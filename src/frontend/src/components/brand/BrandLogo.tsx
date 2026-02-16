@@ -11,7 +11,7 @@ export default function BrandLogo({ size = 'default' }: BrandLogoProps) {
 
   return (
     <img
-      src="/assets/generated/EYEGIC LOGO for ID cards-2.dim_1536x864.png"
+      src="/assets/generated/eyegic-logo.dim_512x256.png"
       alt="Eyegic"
       className={`${sizeClasses[size]} w-auto object-contain flex-shrink-0`}
     />

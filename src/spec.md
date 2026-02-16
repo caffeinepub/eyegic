@@ -1,11 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Fix the Home page hero text layout at md+ breakpoints and ensure the app uses the newly uploaded Eyegic logo everywhere the BrandLogo appears.
+**Goal:** Update the Eyegic logo used across the app to the most recently uploaded logo asset and ensure all visible logo placements render that same updated image.
 
 **Planned changes:**
-- Adjust the Home page hero two-column layout at md and larger breakpoints so the headline “Eyewear Services, On Demand” is fully visible, not overlapped by the hero image, and renders on a single unbroken line.
-- Readjust the font sizes/layout (without changing text content) so the supporting sentence “Professional opticians, rentals, and repairs delivered to your doorstep.” renders as a single unbroken line directly below the headline and remains unobstructed at md+ breakpoints.
-- Add the uploaded logo file “EYEGIC LOGO for ID cards-2.png” as a static frontend asset and update the BrandLogo component to use this exact file everywhere (including desktop header and mobile menu sheet), replacing prior logo asset references.
+- Update `frontend/src/components/brand/BrandLogo.tsx` to reference the last uploaded Eyegic logo file under `/assets/generated/` (replacing the current older/incorrect logo path).
+- Verify `frontend/src/components/layout/SiteHeader.tsx` (desktop header and mobile menu sheet) renders `BrandLogo` and shows the updated logo without broken-image fallback.
+- Ensure no other visible components render a different Eyegic logo asset path (all logo instances match the latest uploaded file).
 
-**User-visible outcome:** On desktop/tablet, the Home hero headline and supporting sentence display cleanly as single lines beside the hero image without overlap, and the correct uploaded Eyegic logo appears consistently across the site header and mobile menu.
+**User-visible outcome:** The updated Eyegic logo appears consistently in the desktop header and in the mobile menu sheet, with no mismatched or broken logos anywhere in the UI.
