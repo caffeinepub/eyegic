@@ -1,0 +1,62 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-fix-the-home-page-hero-layout-so-the-headline-eyewear-services-on-demand-is-fully-visible-next-to-the-hero-image-not-obstructed-overlapped-hidden-and-renders-as-one-single-unbroken-line-on-desktop-tablet-breakpoints-where-the-hero-is-in-a-two-column-layout",
+      "featureTitle": "Fix the Home page hero layout so the headline \"Eyewear Services, On Demand\" is fully visible next to the hero image (not obstructed/overlapped/hidden) and renders as one single unbroken line on desktop/tablet breakpoints where the hero is in a two-column layout.",
+      "files": [
+        "frontend/src/pages/HomePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-27"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-readjust-the-home-page-hero-headline-and-supporting-sentence-font-sizes-without-changing-the-text-content-so-the-supporting-sentence-professional-opticians-rentals-and-repairs-delivered-to-your-doorstep-renders-as-a-single-unbroken-line-directly-below-the-headline-and-remains-fully-visible-not-overlapped-by-the-hero-image-on-desktop-tablet-breakpoints-where-the-hero-is-in-a-two-column-layout",
+      "featureTitle": "Readjust the Home page hero headline and supporting sentence font sizes (without changing the text content) so the supporting sentence \"Professional opticians, rentals, and repairs delivered to your doorstep.\" renders as a single unbroken line directly below the headline and remains fully visible (not overlapped by the hero image) on desktop/tablet breakpoints where the hero is in a two-column layout.",
+      "files": [
+        "frontend/src/pages/HomePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-28"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-the-newly-uploaded-logo-image-file-eyegic-logo-for-id-cards-2-png-as-a-static-frontend-asset-and-update-the-brandlogo-component-so-the-application-uses-this-exact-logo-file-everywhere-the-eyegic-logo-is-rendered-desktop-header-and-mobile-menu-sheet-included-replacing-any-previously-referenced-logo-asset-paths",
+      "featureTitle": "Add the newly uploaded logo image file \"EYEGIC LOGO for ID cards-2.png\" as a static frontend asset and update the BrandLogo component so the application uses this exact logo file everywhere the Eyegic logo is rendered (desktop header and mobile menu sheet included), replacing any previously referenced logo asset paths.",
+      "files": [
+        "frontend/src/components/brand/BrandLogo.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-29"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

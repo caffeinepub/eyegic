@@ -1,0 +1,47 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-16T09:55:17.277Z",
+  "summary": "Home hero layout was adjusted with grid/tailwind classes to prevent overlap and force single-line headline/supporting text at md+; BrandLogo was updated to point to a new generated logo path, but the requested exact uploaded logo file (\"EYEGIC LOGO for ID cards-2.png\") was not added/used per the diff summary. Additionally, a documentation/summary file claims many unrelated UI/animation changes that are not requested (and not evidenced as actual code changes in the modified file list).",
+  "missing_requirements": [
+    {
+      "id": "REQ-29",
+      "requirement": "Add the newly uploaded logo image file \"EYEGIC LOGO for ID cards-2.png\" as a static frontend asset and update BrandLogo so the app uses this exact logo file everywhere the Eyegic logo is rendered (desktop header and mobile menu sheet included), replacing older logo asset paths.",
+      "reason": "No new asset file was added in the diff (Added files: none), and BrandLogo references a different filename/path (\"...dim_1536x864.png\" under /assets/generated) rather than the required exact file name \"EYEGIC LOGO for ID cards-2.png\". Also, there is no code evidence in the modified files list showing header/mobile sheet logo usage being updated beyond BrandLogo itself.",
+      "evidence": [
+        "frontend/src/components/brand/BrandLogo.tsx",
+        "file-diff summary: ADDED FILES: none"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Tailwind config extended with new keyframes/animations (float-gentle, fade-in-up, scale-in) for motion-safe effects across the application.",
+      "reason": "Not requested by the BuildRequest (non-goal: no changes beyond Home hero layout and logo usage) and there is no corresponding modified file shown for tailwind.config.js in the diff’s modified file list; it only appears as a claim inside the summaries file.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "Updates to multiple non-Home pages (MobileOpticianPage, RentalsPage, RepairsPage, MyBookingsPage, ProviderDashboardPage) adding illustrations/animations and UI changes.",
+      "reason": "Not requested and explicitly outside scope (non-goal: no changes to booking/rentals/repairs flows beyond Home hero layout and logo asset usage). These changes are only asserted in frontend-file-summaries.txt and are not evidenced by actual diffs for those files in the modified files list.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "SiteHeader spacing/layout changes (gap adjustments, padding, flex-shrink prevention) including mobile menu sheet adjustments.",
+      "reason": "Not requested by the BuildRequest and no SiteHeader file content is included among the actual modified files listed in the diff summary (only referenced in the summaries file).",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    }
+  ],
+  "confidence": 0.74,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/components/brand/BrandLogo.tsx",
+    "frontend/src/pages/HomePage.tsx",
+    "project_state.json"
+  ]
+}
