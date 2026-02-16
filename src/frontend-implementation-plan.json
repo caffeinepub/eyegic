@@ -1,27 +1,118 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Update Eyegic logo asset reference globally",
+  "title": "Remove logo and all logo-management features from the frontend",
   "requirements": [
     {
-      "id": "REQ-30",
-      "summary": "Point BrandLogo to the most recently uploaded Eyegic logo asset under /assets/generated and ensure all header logo placements (desktop + mobile sheet) render it consistently.",
+      "id": "REQ-1",
+      "summary": "Remove all logo rendering so no logo image is displayed anywhere (header, mobile menu, footer).",
       "acceptanceCriteria": [
-        "`BrandLogo` no longer references an older/incorrect logo path (currently `/assets/generated/EYEGIC LOGO for ID cards-2.dim_1536x864.png`) and instead references the last uploaded logo file under `/assets/generated/`.",
-        "On desktop, the header logo displays the updated logo without broken-image fallback.",
-        "On mobile, opening the menu sheet shows the updated logo at the top of the sheet.",
-        "There are no other components rendering a different Eyegic logo asset path (all visible logo instances match the last uploaded file)."
+        "No <img> or component renders the logo asset at /assets/generated/eyegic-logo.dim_1536x864.png anywhere in the UI.",
+        "SiteHeader no longer imports or renders BrandLogo, including in the desktop header and mobile Sheet menu.",
+        "SiteFooter no longer imports or renders BrandLogo."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/brand/BrandLogo.tsx",
+          "path": "frontend/src/components/layout/SiteHeader.tsx",
           "operation": "modify",
-          "description": "Update the <img> `src` to reference the latest uploaded static logo asset at `frontend/public/assets/generated/eyegic-logo.dim_512x256.png` (rendered via `/assets/generated/eyegic-logo.dim_512x256.png`) so all usages of BrandLogo display the correct logo."
+          "description": "Remove BrandLogo import/usage from the desktop header and mobile Sheet header area; replace with a non-image text brand label so no logo image is rendered."
+        },
+        {
+          "path": "frontend/src/components/layout/SiteFooter.tsx",
+          "operation": "modify",
+          "description": "Remove BrandLogo import/usage from the footer branding area; replace with non-image text branding so no logo image is rendered."
+        },
+        {
+          "path": "frontend/src/components/brand/BrandLogo.tsx",
+          "operation": "delete",
+          "description": "Delete the BrandLogo component to eliminate all logo-image rendering paths (uploaded logo and bundled static logo) from the UI."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Remove Branding/Logo settings route and navigation entry points so users cannot access logo management.",
+      "acceptanceCriteria": [
+        "The '/settings/branding' route is removed from the router configuration (frontend/src/App.tsx).",
+        "All navigation links/buttons to Branding Settings are removed from SiteHeader and SiteFooter (including the mobile menu item).",
+        "The BrandingLogoPage is no longer reachable via navigation or routing."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Remove the BrandingLogoPage import and delete the '/settings/branding' route from the route tree so it is no longer routable."
         },
         {
           "path": "frontend/src/components/layout/SiteHeader.tsx",
           "operation": "modify",
-          "description": "Verify the desktop header and mobile menu sheet continue to render the logo exclusively via the shared `BrandLogo` component (no hardcoded logo paths), ensuring both placements show the updated asset consistently."
+          "description": "Remove the Branding Settings icon button and the mobile menu link that navigates to '/settings/branding'."
+        },
+        {
+          "path": "frontend/src/components/layout/SiteFooter.tsx",
+          "operation": "modify",
+          "description": "Remove the footer navigation link to '/settings/branding' so the Branding settings entry point is not discoverable."
+        },
+        {
+          "path": "frontend/src/pages/settings/BrandingLogoPage.tsx",
+          "operation": "delete",
+          "description": "Delete the BrandingLogoPage implementation to ensure it cannot be reached and its logo-management UI is fully removed from the frontend."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Remove frontend logo fetch/upload logic and now-unused utilities so there are zero references to logo actor methods/types.",
+      "acceptanceCriteria": [
+        "frontend/src/hooks/branding/useSiteLogo.ts is removed or no longer referenced anywhere in the frontend build.",
+        "frontend/src/utils/logoDataUrl.ts is removed or no longer referenced anywhere in the frontend build.",
+        "The app compiles with zero references to getLogo/setLogo actor methods and zero references to LogoType from the frontend."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/branding/useSiteLogo.ts",
+          "operation": "delete",
+          "description": "Remove the logo query/mutation hook to eliminate all frontend references to logo retrieval/upload capabilities (including getLogo/setLogo and LogoType usage)."
+        },
+        {
+          "path": "frontend/src/utils/logoDataUrl.ts",
+          "operation": "delete",
+          "description": "Remove the logo bytes-to-data-url utility to eliminate now-unused logo conversion logic from the frontend codebase."
+        },
+        {
+          "path": "frontend/src/components/brand/BrandLogo.tsx",
+          "operation": "delete",
+          "description": "Ensure this deletion also removes any remaining imports of useGetSiteLogo/useUploadSiteLogo and logoToDataUrl so the frontend build has zero logo references."
+        },
+        {
+          "path": "frontend/src/pages/settings/BrandingLogoPage.tsx",
+          "operation": "delete",
+          "description": "Ensure this deletion also removes any remaining imports of useGetSiteLogo/useUploadSiteLogo and logoToDataUrl so the frontend build has zero logo references."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Remove bundled static logo asset usage and ensure the frontend no longer depends on the generated logo file.",
+      "acceptanceCriteria": [
+        "No code references the static asset path '/assets/generated/eyegic-logo.dim_1536x864.png'.",
+        "If the file frontend/public/assets/generated/eyegic-logo.dim_1536x864.png exists, it is removed from the project or left unused with no runtime references."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/eyegic-logo.dim_1536x864.png",
+          "operation": "delete",
+          "description": "Remove the generated static logo file so the repository no longer depends on or ships this asset."
+        },
+        {
+          "path": "frontend/src/components/brand/BrandLogo.tsx",
+          "operation": "delete",
+          "description": "Deleting BrandLogo removes the fallback <img> that referenced '/assets/generated/eyegic-logo.dim_1536x864.png', ensuring zero runtime references."
+        },
+        {
+          "path": "frontend/src/pages/settings/BrandingLogoPage.tsx",
+          "operation": "delete",
+          "description": "Deleting BrandingLogoPage removes the 'bundledLogoUrl' reference to '/assets/generated/eyegic-logo.dim_1536x864.png', ensuring zero runtime references."
         }
       ]
     }

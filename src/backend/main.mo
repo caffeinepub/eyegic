@@ -7,9 +7,11 @@ import Order "mo:core/Order";
 import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
 import Text "mo:core/Text";
+import Migration "migration";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
+(with migration = Migration.run)
 actor {
   type BookingType = {
     #mobileOptician;
@@ -161,7 +163,6 @@ actor {
     userProfiles.add(caller, profile);
   };
 
-  // PREFILLED DATA INJECTION
   let initialRentalItems = List.fromArray<RentalItem>(
     [
       {
@@ -192,7 +193,7 @@ actor {
   );
 
   public shared ({ caller }) func initialize() : async () {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can initialize");
     };
 
@@ -202,7 +203,6 @@ actor {
     };
   };
 
-  // Mobile Optician Booking
   public shared ({ caller }) func createOpticianBooking(serviceType : ServiceType, details : Text, address : Text, preferredTime : Text, price : PriceInfo) : async Int {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: User authentication required");
@@ -229,7 +229,6 @@ actor {
     bookingId;
   };
 
-  // Repairs/Technician Booking
   public shared ({ caller }) func createRepairBooking(repairType : RepairType, details : Text, address : Text, preferredTime : Text, price : PriceInfo) : async Int {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: User authentication required");
@@ -256,7 +255,6 @@ actor {
     bookingId;
   };
 
-  // Eyewear Rental Booking
   public shared ({ caller }) func createRentalBooking(itemId : Int, rentalPeriod : Int, address : Text, price : PriceInfo) : async Int {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: User authentication required");
@@ -290,7 +288,6 @@ actor {
     bookingId;
   };
 
-  // Provider Onboarding (Self-registration for providers)
   public shared ({ caller }) func onboardProvider(name : Text, contact : Text, serviceAreas : Text, services : [ServiceType], availability : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: User authentication required");
@@ -309,9 +306,8 @@ actor {
     providers.add(caller, provider);
   };
 
-  // Admin: Assign Provider to Booking
   public shared ({ caller }) func assignProviderToBooking(bookingId : Int, providerId : Principal) : async () {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can assign providers");
     };
 
@@ -338,7 +334,6 @@ actor {
     };
   };
 
-  // Provider: Update Booking Status
   public shared ({ caller }) func updateBookingStatus(bookingId : Int, newStatus : BookingStatus) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: User authentication required");
@@ -351,7 +346,6 @@ actor {
       case (?booking) { booking };
     };
 
-    // Verify caller is the assigned provider or admin
     let isAssignedProvider = switch (existingBooking.provider) {
       case (?providerId) { providerId == caller };
       case (null) { false };
@@ -369,9 +363,6 @@ actor {
     bookings.add(bookingId, updatedBooking);
   };
 
-  // Queries
-
-  // Get specific booking (with ownership verification)
   public query ({ caller }) func getBooking(bookingId : Int) : async Booking {
     let booking = switch (bookings.get(bookingId)) {
       case (null) {
@@ -380,7 +371,6 @@ actor {
       case (?b) { b };
     };
 
-    // Verify caller is customer, provider, or admin
     let isCustomer = booking.customer == caller;
     let isProvider = switch (booking.provider) {
       case (?providerId) { providerId == caller };
@@ -395,7 +385,6 @@ actor {
     booking;
   };
 
-  // Get all bookings for a customer
   public query ({ caller }) func getCustomerBookings() : async [Booking] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: User authentication required");
@@ -411,13 +400,11 @@ actor {
     customerBookings.toArray();
   };
 
-  // Get all bookings for a provider
   public query ({ caller }) func getProviderBookings() : async [Booking] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: User authentication required");
     };
 
-    // Verify caller is a registered provider
     switch (providers.get(caller)) {
       case (null) {
         Runtime.trap("Unauthorized: Only registered providers can view provider bookings");
@@ -440,9 +427,8 @@ actor {
     providerBookings.toArray();
   };
 
-  // Admin: Get all bookings
   public query ({ caller }) func getAllBookings() : async [Booking] {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can view all bookings");
     };
     let bookingsArray = List.empty<Booking>();
@@ -453,7 +439,6 @@ actor {
     bookingsArray.toArray();
   };
 
-  // Get rental catalog (public access)
   public query ({ caller }) func getRentalCatalog() : async [RentalItem] {
     let rentalItemsArray = List.empty<RentalItem>();
     let values = rentalCatalog.values();
@@ -463,7 +448,6 @@ actor {
     rentalItemsArray.toArray();
   };
 
-  // Find available rental items (public access)
   public query ({ caller }) func findAvailableRentalItems() : async [RentalItem] {
     let availableItems = List.empty<RentalItem>();
     let values = rentalCatalog.values();
@@ -475,12 +459,10 @@ actor {
     availableItems.toArray();
   };
 
-  // Get provider info (public access for discovery)
   public query ({ caller }) func getProvider(providerId : Principal) : async ?Provider {
     providers.get(providerId);
   };
 
-  // Get all active providers (public access for discovery)
   public query ({ caller }) func getActiveProviders() : async [Provider] {
     let activeProviders = List.empty<Provider>();
     let values = providers.values();

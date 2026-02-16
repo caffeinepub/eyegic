@@ -1,35 +1,106 @@
 {
   "kind": "build_request",
-  "title": "Update Eyegic logo to use the last uploaded file globally",
-  "priority": "high",
+  "title": "Remove site logo and all logo-management features across the app",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-30",
-      "text": "Update the application to use the last uploaded Eyegic logo file (most recent uploaded logo asset) everywhere the logo is rendered by ensuring `frontend/src/components/brand/BrandLogo.tsx` points to that latest static asset (under `/assets/generated/`) and that all logo placements (desktop header and mobile menu sheet in `frontend/src/components/layout/SiteHeader.tsx`) render the updated logo.",
+      "id": "REQ-1",
+      "text": "Remove all logo rendering from the UI so that no logo image is displayed anywhere in the app, including the site header, mobile menu header area, and footer.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-messages-4"
+          "msg-3"
         ],
         "quotes": [
-          "the logo is incorrect, use the last uploaded file"
+          "remove the logo from everywhere"
         ]
       },
       "acceptanceCriteria": [
-        "`BrandLogo` no longer references an older/incorrect logo path (currently `/assets/generated/EYEGIC LOGO for ID cards-2.dim_1536x864.png`) and instead references the last uploaded logo file under `/assets/generated/`.",
-        "On desktop, the header logo displays the updated logo without broken-image fallback.",
-        "On mobile, opening the menu sheet shows the updated logo at the top of the sheet.",
-        "There are no other components rendering a different Eyegic logo asset path (all visible logo instances match the last uploaded file)."
+        "No <img> or component renders the logo asset at /assets/generated/eyegic-logo.dim_1536x864.png anywhere in the UI.",
+        "SiteHeader no longer imports or renders BrandLogo, including in the desktop header and mobile Sheet menu.",
+        "SiteFooter no longer imports or renders BrandLogo."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Remove the Branding/Logo settings UI entry points and route so users cannot navigate to or manage a logo through the frontend.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "remove the logo from everywhere"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The '/settings/branding' route is removed from the router configuration (frontend/src/App.tsx).",
+        "All navigation links/buttons to Branding Settings are removed from SiteHeader and SiteFooter (including the mobile menu item).",
+        "The BrandingLogoPage is no longer reachable via navigation or routing."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Remove frontend logo-fetch/upload logic and any now-unused utilities related to logo byte-to-data-url conversion.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "remove the logo from everywhere"
+        ]
+      },
+      "acceptanceCriteria": [
+        "frontend/src/hooks/branding/useSiteLogo.ts is removed or no longer referenced anywhere in the frontend build.",
+        "frontend/src/utils/logoDataUrl.ts is removed or no longer referenced anywhere in the frontend build.",
+        "The app compiles with zero references to getLogo/setLogo actor methods and zero references to LogoType from the frontend."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Remove backend logo storage and APIs so the canister no longer supports uploading or retrieving a site logo.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "remove the logo from everywhere"
+        ]
+      },
+      "acceptanceCriteria": [
+        "backend/main.mo no longer defines LogoType, persistentLogo state, or exposes getLogo()/setLogo() methods.",
+        "Backend builds successfully and the Candid interface no longer includes logo-related methods.",
+        "No new migration file is introduced unless required by compilation/upgrade constraints."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Remove the bundled static logo asset usage and ensure the repository no longer depends on the generated logo file.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "remove the logo from everywhere"
+        ]
+      },
+      "acceptanceCriteria": [
+        "No code references the static asset path '/assets/generated/eyegic-logo.dim_1536x864.png'.",
+        "If the file frontend/public/assets/generated/eyegic-logo.dim_1536x864.png exists, it is removed from the project or left unused with no runtime references."
       ]
     }
   ],
   "constraints": [
-    "Frontend immutable paths must not be edited: `frontend/src/hooks/useInternetIdentity.ts`, `frontend/src/hooks/useInternetIdentity.tsx`, `frontend/src/hooks/useActor.ts`, `frontend/src/main.tsx`, and anything under `frontend/src/components/ui`.",
-    "Render logo as a static frontend asset (do not route images through the backend)."
+    "Backend must remain a single-actor Motoko canister (all logic in backend/main.mo).",
+    "Do not modify any frontend files under frontend/src/components/ui or other immutable paths listed in SYSTEM_CONTEXT; compose existing components instead."
   ],
   "nonGoals": [
-    "Changing the header layout, spacing, or logo sizing beyond what is necessary to swap the logo asset.",
-    "Creating a new logo design or modifying the logo image contents."
+    "Do not redesign the overall site layout beyond removing logo-related UI elements.",
+    "Do not add new branding features (themes, fonts, colors) as a replacement for the removed logo.",
+    "Do not introduce any new authentication method beyond existing Internet Identity usage."
   ],
   "imageRequirements": {
     "required": [],

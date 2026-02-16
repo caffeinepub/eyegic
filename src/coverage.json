@@ -1,35 +1,107 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T10:00:32.987Z",
+  "generatedAt": "2026-02-16T11:51:42.843Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 5,
+    "implemented": 4,
     "items": [
       {
-        "id": "REQ-30",
-        "summary": "Update the application to use the last uploaded Eyegic logo file (most recent uploaded logo asset) everywhere the logo is rendered by ensuring `frontend/src/components/brand/BrandLogo.tsx` points to that latest static asset (under `/assets/generated/`) and that all logo placements (desktop header and mobile menu sheet in `frontend/src/components/layout/SiteHeader.tsx`) render the updated logo.",
+        "id": "REQ-1",
+        "summary": "Remove all logo rendering from the UI so that no logo image is displayed anywhere in the app, including the site header, mobile menu header area, and footer.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/brand/BrandLogo.tsx",
-          "frontend/src/components/layout/SiteHeader.tsx"
+          "frontend/src/components/layout/SiteHeader.tsx",
+          "frontend/src/components/layout/SiteFooter.tsx",
+          "frontend/src/components/brand/BrandLogo.tsx"
         ],
         "matchedFiles": [
+          "frontend/src/components/layout/SiteHeader.tsx",
+          "frontend/src/components/layout/SiteFooter.tsx",
           "frontend/src/components/brand/BrandLogo.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Remove the Branding/Logo settings UI entry points and route so users cannot navigate to or manage a logo through the frontend.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/layout/SiteHeader.tsx",
+          "frontend/src/components/layout/SiteFooter.tsx",
+          "frontend/src/pages/settings/BrandingLogoPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/layout/SiteHeader.tsx",
+          "frontend/src/components/layout/SiteFooter.tsx",
+          "frontend/src/pages/settings/BrandingLogoPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Remove frontend logo-fetch/upload logic and any now-unused utilities related to logo byte-to-data-url conversion.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/branding/useSiteLogo.ts",
+          "frontend/src/utils/logoDataUrl.ts",
+          "frontend/src/components/brand/BrandLogo.tsx",
+          "frontend/src/pages/settings/BrandingLogoPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/branding/useSiteLogo.ts",
+          "frontend/src/utils/logoDataUrl.ts",
+          "frontend/src/components/brand/BrandLogo.tsx",
+          "frontend/src/pages/settings/BrandingLogoPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Remove backend logo storage and APIs so the canister no longer supports uploading or retrieving a site logo.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Remove the bundled static logo asset usage and ensure the repository no longer depends on the generated logo file.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/public/assets/generated/eyegic-logo.dim_1536x864.png",
+          "frontend/src/components/brand/BrandLogo.tsx",
+          "frontend/src/pages/settings/BrandingLogoPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/public/assets/generated/eyegic-logo.dim_1536x864.png",
+          "frontend/src/components/brand/BrandLogo.tsx",
+          "frontend/src/pages/settings/BrandingLogoPage.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/public/assets/generated/eyegic-logo.dim_1536x864.png",
+    "frontend/src/App.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
     "frontend/src/components/brand/BrandLogo.tsx",
+    "frontend/src/components/layout/SiteFooter.tsx",
+    "frontend/src/components/layout/SiteHeader.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/branding/useSiteLogo.ts",
+    "frontend/src/pages/settings/BrandingLogoPage.tsx",
+    "frontend/src/utils/logoDataUrl.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

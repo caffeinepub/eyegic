@@ -10,7 +10,7 @@ export default function SiteFooter() {
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-3">
-            <h3 className="font-semibold text-lg">Eyegic</h3>
+            <span className="text-2xl font-bold text-foreground">Eyegic</span>
             <p className="text-sm text-muted-foreground">
               On-demand eyewear services at your doorstep
             </p>

@@ -2,10 +2,12 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-application-to-use-the-last-uploaded-eyegic-logo-file-most-recent-uploaded-logo-asset-everywhere-the-logo-is-rendered-by-ensuring-frontend-src-components-brand-brandlogo-tsx-points-to-that-latest-static-asset-under-assets-generated-and-that-all-logo-placements-desktop-header-and-mobile-menu-sheet-in-frontend-src-components-layout-siteheader-tsx-render-the-updated-logo",
-      "featureTitle": "Update the application to use the last uploaded Eyegic logo file (most recent uploaded logo asset) everywhere the logo is rendered by ensuring `frontend/src/components/brand/BrandLogo.tsx` points to that latest static asset (under `/assets/generated/`) and that all logo placements (desktop header and mobile menu sheet in `frontend/src/components/layout/SiteHeader.tsx`) render the updated logo.",
+      "featureId": "feature-remove-all-logo-rendering-from-the-ui-so-that-no-logo-image-is-displayed-anywhere-in-the-app-including-the-site-header-mobile-menu-header-area-and-footer",
+      "featureTitle": "Remove all logo rendering from the UI so that no logo image is displayed anywhere in the app, including the site header, mobile menu header area, and footer.",
       "files": [
-        "frontend/src/components/brand/BrandLogo.tsx"
+        "frontend/src/components/brand/BrandLogo.tsx",
+        "frontend/src/components/layout/SiteFooter.tsx",
+        "frontend/src/components/layout/SiteHeader.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -16,7 +18,71 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-30"
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-remove-the-branding-logo-settings-ui-entry-points-and-route-so-users-cannot-navigate-to-or-manage-a-logo-through-the-frontend",
+      "featureTitle": "Remove the Branding/Logo settings UI entry points and route so users cannot navigate to or manage a logo through the frontend.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/layout/SiteFooter.tsx",
+        "frontend/src/components/layout/SiteHeader.tsx",
+        "frontend/src/pages/settings/BrandingLogoPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-remove-frontend-logo-fetch-upload-logic-and-any-now-unused-utilities-related-to-logo-byte-to-data-url-conversion",
+      "featureTitle": "Remove frontend logo-fetch/upload logic and any now-unused utilities related to logo byte-to-data-url conversion.",
+      "files": [
+        "frontend/src/components/brand/BrandLogo.tsx",
+        "frontend/src/hooks/branding/useSiteLogo.ts",
+        "frontend/src/pages/settings/BrandingLogoPage.tsx",
+        "frontend/src/utils/logoDataUrl.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-remove-the-bundled-static-logo-asset-usage-and-ensure-the-repository-no-longer-depends-on-the-generated-logo-file",
+      "featureTitle": "Remove the bundled static logo asset usage and ensure the repository no longer depends on the generated logo file.",
+      "files": [
+        "frontend/src/components/brand/BrandLogo.tsx",
+        "frontend/src/pages/settings/BrandingLogoPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
       ],
       "confidence": "high"
     }

@@ -1,11 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Update the Eyegic logo used across the app to the most recently uploaded logo asset and ensure all visible logo placements render that same updated image.
+**Goal:** Remove all site logo rendering and all logo-management functionality from both the frontend and backend.
 
 **Planned changes:**
-- Update `frontend/src/components/brand/BrandLogo.tsx` to reference the last uploaded Eyegic logo file under `/assets/generated/` (replacing the current older/incorrect logo path).
-- Verify `frontend/src/components/layout/SiteHeader.tsx` (desktop header and mobile menu sheet) renders `BrandLogo` and shows the updated logo without broken-image fallback.
-- Ensure no other visible components render a different Eyegic logo asset path (all logo instances match the latest uploaded file).
+- Remove all logo display from the UI (header, mobile menu header area, footer) and eliminate any BrandLogo usage/imports.
+- Remove the Branding/Logo settings entry points by deleting the `/settings/branding` route and any navigation links/buttons that point to it.
+- Remove frontend logo upload/fetch logic and related utilities (including any logo data-url conversion helpers) and ensure there are no remaining references to logo actor methods/types.
+- Remove backend logo storage and APIs so the canister no longer exposes logo-related types/state/methods.
+- Remove or leave unused (with zero runtime/code references) the bundled generated logo asset so the repository no longer depends on it.
 
-**User-visible outcome:** The updated Eyegic logo appears consistently in the desktop header and in the mobile menu sheet, with no mismatched or broken logos anywhere in the UI.
+**User-visible outcome:** The app no longer displays a logo anywhere, and users can no longer navigate to or manage a site logo in settings.

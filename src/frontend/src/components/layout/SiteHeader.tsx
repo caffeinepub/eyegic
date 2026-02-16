@@ -3,7 +3,6 @@ import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import BrandLogo from '../brand/BrandLogo';
 import LoginButton from '../auth/LoginButton';
 
 export default function SiteHeader() {
@@ -24,7 +23,7 @@ export default function SiteHeader() {
       <div className="container-custom flex h-24 md:h-28 items-center justify-between gap-4 px-4 md:px-6">
         <div className="flex items-center gap-6 md:gap-12">
           <Link to="/" className="flex items-center flex-shrink-0">
-            <BrandLogo />
+            <span className="text-2xl font-bold text-foreground">Eyegic</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-6 lg:gap-7">
@@ -67,7 +66,9 @@ export default function SiteHeader() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <div className="flex items-center justify-center py-6 border-b mb-6">
-                <BrandLogo size="sheet" />
+                <Link to="/" onClick={() => setMobileMenuOpen(false)}>
+                  <span className="text-2xl font-bold text-foreground">Eyegic</span>
+                </Link>
               </div>
               <nav className="flex flex-col gap-4">
                 {navLinks.map((link) => (
