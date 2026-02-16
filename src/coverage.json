@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T11:58:38.427Z",
+  "generatedAt": "2026-02-16T14:42:25.129Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,49 +11,43 @@
     "implemented": 3,
     "items": [
       {
-        "id": "REQ-6",
-        "summary": "Add the user-uploaded logo image file \"EYEGIC LOGO for ID cards-5.png\" to the frontend as a static asset and use this exact image as the only logo image used anywhere in the app.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/public/assets/generated/EYEGIC LOGO for ID cards-5.dim_1536x1024.png"
-        ],
-        "matchedFiles": [
-          "frontend/public/assets/generated/EYEGIC LOGO for ID cards-5.dim_1536x1024.png"
-        ]
-      },
-      {
-        "id": "REQ-7",
-        "summary": "Implement a reusable BrandLogo component that renders the uploaded logo image, and replace the text-based brand rendering in the site header and footer with the BrandLogo component.",
+        "id": "REQ-1",
+        "summary": "Remove all instances of the current logo image (including the header home-link <img> at XPath /html[1]/body[1]/div[1]/div[1]/header[1]/div[1]/div[1]/a[1]/img[1]) across the entire app, so no UI renders the logo image anywhere.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/components/brand/BrandLogo.tsx",
-          "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/components/layout/SiteFooter.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/brand/BrandLogo.tsx",
-          "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/components/layout/SiteFooter.tsx"
-        ]
-      },
-      {
-        "id": "REQ-8",
-        "summary": "Remove/avoid any remaining logo-related logic or references that would cause another logo to appear (including generated placeholder logos, previously bundled logo assets, or logo-management UI/hooks/utilities), while keeping existing settings routes for logo management disabled/absent.",
-        "status": "implemented",
-        "plannedFiles": [
           "frontend/src/hooks/branding/useSiteLogo.ts",
-          "frontend/src/utils/logoDataUrl.ts",
-          "frontend/src/pages/settings/BrandingLogoPage.tsx",
-          "frontend/public/assets/generated/eyegic-logo.dim_1536x864.png",
-          "frontend/public/assets/generated/eyegic-logo.dim_512x256.png",
-          "frontend/public/assets/generated/eyegic-icons.dim_512x512.png",
-          "frontend/public/assets/generated/EYEGIC logo transparent background.png"
+          "frontend/src/components/layout/SiteFooter.tsx"
         ],
         "matchedFiles": [
-          "frontend/public/assets/generated/eyegic-logo.dim_1536x864.png",
-          "frontend/public/assets/generated/eyegic-logo.dim_512x256.png",
-          "frontend/public/assets/generated/eyegic-icons.dim_512x512.png",
-          "frontend/public/assets/generated/EYEGIC logo transparent background.png"
+          "frontend/src/components/brand/BrandLogo.tsx",
+          "frontend/src/hooks/branding/useSiteLogo.ts",
+          "frontend/src/components/layout/SiteFooter.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Replace the header brand logo area with a bold, text-only brand mark that reads exactly \"EYEGIC\", sized as large as possible while still fitting within the header height, and apply this across all pages (including mobile header/menu). The brand mark must remain a link to \"/\".",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/brand/BrandLogo.tsx",
+          "frontend/src/components/layout/SiteHeader.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/brand/BrandLogo.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Update the footer to remove the logo image display and replace it with a text-only \"EYEGIC\" brand mark (or remove the logo area entirely) while keeping the footer layout coherent and accessible.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/layout/SiteFooter.tsx",
+          "frontend/src/hooks/branding/useSiteLogo.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/layout/SiteFooter.tsx",
+          "frontend/src/hooks/branding/useSiteLogo.ts"
         ]
       }
     ]
@@ -63,14 +57,9 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/assets/generated/EYEGIC LOGO for ID cards-5.dim_1536x1024.png",
-    "frontend/public/assets/generated/EYEGIC logo transparent background.png",
-    "frontend/public/assets/generated/eyegic-icons.dim_512x512.png",
-    "frontend/public/assets/generated/eyegic-logo.dim_1536x864.png",
-    "frontend/public/assets/generated/eyegic-logo.dim_512x256.png",
     "frontend/src/components/brand/BrandLogo.tsx",
     "frontend/src/components/layout/SiteFooter.tsx",
-    "frontend/src/components/layout/SiteHeader.tsx",
+    "frontend/src/hooks/branding/useSiteLogo.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

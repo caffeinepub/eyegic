@@ -1,12 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Use the single user-uploaded EYEGIC logo file everywhere in the app and remove any other logo usage.
+**Goal:** Remove all logo images throughout the app and standardize header/footer branding as bold, text-only “EYEGIC” that links to the home page.
 
 **Planned changes:**
-- Add the static asset `EYEGIC LOGO for ID cards-5.png` to the frontend and ensure it is loadable by the UI.
-- Create a reusable `BrandLogo` component that renders only `EYEGIC LOGO for ID cards-5.png`.
-- Replace text-based branding in the site header and footer (including the mobile sheet header area) with `BrandLogo`.
-- Remove/avoid any remaining frontend references, logic, or UI related to other logo assets or logo fetching/upload/management so no other logo can appear.
+- Remove all rendered usages of the current logo image(s) across the app, including the header home-link `<img>` and any occurrences in header, mobile menu header, and footer.
+- Replace the header brand area (desktop and mobile/menu) with a bold, text-only “EYEGIC” link to “/”, sized to the maximum that fits the header height across responsive breakpoints.
+- Update the footer to no longer render a logo `<img>` and replace it with text-only “EYEGIC” (or remove the logo area) while keeping layout/spacing coherent and accessible.
+- Clean up any unused imports/references created by removing image-based logo code (including `useSiteLogo()` if it becomes unused).
 
-**User-visible outcome:** The header and footer show the uploaded EYEGIC logo image (not text), and the app does not display or manage any other logo.
+**User-visible outcome:** The app no longer shows any logo images; users see a bold “EYEGIC” text brand in the header (and mobile menu header) that links to “/”, and the footer no longer displays a logo image.

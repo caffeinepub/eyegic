@@ -1,91 +1,73 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Use only the uploaded EYEGIC logo file across the app",
+  "title": "Replace image-based logo branding with text-only “EYEGIC” across header and footer",
   "requirements": [
     {
-      "id": "REQ-6",
-      "summary": "Add the uploaded EYEGIC logo as a static asset and ensure it is the only logo image used anywhere in the app.",
+      "id": "REQ-1",
+      "summary": "Remove all rendered uses of the current logo image across the app and clean up any now-unused logo code.",
       "acceptanceCriteria": [
-        "The file \"EYEGIC LOGO for ID cards-5.png\" is included in the frontend static assets (e.g., under frontend/public/assets/generated/) and is loadable by the UI.",
-        "No other logo image files are added or referenced anywhere in the repository or UI."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/public/assets/generated/EYEGIC LOGO for ID cards-5.dim_1536x1024.png",
-          "operation": "create",
-          "description": "Add the required static logo asset at this exact path and filename so it can be used as the sole logo image throughout the UI."
-        }
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "summary": "Create a reusable BrandLogo component for the uploaded logo and use it in the site header and footer (desktop and mobile header areas).",
-      "acceptanceCriteria": [
-        "SiteHeader displays the uploaded logo image (not a text-only brand name) for both desktop header and the mobile sheet header area.",
-        "SiteFooter displays the uploaded logo image (not a text-only brand name).",
-        "BrandLogo uses only the uploaded file \"EYEGIC LOGO for ID cards-5.png\" as its image source and does not fetch logos from the backend or from any other asset."
+        "No rendered <img> in the app uses src \"/assets/generated/EYEGIC LOGO powered by lensdirect.dim_1536x1024.png\".",
+        "Header, mobile menu header, and footer no longer display the logo image.",
+        "App builds with no unused-import/typecheck errors after removing logo usage."
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/brand/BrandLogo.tsx",
           "operation": "modify",
-          "description": "Implement BrandLogo to render a single <img> that uses only frontend/public/assets/generated/EYEGIC LOGO for ID cards-5.dim_1536x1024.png as its source (no backend fetch, no alternative assets)."
+          "description": "Remove the <img>-based logo rendering and any dependency on the image src; convert the component to render text-only branding so no UI path can render the old logo image."
         },
         {
-          "path": "frontend/src/components/layout/SiteHeader.tsx",
-          "operation": "modify",
-          "description": "Replace the text-based brand rendering with the BrandLogo component for both the desktop header brand area and the mobile sheet header area."
+          "path": "frontend/src/hooks/branding/useSiteLogo.ts",
+          "operation": "delete",
+          "description": "Remove the hook that hardcodes the logo image path so it cannot be referenced (directly or indirectly) after the text-only branding change."
         },
         {
           "path": "frontend/src/components/layout/SiteFooter.tsx",
           "operation": "modify",
-          "description": "Replace the text-based brand rendering with the BrandLogo component in the footer branding area."
+          "description": "Remove footer <img> logo rendering and remove useSiteLogo() import/usage; ensure there are no remaining references to the logo image path and the footer still compiles cleanly."
         }
       ]
     },
     {
-      "id": "REQ-8",
-      "summary": "Remove/avoid any remaining non-uploaded logo references and disable/absent any logo-management UI/hooks/utilities in the frontend.",
+      "id": "REQ-2",
+      "summary": "Replace the header brand logo area with a bold, text-only “EYEGIC” link to “/” across desktop and mobile header/menu, ensuring it scales to fit the header height.",
       "acceptanceCriteria": [
-        "A search through the frontend codebase shows no references to any other logo asset filenames/paths besides \"EYEGIC LOGO for ID cards-5.png\".",
-        "The app does not expose any logo upload/fetch/settings UI, and no backend calls exist in the frontend that attempt to retrieve or set a site logo."
+        "In the desktop header, the left brand element displays bold text \"EYEGIC\" (no logo image) and clicking it navigates to \"/\".",
+        "The brand text scales to fit the header height (no vertical overflow/cropping) across responsive breakpoints.",
+        "In the mobile menu header area (inside the Sheet), the brand text \"EYEGIC\" is shown instead of an image and still closes the menu on click if previously supported via onClick."
       ],
       "file_operations": [
         {
+          "path": "frontend/src/components/brand/BrandLogo.tsx",
+          "operation": "modify",
+          "description": "Implement a text-only brand mark that renders exactly \"EYEGIC\" in bold, using responsive sizing (e.g., clamp-based Tailwind arbitrary value and tight leading) so it grows as large as possible while still fitting within the header height; preserve the existing Link to \"/\" and support the existing onClick behavior for mobile menu close."
+        },
+        {
+          "path": "frontend/src/components/layout/SiteHeader.tsx",
+          "operation": "modify",
+          "description": "Ensure the header and mobile Sheet header continue to use the brand component and that layout/className constraints allow the text-only \"EYEGIC\" mark to visually scale without overflow or cropping at the existing header heights across breakpoints."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Update the footer to remove the logo image and replace it with a text-only “EYEGIC” brand mark (or remove the logo area) while keeping layout and accessibility intact.",
+      "acceptanceCriteria": [
+        "The footer no longer renders an <img> for the site logo.",
+        "Footer layout remains visually aligned (no broken spacing where the logo image used to be).",
+        "No references to useSiteLogo() remain if it becomes unused by removing the image-based logo."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/layout/SiteFooter.tsx",
+          "operation": "modify",
+          "description": "Replace the logo image area with a text-only \"EYEGIC\" brand mark (either as a Link to \"/\" or non-link text if preferred by existing footer layout), adjust spacing/alignment so the grid remains coherent, and ensure accessible semantics (no empty logo container)."
+        },
+        {
           "path": "frontend/src/hooks/branding/useSiteLogo.ts",
           "operation": "delete",
-          "description": "Remove unused logo-fetching hook file to prevent future accidental backend logo retrieval logic from being introduced."
-        },
-        {
-          "path": "frontend/src/utils/logoDataUrl.ts",
-          "operation": "delete",
-          "description": "Remove unused logo utility file to prevent alternate logo sources (data URLs / placeholders) from being used."
-        },
-        {
-          "path": "frontend/src/pages/settings/BrandingLogoPage.tsx",
-          "operation": "delete",
-          "description": "Remove the (currently empty) branding logo settings page to keep logo management UI disabled/absent."
-        },
-        {
-          "path": "frontend/public/assets/generated/eyegic-logo.dim_1536x864.png",
-          "operation": "delete",
-          "description": "Delete previously bundled/generated placeholder logo asset to ensure no alternate logo image can be referenced or displayed."
-        },
-        {
-          "path": "frontend/public/assets/generated/eyegic-logo.dim_512x256.png",
-          "operation": "delete",
-          "description": "Delete previously bundled/generated placeholder logo asset to ensure no alternate logo image can be referenced or displayed."
-        },
-        {
-          "path": "frontend/public/assets/generated/eyegic-icons.dim_512x512.png",
-          "operation": "delete",
-          "description": "Delete previously bundled/generated icon/logo-like asset to reduce the risk of an alternate logo appearing or being referenced."
-        },
-        {
-          "path": "frontend/public/assets/generated/EYEGIC logo transparent background.png",
-          "operation": "delete",
-          "description": "Delete alternate EYEGIC logo asset variant so the codebase cannot reference anything other than the required uploaded logo file."
+          "description": "Ensure footer cleanup leaves no remaining useSiteLogo() references anywhere in the frontend after removing the image-based logo."
         }
       ]
     }

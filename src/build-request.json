@@ -1,85 +1,73 @@
 {
   "kind": "build_request",
-  "title": "Use only the uploaded EYEGIC logo file across the app",
+  "title": "Remove all logo images and replace header branding with bold “EYEGIC” text across the app",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-6",
-      "text": "Add the user-uploaded logo image file \"EYEGIC LOGO for ID cards-5.png\" to the frontend as a static asset and use this exact image as the only logo image used anywhere in the app.",
+      "id": "REQ-1",
+      "text": "Remove all instances of the current logo image (including the header home-link <img> at XPath /html[1]/body[1]/div[1]/div[1]/header[1]/div[1]/div[1]/a[1]/img[1]) across the entire app, so no UI renders the logo image anywhere.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-1"
         ],
         "quotes": [
-          "please use the file for logo attached with this message. please dont use any other logo. USE THE LOGO IN THIS FILE ONLY"
+          "override that rule and remove this logo everywhere in the app"
         ]
       },
       "acceptanceCriteria": [
-        "The file \"EYEGIC LOGO for ID cards-5.png\" is included in the frontend static assets (e.g., under frontend/public/assets/generated/) and is loadable by the UI.",
-        "No other logo image files are added or referenced anywhere in the repository or UI."
+        "No rendered <img> in the app uses src \"/assets/generated/EYEGIC LOGO powered by lensdirect.dim_1536x1024.png\".",
+        "Header, mobile menu header, and footer no longer display the logo image.",
+        "App builds with no unused-import/typecheck errors after removing logo usage."
       ]
     },
     {
-      "id": "REQ-7",
-      "text": "Implement a reusable BrandLogo component that renders the uploaded logo image, and replace the text-based brand rendering in the site header and footer with the BrandLogo component.",
+      "id": "REQ-2",
+      "text": "Replace the header brand logo area with a bold, text-only brand mark that reads exactly \"EYEGIC\", sized as large as possible while still fitting within the header height, and apply this across all pages (including mobile header/menu). The brand mark must remain a link to \"/\".",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-1"
         ],
         "quotes": [
-          "USE THE LOGO IN THIS FILE ONLY"
+          "header will contain EYEGIC text in place of logo in bold format with max font size as possible to fit the header, this change is meant to apply across all the pages"
         ]
       },
       "acceptanceCriteria": [
-        "SiteHeader displays the uploaded logo image (not a text-only brand name) for both desktop header and the mobile sheet header area.",
-        "SiteFooter displays the uploaded logo image (not a text-only brand name).",
-        "BrandLogo uses only the uploaded file \"EYEGIC LOGO for ID cards-5.png\" as its image source and does not fetch logos from the backend or from any other asset."
+        "In the desktop header, the left brand element displays bold text \"EYEGIC\" (no logo image) and clicking it navigates to \"/\".",
+        "The brand text scales to fit the header height (no vertical overflow/cropping) across responsive breakpoints.",
+        "In the mobile menu header area (inside the Sheet), the brand text \"EYEGIC\" is shown instead of an image and still closes the menu on click if previously supported via onClick."
       ]
     },
     {
-      "id": "REQ-8",
-      "text": "Remove/avoid any remaining logo-related logic or references that would cause another logo to appear (including generated placeholder logos, previously bundled logo assets, or logo-management UI/hooks/utilities), while keeping existing settings routes for logo management disabled/absent.",
+      "id": "REQ-3",
+      "text": "Update the footer to remove the logo image display and replace it with a text-only \"EYEGIC\" brand mark (or remove the logo area entirely) while keeping the footer layout coherent and accessible.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-1"
         ],
         "quotes": [
-          "please dont use any other logo"
+          "remove all instances of this logo across the entire app"
         ]
       },
       "acceptanceCriteria": [
-        "A search through the frontend codebase shows no references to any other logo asset filenames/paths besides \"EYEGIC LOGO for ID cards-5.png\".",
-        "The app does not expose any logo upload/fetch/settings UI, and no backend calls exist in the frontend that attempt to retrieve or set a site logo."
+        "The footer no longer renders an <img> for the site logo.",
+        "Footer layout remains visually aligned (no broken spacing where the logo image used to be).",
+        "No references to useSiteLogo() remain if it becomes unused by removing the image-based logo."
       ]
     }
   ],
   "constraints": [
-    "Use only the user-uploaded image file \"EYEGIC LOGO for ID cards-5.png\" for any logo rendering.",
-    "Do not introduce or reference any additional logo assets (including replacements, placeholders, or alternate logo variants).",
-    "Do not edit files under frontend/src/components/ui or any paths listed in frontend.immutablePaths."
+    "Frontend immutable paths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui."
   ],
   "nonGoals": [
-    "Adding logo upload/change functionality in settings.",
-    "Storing or serving the logo from the backend canister.",
-    "Creating additional derived logo files such as favicons or alternate-sized logo variants."
+    "Do not add new authentication providers or change Internet Identity behavior.",
+    "Do not introduce new backend canisters/services or external storage.",
+    "Do not redesign unrelated pages or change booking/provider functionality beyond removing logo imagery."
   ],
   "imageRequirements": {
-    "required": [
-      "EYEGIC logo image (EYEGIC LOGO for ID cards-5.dim_1536x1024.png)"
-    ],
+    "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

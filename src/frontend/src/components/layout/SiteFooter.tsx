@@ -1,6 +1,5 @@
 import { Link } from '@tanstack/react-router';
 import { Heart } from 'lucide-react';
-import BrandLogo from '../brand/BrandLogo';
 
 export default function SiteFooter() {
   const currentYear = new Date().getFullYear();
@@ -11,13 +10,9 @@ export default function SiteFooter() {
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-3">
-            <div className="flex items-center">
-              <img
-                src="/assets/generated/EYEGIC LOGO for ID cards-5.dim_1536x1024.png"
-                alt="Eyegic"
-                className="h-10 w-auto object-contain"
-              />
-            </div>
+            <Link to="/" className="inline-block">
+              <span className="text-2xl font-bold leading-none tracking-tight">EYEGIC</span>
+            </Link>
             <p className="text-sm text-muted-foreground">
               On-demand eyewear services at your doorstep
             </p>
