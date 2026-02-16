@@ -1,13 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Remove all site logo rendering and all logo-management functionality from both the frontend and backend.
+**Goal:** Use the single user-uploaded EYEGIC logo file everywhere in the app and remove any other logo usage.
 
 **Planned changes:**
-- Remove all logo display from the UI (header, mobile menu header area, footer) and eliminate any BrandLogo usage/imports.
-- Remove the Branding/Logo settings entry points by deleting the `/settings/branding` route and any navigation links/buttons that point to it.
-- Remove frontend logo upload/fetch logic and related utilities (including any logo data-url conversion helpers) and ensure there are no remaining references to logo actor methods/types.
-- Remove backend logo storage and APIs so the canister no longer exposes logo-related types/state/methods.
-- Remove or leave unused (with zero runtime/code references) the bundled generated logo asset so the repository no longer depends on it.
+- Add the static asset `EYEGIC LOGO for ID cards-5.png` to the frontend and ensure it is loadable by the UI.
+- Create a reusable `BrandLogo` component that renders only `EYEGIC LOGO for ID cards-5.png`.
+- Replace text-based branding in the site header and footer (including the mobile sheet header area) with `BrandLogo`.
+- Remove/avoid any remaining frontend references, logic, or UI related to other logo assets or logo fetching/upload/management so no other logo can appear.
 
-**User-visible outcome:** The app no longer displays a logo anywhere, and users can no longer navigate to or manage a site logo in settings.
+**User-visible outcome:** The header and footer show the uploaded EYEGIC logo image (not text), and the app does not display or manage any other logo.

@@ -1,40 +1,35 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
-  "architectural_notes": [],
+  "summary": "Project now includes a strict branding requirement to use only the user-provided/attached logo file and no other logo assets.",
+  "architectural_notes": [
+    "Branding constraint: the app must use only the user-provided (attached) logo file; no fallback/default/alternate logos permitted."
+  ],
   "known_issues": [],
-  "isFixRequest": true,
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- EYEGIC logo image (EYEGIC LOGO for ID cards-5.dim_1536x1024.png)",
   "existing_features": [
     {
-      "id": "feature-remove-all-logo-rendering-from-the-ui-so-that-no-logo-image-is-displayed-anywhere-in-the-app-including-the-site-header-mobile-menu-header-area-and-footer",
-      "title": "Remove all logo rendering from the UI so that no logo image is displayed anywhere in the app, including the site header, mobile menu header area, and footer.",
+      "id": "feature-add-the-user-uploaded-logo-image-file-eyegic-logo-for-id-cards-5-png-to-the-frontend-as-a-static-asset-and-use-this-exact-image-as-the-only-logo-image-used-anywhere-in-the-app",
+      "title": "Add the user-uploaded logo image file \"EYEGIC LOGO for ID cards-5.png\" to the frontend as a static asset and use this exact image as the only logo image used anywhere in the app.",
       "reqIds": [
-        "REQ-1"
+        "REQ-6"
       ],
       "version": 1
     },
     {
-      "id": "feature-remove-the-branding-logo-settings-ui-entry-points-and-route-so-users-cannot-navigate-to-or-manage-a-logo-through-the-frontend",
-      "title": "Remove the Branding/Logo settings UI entry points and route so users cannot navigate to or manage a logo through the frontend.",
+      "id": "feature-implement-a-reusable-brandlogo-component-that-renders-the-uploaded-logo-image-and-replace-the-text-based-brand-rendering-in-the-site-header-and-footer-with-the-brandlogo-component",
+      "title": "Implement a reusable BrandLogo component that renders the uploaded logo image, and replace the text-based brand rendering in the site header and footer with the BrandLogo component.",
       "reqIds": [
-        "REQ-2"
+        "REQ-7"
       ],
       "version": 1
     },
     {
-      "id": "feature-remove-frontend-logo-fetch-upload-logic-and-any-now-unused-utilities-related-to-logo-byte-to-data-url-conversion",
-      "title": "Remove frontend logo-fetch/upload logic and any now-unused utilities related to logo byte-to-data-url conversion.",
+      "id": "feature-remove-avoid-any-remaining-logo-related-logic-or-references-that-would-cause-another-logo-to-appear-including-generated-placeholder-logos-previously-bundled-logo-assets-or-logo-management-ui-hooks-utilities-while-keeping-existing-settings-routes-for-logo-management-disabled-absent",
+      "title": "Remove/avoid any remaining logo-related logic or references that would cause another logo to appear (including generated placeholder logos, previously bundled logo assets, or logo-management UI/hooks/utilities), while keeping existing settings routes for logo management disabled/absent.",
       "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-remove-the-bundled-static-logo-asset-usage-and-ensure-the-repository-no-longer-depends-on-the-generated-logo-file",
-      "title": "Remove the bundled static logo asset usage and ensure the repository no longer depends on the generated logo file.",
-      "reqIds": [
-        "REQ-5"
+        "REQ-8"
       ],
       "version": 1
     }
@@ -42,20 +37,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Remove the logo from everywhere in the site/app (all pages/headers/assets)",
+      "summary": "Use only the logo file attached by the user; do not use any other logo anywhere in the app/build.",
       "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Remove backend logo storage and APIs so the canister no longer supports uploading or retrieving a site logo.",
-      "reqIds": [
-        "REQ-4"
-      ],
       "status": "pending"
     }
   ],
-  "projectName": "Remove site logo and all logo-management features across the app",
+  "projectName": "Use only the uploaded EYEGIC logo file across the app",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

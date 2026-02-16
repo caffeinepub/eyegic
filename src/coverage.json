@@ -1,107 +1,76 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T11:51:42.843Z",
+  "generatedAt": "2026-02-16T11:58:38.427Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
-    "implemented": 4,
+    "total": 3,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-1",
-        "summary": "Remove all logo rendering from the UI so that no logo image is displayed anywhere in the app, including the site header, mobile menu header area, and footer.",
+        "id": "REQ-6",
+        "summary": "Add the user-uploaded logo image file \"EYEGIC LOGO for ID cards-5.png\" to the frontend as a static asset and use this exact image as the only logo image used anywhere in the app.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/components/layout/SiteFooter.tsx",
-          "frontend/src/components/brand/BrandLogo.tsx"
+          "frontend/public/assets/generated/EYEGIC LOGO for ID cards-5.dim_1536x1024.png"
         ],
         "matchedFiles": [
-          "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/components/layout/SiteFooter.tsx",
-          "frontend/src/components/brand/BrandLogo.tsx"
+          "frontend/public/assets/generated/EYEGIC LOGO for ID cards-5.dim_1536x1024.png"
         ]
       },
       {
-        "id": "REQ-2",
-        "summary": "Remove the Branding/Logo settings UI entry points and route so users cannot navigate to or manage a logo through the frontend.",
+        "id": "REQ-7",
+        "summary": "Implement a reusable BrandLogo component that renders the uploaded logo image, and replace the text-based brand rendering in the site header and footer with the BrandLogo component.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/App.tsx",
+          "frontend/src/components/brand/BrandLogo.tsx",
           "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/components/layout/SiteFooter.tsx",
-          "frontend/src/pages/settings/BrandingLogoPage.tsx"
+          "frontend/src/components/layout/SiteFooter.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/App.tsx",
+          "frontend/src/components/brand/BrandLogo.tsx",
           "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/components/layout/SiteFooter.tsx",
-          "frontend/src/pages/settings/BrandingLogoPage.tsx"
+          "frontend/src/components/layout/SiteFooter.tsx"
         ]
       },
       {
-        "id": "REQ-3",
-        "summary": "Remove frontend logo-fetch/upload logic and any now-unused utilities related to logo byte-to-data-url conversion.",
+        "id": "REQ-8",
+        "summary": "Remove/avoid any remaining logo-related logic or references that would cause another logo to appear (including generated placeholder logos, previously bundled logo assets, or logo-management UI/hooks/utilities), while keeping existing settings routes for logo management disabled/absent.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/hooks/branding/useSiteLogo.ts",
           "frontend/src/utils/logoDataUrl.ts",
-          "frontend/src/components/brand/BrandLogo.tsx",
-          "frontend/src/pages/settings/BrandingLogoPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/branding/useSiteLogo.ts",
-          "frontend/src/utils/logoDataUrl.ts",
-          "frontend/src/components/brand/BrandLogo.tsx",
-          "frontend/src/pages/settings/BrandingLogoPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "Remove backend logo storage and APIs so the canister no longer supports uploading or retrieving a site logo.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-5",
-        "summary": "Remove the bundled static logo asset usage and ensure the repository no longer depends on the generated logo file.",
-        "status": "implemented",
-        "plannedFiles": [
+          "frontend/src/pages/settings/BrandingLogoPage.tsx",
           "frontend/public/assets/generated/eyegic-logo.dim_1536x864.png",
-          "frontend/src/components/brand/BrandLogo.tsx",
-          "frontend/src/pages/settings/BrandingLogoPage.tsx"
+          "frontend/public/assets/generated/eyegic-logo.dim_512x256.png",
+          "frontend/public/assets/generated/eyegic-icons.dim_512x512.png",
+          "frontend/public/assets/generated/EYEGIC logo transparent background.png"
         ],
         "matchedFiles": [
           "frontend/public/assets/generated/eyegic-logo.dim_1536x864.png",
-          "frontend/src/components/brand/BrandLogo.tsx",
-          "frontend/src/pages/settings/BrandingLogoPage.tsx"
+          "frontend/public/assets/generated/eyegic-logo.dim_512x256.png",
+          "frontend/public/assets/generated/eyegic-icons.dim_512x512.png",
+          "frontend/public/assets/generated/EYEGIC logo transparent background.png"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/public/assets/generated/EYEGIC LOGO for ID cards-5.dim_1536x1024.png",
+    "frontend/public/assets/generated/EYEGIC logo transparent background.png",
+    "frontend/public/assets/generated/eyegic-icons.dim_512x512.png",
     "frontend/public/assets/generated/eyegic-logo.dim_1536x864.png",
-    "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
+    "frontend/public/assets/generated/eyegic-logo.dim_512x256.png",
     "frontend/src/components/brand/BrandLogo.tsx",
     "frontend/src/components/layout/SiteFooter.tsx",
     "frontend/src/components/layout/SiteHeader.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/branding/useSiteLogo.ts",
-    "frontend/src/pages/settings/BrandingLogoPage.tsx",
-    "frontend/src/utils/logoDataUrl.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

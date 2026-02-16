@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import LoginButton from '../auth/LoginButton';
+import BrandLogo from '../brand/BrandLogo';
 
 export default function SiteHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -22,9 +23,7 @@ export default function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container-custom flex h-24 md:h-28 items-center justify-between gap-4 px-4 md:px-6">
         <div className="flex items-center gap-6 md:gap-12">
-          <Link to="/" className="flex items-center flex-shrink-0">
-            <span className="text-2xl font-bold text-foreground">Eyegic</span>
-          </Link>
+          <BrandLogo />
 
           <nav className="hidden md:flex items-center gap-6 lg:gap-7">
             {navLinks.slice(0, 4).map((link) => (
@@ -66,9 +65,7 @@ export default function SiteHeader() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <div className="flex items-center justify-center py-6 border-b mb-6">
-                <Link to="/" onClick={() => setMobileMenuOpen(false)}>
-                  <span className="text-2xl font-bold text-foreground">Eyegic</span>
-                </Link>
+                <BrandLogo onClick={() => setMobileMenuOpen(false)} />
               </div>
               <nav className="flex flex-col gap-4">
                 {navLinks.map((link) => (

@@ -1,92 +1,60 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T11:51:42.840Z",
-  "summary": "The diff removes logo rendering from SiteHeader and SiteFooter and removes the /settings/branding route from App.tsx, but it does not remove logo-management functionality overall. Logo utilities/hooks/pages remain, the BrandLogo component still renders the static logo asset path, and the backend introduces a new migration that includes logo state/types—contrary to the request to remove backend logo storage/APIs and avoid new migrations unless required.",
+  "generatedAt": "2026-02-16T11:58:38.424Z",
+  "summary": "The diff updates header/footer branding to show an image and adds a BrandLogo component, but it does not add or reference the exact required logo filename, does not ensure the static asset is actually added, does not use BrandLogo in the footer, and retains/mentions logo-management/backend-logo logic that violates the “only this logo, no logo UI/backend calls” constraints.",
   "missing_requirements": [
     {
-      "id": "REQ-1",
-      "requirement": "Remove all logo rendering from the UI so that no logo image is displayed anywhere in the app, including the site header, mobile menu header area, and footer.",
-      "reason": "Although SiteHeader/SiteFooter were changed to text branding, the BrandLogo component still exists and is described as rendering the bundled static logo at the specified asset path (and also an uploaded logo), which conflicts with the acceptance criteria that no component renders that logo asset anywhere in the UI.",
+      "id": "REQ-6",
+      "requirement": "Add the user-uploaded logo image file \"EYEGIC LOGO for ID cards-5.png\" to the frontend as a static asset and use this exact image as the only logo image used anywhere in the app.",
+      "reason": "No new static asset file is added (Added files: none), and the code references a different filename (the \".dim_1536x1024.png\" variant) instead of the exact required \"EYEGIC LOGO for ID cards-5.png\".",
       "evidence": [
         "frontend/src/components/brand/BrandLogo.tsx",
-        "frontend-file-summaries.txt (BrandLogo.tsx renders fallback to /assets/generated/eyegic-logo.dim_1536x864.png)"
+        "frontend/src/components/layout/SiteFooter.tsx",
+        "frontend-file-summaries.txt"
       ]
     },
     {
-      "id": "REQ-3",
-      "requirement": "Remove frontend logo-fetch/upload logic and any now-unused utilities related to logo byte-to-data-url conversion.",
-      "reason": "The logo React Query hook and logo data-url utility remain present and are summarized as implementing logo fetch/upload and conversion logic, implying continued references to LogoType and getLogo/setLogo-style behavior from the frontend.",
+      "id": "REQ-7",
+      "requirement": "Implement a reusable BrandLogo component and replace the text-based brand rendering in the site header and footer with the BrandLogo component.",
+      "reason": "SiteHeader uses BrandLogo, but SiteFooter imports BrandLogo and still renders a raw <img> directly instead of using the BrandLogo component.",
       "evidence": [
-        "frontend/src/hooks/branding/useSiteLogo.ts",
-        "frontend/src/utils/logoDataUrl.ts",
-        "frontend-file-summaries.txt (useSiteLogo.ts and logoDataUrl.ts descriptions)"
+        "frontend/src/components/layout/SiteHeader.tsx",
+        "frontend/src/components/layout/SiteFooter.tsx"
       ]
     },
     {
-      "id": "REQ-4",
-      "requirement": "Remove backend logo storage and APIs so the canister no longer supports uploading or retrieving a site logo.",
-      "reason": "A new backend migration file is added that explicitly defines LogoType and includes persistentLogo in the old actor state, which contradicts removing logo storage/types. The diff does not provide evidence that getLogo/setLogo methods were removed from backend/main.mo (file is truncated).",
+      "id": "REQ-8",
+      "requirement": "Remove/avoid any remaining logo-related logic or references that would cause another logo to appear (including logo-management UI/hooks/utilities), while keeping settings routes disabled/absent.",
+      "reason": "The repo still includes/mentions frontend utilities and hooks for fetching/uploading logos from the backend and a settings page for uploading/replacing a logo, which contradicts the requirement to avoid logo-management UI and backend logo calls and to have no other logo logic.",
       "evidence": [
-        "backend/migration.mo (defines LogoType and OldActor.persistentLogo)",
-        "backend/main.mo (truncated; no explicit evidence of removed getLogo/setLogo/LogoType)"
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "requirement": "Remove the bundled static logo asset usage and ensure the repository no longer depends on the generated logo file.",
-      "reason": "The BrandLogo component is described as falling back to the bundled static logo at '/assets/generated/eyegic-logo.dim_1536x864.png', which violates the requirement of zero code references to that path.",
-      "evidence": [
-        "frontend/src/components/brand/BrandLogo.tsx",
-        "frontend-file-summaries.txt (BrandLogo.tsx references /assets/generated/eyegic-logo.dim_1536x864.png)"
+        "frontend-file-summaries.txt"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Backend migration introducing/handling persistent logo state (LogoType and persistentLogo) via a new migration file.",
-      "reason": "The request was to remove backend logo storage/APIs and to avoid introducing a migration file unless required; adding a migration that includes logo state is the opposite of the requested change.",
-      "evidence": [
-        "backend/migration.mo (comment 'New persistent state for the logo', defines LogoType and persistentLogo)",
-        "backend/main.mo (imports Migration \"migration\" and uses Migration.run)"
-      ]
-    },
-    {
-      "description": "BrandLogo behavior that attempts to render an uploaded backend logo and falls back to a bundled static logo asset.",
-      "reason": "The BuildRequest asks to remove all logo rendering and logo-management features, not to implement fallback logo rendering logic.",
+      "description": "Using a different logo asset filename (\"/assets/generated/EYEGIC LOGO for ID cards-5.dim_1536x1024.png\") instead of the requested exact file \"EYEGIC LOGO for ID cards-5.png\".",
+      "reason": "BuildRequest explicitly constrains usage to the exact uploaded file name and forbids alternate variants; the diff references a different, derived filename.",
       "evidence": [
         "frontend/src/components/brand/BrandLogo.tsx",
-        "frontend-file-summaries.txt (BrandLogo.tsx three-stage fallback including bundled static logo path)"
+        "frontend/src/components/layout/SiteFooter.tsx"
       ]
     },
     {
-      "description": "Branding logo settings page with upload/preview/toast feedback (BrandingLogoPage) retained/implemented.",
-      "reason": "The BuildRequest requires removing branding/logo management entry points and making the branding page unreachable; keeping a full branding logo management page is not requested and conflicts with removing logo-management features across the app.",
+      "description": "Logo backend integration and logo upload/replace UI (hooks/utilities for fetching/uploading a site logo; branding logo settings page).",
+      "reason": "Non-goals/REQ-8 prohibit exposing logo upload/fetch/settings UI and prohibit backend calls for logo retrieval/setting; the diff summary text indicates these components/utilities exist.",
       "evidence": [
-        "frontend/src/pages/settings/BrandingLogoPage.tsx",
-        "frontend-file-summaries.txt (BrandingLogoPage allows upload/replace logo)"
-      ]
-    },
-    {
-      "description": "Added/expanded UI animations (tailwind keyframes/animations and animated illustrations across multiple pages).",
-      "reason": "Non-goals explicitly say not to redesign the overall site layout beyond removing logo-related UI elements; these animation additions are unrelated to logo removal.",
-      "evidence": [
-        "frontend-file-summaries.txt (frontend/tailwind.config.js animation additions; multiple pages updated with animations)"
+        "frontend-file-summaries.txt"
       ]
     }
   ],
-  "confidence": 0.78,
+  "confidence": 0.74,
   "changed_files": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/App.tsx",
     "frontend/src/components/brand/BrandLogo.tsx",
     "frontend/src/components/layout/SiteFooter.tsx",
     "frontend/src/components/layout/SiteHeader.tsx",
-    "frontend/src/hooks/branding/useSiteLogo.ts",
-    "frontend/src/pages/settings/BrandingLogoPage.tsx",
-    "frontend/src/utils/logoDataUrl.ts",
     "project_state.json"
   ]
 }
