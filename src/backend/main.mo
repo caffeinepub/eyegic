@@ -4,7 +4,7 @@ import Iter "mo:core/Iter";
 import List "mo:core/List";
 import Map "mo:core/Map";
 
-import Migration "migration";
+
 import Order "mo:core/Order";
 import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
@@ -16,7 +16,7 @@ import AccessControl "authorization/access-control";
 import MixinStorage "blob-storage/Mixin";
 import Storage "blob-storage/Storage";
 
-(with migration = Migration.run)
+
 actor {
   type BookingType = {
     #mobileOptician;

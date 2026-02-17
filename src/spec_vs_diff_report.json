@@ -1,55 +1,56 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-17T09:56:52.367Z",
-  "summary": "Diff adds a migration stub for a new verificationLogs field, introduces an admin notifications bell control in the header, and adds a profile-completion query hook. However, the backend APIs and authorization for OTP verification logs and the backend profile completion calculation are not evidenced in the provided diff, and the /admin/notifications page (and its access denied behavior) is not shown.",
+  "generatedAt": "2026-02-17T10:08:53.415Z",
+  "summary": "The diff adds a home-route detection hook and updates the SiteHeader to conditionally include My Profile and Admin Notifications controls. However, due to truncation, key acceptance criteria (exact Version 32 behavior, navigation targets, and mobile/non-home route behavior) cannot be verified from the provided evidence.",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "Implement persisted OTP mobile-number verification logs with admin-only retrieval: logMobileNumberVerification(mobileNumber) appends {mobileNumber, verifiedAt} to canister state; getMobileNumberVerifications() returns full list for admins and traps for non-admins; no email/SMS sending.",
-      "reason": "backend/main.mo shows a LogMobileNumberVerification type and a verificationLogs value, but there is no evidence in the diff summary of the required public methods (logMobileNumberVerification, getMobileNumberVerifications), admin-only authorization/trap behavior, or that logs are stored in a mutable, persisted structure (verificationLogs is shown as an immutable empty list).",
+      "requirement": "Clicking “My Profile” navigates to /profile and the control is visible/clickable when authenticated (matching Version 32).",
+      "reason": "The SiteHeader diff is truncated at the point where the authenticated controls and click handlers would appear, so the /profile navigation and exact behavior/appearance cannot be confirmed from the provided evidence.",
       "evidence": [
-        "backend/main.mo",
-        "backend/migration.mo"
+        "frontend/src/components/layout/SiteHeader.tsx (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-1",
+      "requirement": "Clicking “Notifications” navigates to /admin/notifications and the control is visible/clickable for admin users (matching Version 32).",
+      "reason": "While AdminNotificationsControl is imported, the truncated diff does not show it being rendered nor any navigation wiring to /admin/notifications.",
+      "evidence": [
+        "frontend/src/components/layout/SiteHeader.tsx (truncated)"
       ]
     },
     {
       "id": "REQ-2",
-      "requirement": "Update calculateProfileCompletion() so it evaluates all UserProfile fields and returns an integer 0–100 (0 if no profile).",
-      "reason": "Frontend adds a hook that calls actor.calculateProfileCompletion(), but the diff summary does not show any backend implementation/update of calculateProfileCompletion() to include all fields or to return a whole-number 0–100 value.",
+      "requirement": "Ensure the restored controls do not appear on non-home routes for both desktop header and the mobile navigation experience (no alternate entry in header or menu on non-home routes).",
+      "reason": "A home-route hook is added, but the truncated header diff does not show how the mobile menu/sheet contents are conditionally rendered by route, so the mobile-nav portion of the requirement cannot be verified.",
       "evidence": [
-        "frontend/src/hooks/profile/useProfileCompletion.ts",
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "requirement": "Restore admin notifications UX: header control for admins with badge count; navigate to /admin/notifications; /admin/notifications lists verification records newest-first with human-readable timestamps; non-admin access denied.",
-      "reason": "The header bell control and navigation to /admin/notifications are shown, but the diff summary provides no evidence of the /admin/notifications page/panel implementation, sorting newest-first, timestamp formatting, or the non-admin access denied state.",
-      "evidence": [
-        "frontend/src/components/layout/header/AdminNotificationsControl.tsx",
-        "frontend/src/components/layout/SiteHeader.tsx"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "requirement": "Restore Version 27 My Profile header control and show completion percentage beneath it in both desktop header and mobile menu; hide when unauthenticated; navigates to /profile.",
-      "reason": "SiteHeader imports MyProfileControl and the new profile completion hook exists, but the provided SiteHeader diff is truncated and does not include evidence that the completion percentage is rendered beneath the control in both desktop and mobile variants, that it navigates to /profile, and that it is hidden when unauthenticated.",
-      "evidence": [
-        "frontend/src/components/layout/SiteHeader.tsx",
-        "frontend/src/hooks/profile/useProfileCompletion.ts"
+        "frontend/src/hooks/routing/useIsHomeRoute.ts",
+        "frontend/src/components/layout/SiteHeader.tsx (truncated)"
       ]
     }
   ],
-  "hallucinated_features": [],
-  "confidence": 0.62,
+  "hallucinated_features": [
+    {
+      "description": "Added/updated project tracking metadata (project_state.json) describing additional feature requests and statuses.",
+      "reason": "The BuildRequest only asks for UI behavior changes in the header; adding project state/request tracking is not requested.",
+      "evidence": [
+        "project_state.json"
+      ]
+    },
+    {
+      "description": "Updated/added a repository-wide documentation/summary file (frontend-file-summaries.txt) describing many unrelated UI and page changes.",
+      "reason": "The BuildRequest is narrowly scoped to restoring Home header controls; maintaining a broad summary file is not requested as part of the requirements.",
+      "evidence": [
+        "frontend-file-summaries.txt (truncated)"
+      ]
+    }
+  ],
+  "confidence": 0.55,
   "changed_files": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "frontend-file-summaries.txt",
     "frontend/src/components/layout/SiteHeader.tsx",
-    "frontend/src/components/layout/header/AdminNotificationsControl.tsx",
-    "frontend/src/hooks/profile/useProfileCompletion.ts",
+    "frontend/src/hooks/routing/useIsHomeRoute.ts",
     "project_state.json"
   ]
 }

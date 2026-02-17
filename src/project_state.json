@@ -1,24 +1,26 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Implement restoration of Version 27 behavior: Admin dashboard notifications panel for OTP-verified users, and My Profile button showing profile-completion percentage based on all profile fields.",
+  "summary": "New project",
   "architectural_notes": [],
-  "known_issues": [],
+  "known_issues": [
+    "Live production build missing the interactive Profile and Notifications icons that were present in Version 32; should appear only in Home page header."
+  ],
   "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-ensure-the-admin-notifications-ui-is-restored-in-the-header-for-admin-users-and-points-to-a-notifications-panel-in-the-admin-dashboard-that-lists-otp-verified-users-mobile-number-verified-time-matching-version-27-behavior",
-      "title": "Ensure the Admin notifications UI is restored in the header for admin users and points to a notifications panel in the Admin dashboard that lists OTP-verified users (mobile number + verified time), matching Version 27 behavior.",
+      "id": "feature-restore-the-interactive-my-profile-and-notifications-icon-buttons-in-the-live-ui-so-they-appear-and-behave-exactly-as-they-did-in-version-32",
+      "title": "Restore the interactive “My Profile” and “Notifications” icon/buttons in the live UI so they appear and behave exactly as they did in Version 32.",
       "reqIds": [
-        "REQ-3"
+        "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-restore-the-header-my-profile-control-exactly-as-in-version-27-including-showing-the-profile-completion-percentage-beneath-the-my-profile-button-in-both-desktop-header-and-mobile-menu-variants",
-      "title": "Restore the header 'My Profile' control exactly as in Version 27, including showing the profile completion percentage beneath the My Profile button in both desktop header and mobile menu variants.",
+      "id": "feature-show-the-restored-my-profile-and-notifications-controls-only-in-the-home-page-header-route-and-ensure-they-do-not-appear-in-the-header-on-other-routes",
+      "title": "Show the restored “My Profile” and “Notifications” controls only in the Home page header (route “/”), and ensure they do not appear in the header on other routes.",
       "reqIds": [
-        "REQ-4"
+        "REQ-2"
       ],
       "version": 1
     }
@@ -26,30 +28,8 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Show OTP-verified user interest notifications inside Admin dashboard via a notifications panel (no email/SMS), including the verified user mobile number.",
+      "summary": "Rebuild/fix UI to restore interactive Profile and Notifications icons exactly as in Version 32, shown only in the Home page header (missing in live production)",
       "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Restore My Profile button to display profile completion percentage calculated from all fields in the My Profile section.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Persist and expose mobile-number OTP verification logs so that when a user successfully verifies their mobile number by OTP, an admin can see a notification entry containing the verified mobile number and a verification timestamp (no email/SMS).",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Update profile completion calculation so the completion percentage is based on all fields in the My Profile section, and return a 0–100 integer percentage for display in the header My Profile control.",
-      "reqIds": [
-        "REQ-2"
-      ],
       "status": "pending"
     }
   ],

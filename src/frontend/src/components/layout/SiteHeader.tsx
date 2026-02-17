@@ -16,6 +16,7 @@ import MyProfileControl from './header/MyProfileControl';
 import { useInternetIdentity } from '../../hooks/useInternetIdentity';
 import { useQueryClient } from '@tanstack/react-query';
 import { useIsCallerAdmin } from '../../hooks/auth/useIsCallerAdmin';
+import { useIsHomeRoute } from '../../hooks/routing/useIsHomeRoute';
 
 export default function SiteHeader() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function SiteHeader() {
   const queryClient = useQueryClient();
   const { data: isAdmin } = useIsCallerAdmin();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isHomeRoute = useIsHomeRoute();
 
   const isAuthenticated = !!identity;
   const isLoggingIn = loginStatus === 'logging-in';
@@ -112,11 +114,13 @@ export default function SiteHeader() {
                 My Bookings
               </Button>
 
-              <div className="hidden md:flex">
-                <MyProfileControl variant="desktop" />
-              </div>
+              {isHomeRoute && (
+                <div className="hidden md:flex">
+                  <MyProfileControl variant="desktop" />
+                </div>
+              )}
 
-              {isAdmin && (
+              {isHomeRoute && isAdmin && (
                 <div className="hidden md:flex">
                   <AdminNotificationsControl />
                 </div>
@@ -203,9 +207,11 @@ export default function SiteHeader() {
                       My Bookings
                     </Button>
 
-                    <MyProfileControl variant="mobile" onNavigate={closeMobileMenu} />
+                    {isHomeRoute && (
+                      <MyProfileControl variant="mobile" onNavigate={closeMobileMenu} />
+                    )}
 
-                    {isAdmin && (
+                    {isHomeRoute && isAdmin && (
                       <Button
                         variant="ghost"
                         className="justify-start"

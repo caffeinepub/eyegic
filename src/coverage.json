@@ -1,70 +1,50 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-17T09:56:52.370Z",
+  "generatedAt": "2026-02-17T10:08:53.418Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
+    "total": 2,
     "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Persist and expose mobile-number OTP verification logs so that when a user successfully verifies their mobile number by OTP, an admin can see a notification entry containing the verified mobile number and a verification timestamp (no email/SMS).",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-2",
-        "summary": "Update profile completion calculation so the completion percentage is based on all fields in the My Profile section, and return a 0–100 integer percentage for display in the header My Profile control.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-3",
-        "summary": "Ensure the Admin notifications UI is restored in the header for admin users and points to a notifications panel in the Admin dashboard that lists OTP-verified users (mobile number + verified time), matching Version 27 behavior.",
+        "summary": "Restore the interactive “My Profile” and “Notifications” icon/buttons in the live UI so they appear and behave exactly as they did in Version 32.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/layout/header/AdminNotificationsControl.tsx",
           "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/pages/admin/AdminNotificationsPage.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/hooks/routing/useIsHomeRoute.ts"
         ],
         "matchedFiles": [
-          "frontend/src/components/layout/header/AdminNotificationsControl.tsx",
-          "frontend/src/components/layout/SiteHeader.tsx"
+          "frontend/src/components/layout/SiteHeader.tsx",
+          "frontend/src/hooks/routing/useIsHomeRoute.ts"
         ]
       },
       {
-        "id": "REQ-4",
-        "summary": "Restore the header 'My Profile' control exactly as in Version 27, including showing the profile completion percentage beneath the My Profile button in both desktop header and mobile menu variants.",
+        "id": "REQ-2",
+        "summary": "Show the restored “My Profile” and “Notifications” controls only in the Home page header (route “/”), and ensure they do not appear in the header on other routes.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/profile/useProfileCompletion.ts",
-          "frontend/src/components/layout/header/MyProfileControl.tsx",
-          "frontend/src/components/layout/SiteHeader.tsx"
+          "frontend/src/components/layout/SiteHeader.tsx",
+          "frontend/src/hooks/routing/useIsHomeRoute.ts"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/profile/useProfileCompletion.ts",
-          "frontend/src/components/layout/SiteHeader.tsx"
+          "frontend/src/components/layout/SiteHeader.tsx",
+          "frontend/src/hooks/routing/useIsHomeRoute.ts"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/components/layout/SiteHeader.tsx",
-    "frontend/src/components/layout/header/AdminNotificationsControl.tsx",
-    "frontend/src/hooks/profile/useProfileCompletion.ts",
+    "frontend/src/hooks/routing/useIsHomeRoute.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-ensure-the-admin-notifications-ui-is-restored-in-the-header-for-admin-users-and-points-to-a-notifications-panel-in-the-admin-dashboard-that-lists-otp-verified-users-mobile-number-verified-time-matching-version-27-behavior",
-      "featureTitle": "Ensure the Admin notifications UI is restored in the header for admin users and points to a notifications panel in the Admin dashboard that lists OTP-verified users (mobile number + verified time), matching Version 27 behavior.",
+      "featureId": "feature-restore-the-interactive-my-profile-and-notifications-icon-buttons-in-the-live-ui-so-they-appear-and-behave-exactly-as-they-did-in-version-32",
+      "featureTitle": "Restore the interactive “My Profile” and “Notifications” icon/buttons in the live UI so they appear and behave exactly as they did in Version 32.",
       "files": [
         "frontend/src/components/layout/SiteHeader.tsx",
-        "frontend/src/components/layout/header/AdminNotificationsControl.tsx"
+        "frontend/src/hooks/routing/useIsHomeRoute.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -18,16 +18,16 @@
         "blob-storage@4.0.0"
       ],
       "testIds": [
-        "REQ-3"
+        "REQ-1"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-restore-the-header-my-profile-control-exactly-as-in-version-27-including-showing-the-profile-completion-percentage-beneath-the-my-profile-button-in-both-desktop-header-and-mobile-menu-variants",
-      "featureTitle": "Restore the header 'My Profile' control exactly as in Version 27, including showing the profile completion percentage beneath the My Profile button in both desktop header and mobile menu variants.",
+      "featureId": "feature-show-the-restored-my-profile-and-notifications-controls-only-in-the-home-page-header-route-and-ensure-they-do-not-appear-in-the-header-on-other-routes",
+      "featureTitle": "Show the restored “My Profile” and “Notifications” controls only in the Home page header (route “/”), and ensure they do not appear in the header on other routes.",
       "files": [
         "frontend/src/components/layout/SiteHeader.tsx",
-        "frontend/src/hooks/profile/useProfileCompletion.ts"
+        "frontend/src/hooks/routing/useIsHomeRoute.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -39,7 +39,7 @@
         "blob-storage@4.0.0"
       ],
       "testIds": [
-        "REQ-4"
+        "REQ-2"
       ],
       "confidence": "high"
     }

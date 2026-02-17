@@ -1,96 +1,58 @@
 {
   "kind": "build_request",
-  "title": "Restore Version 27 admin OTP verification notifications and My Profile completion indicator",
+  "title": "Restore Home Header Profile & Notifications Controls (match Version 32)",
   "projectName": "EYEGIC Bookings",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Persist and expose mobile-number OTP verification logs so that when a user successfully verifies their mobile number by OTP, an admin can see a notification entry containing the verified mobile number and a verification timestamp (no email/SMS).",
-      "target": "backend",
+      "text": "Restore the interactive “My Profile” and “Notifications” icon/buttons in the live UI so they appear and behave exactly as they did in Version 32.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-6",
+          "msg-8"
         ],
         "quotes": [
-          "in version 27 whenever a user sucessfully verfies his/her mobile number by otp, ... [instead send the notification only inside the admin dashboard (no email/SMS)]."
+          "the my profile and notification icon/buttons are not seen in the live version as they were visible in version 32",
+          "rebuild/fix the UI so the icons appear exactly as they did in Version 32 ... the icons were interactive in Version 32 and their behavior be restored as well"
         ]
       },
       "acceptanceCriteria": [
-        "Calling backend logMobileNumberVerification(mobileNumber) appends a new LogMobileNumberVerification record with {mobileNumber, verifiedAt} to persisted canister state.",
-        "Calling backend getMobileNumberVerifications() as an admin returns the full list of persisted verification records.",
-        "Calling backend getMobileNumberVerifications() as a non-admin traps with an authorization error.",
-        "No code sends email to info@eyegic.com or SMS to 8600044322 as part of this feature."
+        "In production/live build, the “My Profile” control is visible and clickable when the user is authenticated, matching Version 32 appearance and interaction.",
+        "In production/live build, the “Notifications” control is visible and clickable for admin users, matching Version 32 appearance and interaction.",
+        "Clicking “My Profile” navigates to /profile.",
+        "Clicking “Notifications” navigates to /admin/notifications.",
+        "No console errors are introduced by the header changes."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update profile completion calculation so the completion percentage is based on all fields in the My Profile section, and return a 0–100 integer percentage for display in the header My Profile control.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "For the profile completion percentage, all fields inside the my profile button should be counted toward the percentage calculation"
-        ]
-      },
-      "acceptanceCriteria": [
-        "calculateProfileCompletion() evaluates every field in UserProfile (name, age, address, gender, phone, email, framePreferences, profilePicture, prescriptionPicture) when computing completion.",
-        "The returned value is a whole-number percentage from 0 to 100 inclusive.",
-        "If no profile exists for the caller, calculateProfileCompletion() returns 0.",
-        "The completion percentage increases as additional profile fields are filled in (and reaches 100 when all are filled)."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Ensure the Admin notifications UI is restored in the header for admin users and points to a notifications panel in the Admin dashboard that lists OTP-verified users (mobile number + verified time), matching Version 27 behavior.",
+      "text": "Show the restored “My Profile” and “Notifications” controls only in the Home page header (route “/”), and ensure they do not appear in the header on other routes.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-8"
         ],
         "quotes": [
-          "a notifications panel"
+          "these icons appear in the header of home page only"
         ]
       },
       "acceptanceCriteria": [
-        "For admin users, the header displays an Admin notifications control with a badge count equal to the number of verification log records.",
-        "Clicking the Admin notifications control navigates to /admin/notifications.",
-        "The /admin/notifications page renders a notifications panel listing verification records sorted newest-first and displaying mobile number and a human-readable timestamp.",
-        "Non-admin users cannot access the /admin/notifications page (they see an access denied state)."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Restore the header 'My Profile' control exactly as in Version 27, including showing the profile completion percentage beneath the My Profile button in both desktop header and mobile menu variants.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "For profile button, in version 27, it showed percentage completion of profile by the user"
-        ]
-      },
-      "acceptanceCriteria": [
-        "When authenticated, the header shows a 'My Profile' control that navigates to /profile.",
-        "The control displays the profile completion percentage text beneath the button in desktop header variant.",
-        "The same completion percentage text appears beneath the My Profile item in the mobile menu variant.",
-        "When unauthenticated, the My Profile control is not shown."
+        "When the current route is “/”, the header displays the restored controls per authentication/admin rules.",
+        "When the current route is not “/”, the header does not render the “My Profile” control and does not render the “Notifications” control.",
+        "This rule applies consistently for both desktop header rendering and the mobile navigation experience (no alternate entry in the header or menu on non-home routes)."
       ]
     }
   ],
   "constraints": [
-    "Do not implement email or SMS notifications for OTP verification; notifications must appear only inside the admin dashboard.",
-    "Backend must remain a single Motoko actor (all logic in backend/main.mo).",
-    "Do not edit frontend immutable paths listed in SYSTEM_CONTEXT (compose existing UI components instead).",
-    "Use English for all user-facing UI text."
+    "Frontend must not modify files under frontend/src/components/ui (compose existing UI components instead).",
+    "Do not edit immutable hook files (frontend/src/hooks/useInternetIdentity.ts / .tsx and frontend/src/hooks/useActor.ts)."
   ],
   "nonGoals": [
-    "Implementing third-party email/SMS providers or any outbound messaging.",
-    "Adding real-time push updates (WebSockets/push notifications).",
-    "Changing the OTP verification UX beyond ensuring it logs verifications and drives admin notifications."
+    "Do not change backend data models or persistence related to notifications or profiles.",
+    "Do not add new notification types/panels beyond restoring the existing navigation/control behavior.",
+    "Do not change global navigation links (Mobile Optician / Rentals / Repairs) or authentication flow."
   ],
   "imageRequirements": {
     "required": [],

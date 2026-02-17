@@ -1,64 +1,49 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Restore V27 admin notifications UI and My Profile completion indicator (frontend)",
+  "title": "Restore Home-only Header Profile & Notifications Controls",
   "requirements": [
     {
-      "id": "REQ-3",
-      "summary": "Restore admin header notifications control and ensure /admin/notifications shows OTP verification logs with admin-only access.",
+      "id": "REQ-1",
+      "summary": "Restore interactive “My Profile” and “Notifications” header controls to match Version 32 behavior and navigation rules.",
       "acceptanceCriteria": [
-        "For admin users, the header displays an Admin notifications control with a badge count equal to the number of verification log records.",
-        "Clicking the Admin notifications control navigates to /admin/notifications.",
-        "The /admin/notifications page renders a notifications panel listing verification records sorted newest-first and displaying mobile number and a human-readable timestamp.",
-        "Non-admin users cannot access the /admin/notifications page (they see an access denied state)."
+        "In production/live build, the “My Profile” control is visible and clickable when the user is authenticated, matching Version 32 appearance and interaction.",
+        "In production/live build, the “Notifications” control is visible and clickable for admin users, matching Version 32 appearance and interaction.",
+        "Clicking “My Profile” navigates to /profile.",
+        "Clicking “Notifications” navigates to /admin/notifications.",
+        "No console errors are introduced by the header changes."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/layout/header/AdminNotificationsControl.tsx",
-          "operation": "modify",
-          "description": "Update the Admin notifications control so the primary click action navigates directly to /admin/notifications (not just opening a dropdown), while keeping the badge count driven by useMobileNumberVerifications(). Use shadcn-ui Button for consistent styling. Verify the component's usage instructions before implementing."
-        },
-        {
           "path": "frontend/src/components/layout/SiteHeader.tsx",
           "operation": "modify",
-          "description": "Ensure the AdminNotificationsControl is rendered for admin users in both desktop header and mobile menu variants, and that the control remains discoverable/clickable in mobile layout. Use the authorization component’s role-based access via useIsCallerAdmin() to guard admin-only UI. Verify the component's usage instructions before implementing."
+          "description": "Update header rendering so the existing MyProfileControl and AdminNotificationsControl are presented and remain interactive per Version 32 rules (authenticated for profile; admin-only for notifications) while preserving current navigation behavior. Use the authorization component’s role-based capability via existing auth/admin hooks (e.g., Internet Identity auth state and admin checks) to decide visibility; verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/pages/admin/AdminNotificationsPage.tsx",
-          "operation": "modify",
-          "description": "Confirm admin-only gating behavior remains: RequireLogin wrapper + AccessDeniedScreen for non-admin, and render verification records newest-first with human-readable timestamps. Keep user-facing text in English. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Verify /admin/notifications route wiring exists and remains registered to AdminNotificationsPage (add/update route only if missing). Verify the component's usage instructions before implementing."
+          "path": "frontend/src/hooks/routing/useIsHomeRoute.ts",
+          "operation": "create",
+          "description": "Add a small routing hook that determines whether the current route is the Home route (“/”) using TanStack Router state, so SiteHeader can reliably gate header-only controls without introducing console errors."
         }
       ]
     },
     {
-      "id": "REQ-4",
-      "summary": "Restore the Version 27-style header My Profile control and show profile completion percentage under it in desktop header and mobile menu when authenticated.",
+      "id": "REQ-2",
+      "summary": "Show “My Profile” and “Notifications” controls only on the Home page header (/) across desktop and mobile header/menu experiences.",
       "acceptanceCriteria": [
-        "When authenticated, the header shows a 'My Profile' control that navigates to /profile.",
-        "The control displays the profile completion percentage text beneath the button in desktop header variant.",
-        "The same completion percentage text appears beneath the My Profile item in the mobile menu variant.",
-        "When unauthenticated, the My Profile control is not shown."
+        "When the current route is “/”, the header displays the restored controls per authentication/admin rules.",
+        "When the current route is not “/”, the header does not render the “My Profile” control and does not render the “Notifications” control.",
+        "This rule applies consistently for both desktop header rendering and the mobile navigation experience (no alternate entry in the header or menu on non-home routes)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/profile/useProfileCompletion.ts",
-          "operation": "modify",
-          "description": "Normalize the completion value returned from calculateProfileCompletion() for UI display: coerce to a whole-number 0–100 (e.g., clamp + round) and ensure stable behavior when actor is unavailable. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/layout/header/MyProfileControl.tsx",
-          "operation": "modify",
-          "description": "Ensure the My Profile control matches Version 27 behavior: always show the percentage text under the control for both desktop and mobile variants when authenticated, and confirm navigation to /profile. Verify the component's usage instructions before implementing."
-        },
-        {
           "path": "frontend/src/components/layout/SiteHeader.tsx",
           "operation": "modify",
-          "description": "Confirm MyProfileControl is rendered only when authenticated and appears in both the desktop header area and mobile menu area with the percentage beneath it. Verify the component's usage instructions before implementing."
+          "description": "Gate rendering of MyProfileControl and AdminNotificationsControl behind an isHomeRoute check so they appear only on “/”. Apply the same gating to the mobile Sheet menu section to ensure no alternate entry for these controls appears on non-home routes. Use the authorization component’s role-based capability via existing hooks for authenticated/admin visibility; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/routing/useIsHomeRoute.ts",
+          "operation": "modify",
+          "description": "Ensure the route detection logic correctly identifies only “/” as Home (excluding other paths) and is safe across navigation changes, so header/mobile menu gating is consistent."
         }
       ]
     }
