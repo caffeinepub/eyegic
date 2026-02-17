@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-restore-the-interactive-my-profile-and-notifications-icon-buttons-in-the-live-ui-so-they-appear-and-behave-exactly-as-they-did-in-version-32",
-      "featureTitle": "Restore the interactive “My Profile” and “Notifications” icon/buttons in the live UI so they appear and behave exactly as they did in Version 32.",
+      "featureId": "feature-remove-the-admin-control-button-from-the-site-header-on-both-desktop-and-mobile-views-so-it-is-no-longer-visible-to-any-user-including-admins-while-keeping-all-other-header-content-and-behavior-unchanged",
+      "featureTitle": "Remove the \"Admin\" control/button from the site header on both desktop and mobile views so it is no longer visible to any user (including admins), while keeping all other header content and behavior unchanged.",
       "files": [
-        "frontend/src/components/layout/SiteHeader.tsx",
-        "frontend/src/hooks/routing/useIsHomeRoute.ts"
+        "frontend/src/components/layout/SiteHeader.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -19,27 +18,6 @@
       ],
       "testIds": [
         "REQ-1"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-show-the-restored-my-profile-and-notifications-controls-only-in-the-home-page-header-route-and-ensure-they-do-not-appear-in-the-header-on-other-routes",
-      "featureTitle": "Show the restored “My Profile” and “Notifications” controls only in the Home page header (route “/”), and ensure they do not appear in the header on other routes.",
-      "files": [
-        "frontend/src/components/layout/SiteHeader.tsx",
-        "frontend/src/hooks/routing/useIsHomeRoute.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0"
-      ],
-      "testIds": [
-        "REQ-2"
       ],
       "confidence": "high"
     }

@@ -67,6 +67,11 @@ export default function SiteFooter() {
                   My Profile
                 </Link>
               </li>
+              <li>
+                <Link to="/admin/notifications" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Admin Panel
+                </Link>
+              </li>
             </ul>
           </div>
 

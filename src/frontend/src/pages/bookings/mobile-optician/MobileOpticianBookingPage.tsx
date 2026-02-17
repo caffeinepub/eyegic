@@ -10,14 +10,16 @@ import PageLayout from '../../../components/layout/PageLayout';
 import RequireLogin from '../../../components/auth/RequireLogin';
 import MobileNumberOtpGate from '../../../components/forms/MobileNumberOtpGate';
 import { useCreateOpticianBooking } from '../../../hooks/bookings/useCreateOpticianBooking';
+import { useLogMobileNumberVerification } from '../../../hooks/bookings/useLogMobileNumberVerification';
 import { ServiceType } from '../../../backend';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
-import { getHomeOtpVerified, clearHomeOtpVerified } from '@/utils/homeOtpSession';
+import { getHomeOtpVerified } from '@/utils/homeOtpSession';
 
 export default function MobileOpticianBookingPage() {
   const navigate = useNavigate();
   const createBooking = useCreateOpticianBooking();
+  const logVerification = useLogMobileNumberVerification();
 
   const [step, setStep] = useState(1);
   const [mobileNumber, setMobileNumber] = useState('');
@@ -25,19 +27,28 @@ export default function MobileOpticianBookingPage() {
   const [details, setDetails] = useState('');
   const [address, setAddress] = useState('');
   const [preferredTime, setPreferredTime] = useState('');
+  const [isFromHomeFlow, setIsFromHomeFlow] = useState(false);
 
   useEffect(() => {
     // Check if coming from Home flow with verified mobile
     const { verified, mobileNumber: homeMobile } = getHomeOtpVerified();
     if (verified && homeMobile) {
       setMobileNumber(homeMobile);
+      setIsFromHomeFlow(true);
       setStep(2); // Skip OTP gate
     }
   }, []);
 
-  const handleOtpSubmit = (mobile: string) => {
-    setMobileNumber(mobile);
-    setStep(2);
+  const handleOtpSubmit = async (mobile: string) => {
+    try {
+      // Log verification to backend (only when OTP is completed on this page)
+      await logVerification.mutateAsync(mobile);
+      setMobileNumber(mobile);
+      setStep(2);
+      toast.success('Mobile number verified successfully!');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to verify mobile number');
+    }
   };
 
   const handleServiceTypeSubmit = () => {
@@ -94,7 +105,7 @@ export default function MobileOpticianBookingPage() {
                 {step === 1 && (
                   <MobileNumberOtpGate
                     onSubmitRequest={handleOtpSubmit}
-                    disabled={createBooking.isPending}
+                    disabled={logVerification.isPending || createBooking.isPending}
                   />
                 )}
 
@@ -175,8 +186,8 @@ export default function MobileOpticianBookingPage() {
                           <span className="font-semibold">Service Fee:</span>
                           <span className="text-xl font-bold text-primary">Rs. 500</span>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Refundable on any purchase of lens or frame
+                        <p className="text-xs text-muted-foreground">
+                          * Refundable on purchase of lens or frame
                         </p>
                       </div>
 

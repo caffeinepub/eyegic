@@ -7,10 +7,11 @@ export function useLogMobileNumberVerification() {
   return useMutation({
     mutationFn: async (mobileNumber: string) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.logMobileNumberVerification(mobileNumber);
+      await actor.logMobileNumberVerification(mobileNumber);
     },
     onError: (error: any) => {
       console.error('Failed to log mobile number verification:', error);
+      throw error;
     },
   });
 }

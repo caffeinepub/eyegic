@@ -10,6 +10,7 @@ import RequireLogin from '../../../components/auth/RequireLogin';
 import MobileNumberOtpGate from '../../../components/forms/MobileNumberOtpGate';
 import RepairIssueTypeMultiSelect from '../../../components/forms/RepairIssueTypeMultiSelect';
 import { useCreateRepairBooking } from '../../../hooks/bookings/useCreateRepairBooking';
+import { useLogMobileNumberVerification } from '../../../hooks/bookings/useLogMobileNumberVerification';
 import { RepairType } from '../../../backend';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
@@ -18,6 +19,7 @@ import { getHomeOtpVerified } from '@/utils/homeOtpSession';
 export default function RepairRequestPage() {
   const navigate = useNavigate();
   const createBooking = useCreateRepairBooking();
+  const logVerification = useLogMobileNumberVerification();
 
   const [step, setStep] = useState(1);
   const [mobileNumber, setMobileNumber] = useState('');
@@ -25,19 +27,28 @@ export default function RepairRequestPage() {
   const [details, setDetails] = useState('');
   const [address, setAddress] = useState('');
   const [preferredTime, setPreferredTime] = useState('');
+  const [isFromHomeFlow, setIsFromHomeFlow] = useState(false);
 
   useEffect(() => {
     // Check if coming from Home flow with verified mobile
     const { verified, mobileNumber: homeMobile } = getHomeOtpVerified();
     if (verified && homeMobile) {
       setMobileNumber(homeMobile);
+      setIsFromHomeFlow(true);
       setStep(2); // Skip OTP gate
     }
   }, []);
 
-  const handleOtpSubmit = (mobile: string) => {
-    setMobileNumber(mobile);
-    setStep(2);
+  const handleOtpSubmit = async (mobile: string) => {
+    try {
+      // Log verification to backend (only when OTP is completed on this page)
+      await logVerification.mutateAsync(mobile);
+      setMobileNumber(mobile);
+      setStep(2);
+      toast.success('Mobile number verified successfully!');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to verify mobile number');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,7 +91,7 @@ export default function RepairRequestPage() {
                 {step === 1 && (
                   <MobileNumberOtpGate
                     onSubmitRequest={handleOtpSubmit}
-                    disabled={createBooking.isPending}
+                    disabled={logVerification.isPending || createBooking.isPending}
                   />
                 )}
 

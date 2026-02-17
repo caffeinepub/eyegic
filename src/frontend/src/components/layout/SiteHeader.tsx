@@ -8,21 +8,18 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, ChevronDown, LogOut, LogIn } from 'lucide-react';
+import { Menu, ChevronDown, LogIn } from 'lucide-react';
 import BrandLogo from '../brand/BrandLogo';
 import WhatsAppIcon from '../icons/WhatsAppIcon';
-import AdminNotificationsControl from './header/AdminNotificationsControl';
 import MyProfileControl from './header/MyProfileControl';
 import { useInternetIdentity } from '../../hooks/useInternetIdentity';
 import { useQueryClient } from '@tanstack/react-query';
-import { useIsCallerAdmin } from '../../hooks/auth/useIsCallerAdmin';
 import { useIsHomeRoute } from '../../hooks/routing/useIsHomeRoute';
 
 export default function SiteHeader() {
   const navigate = useNavigate();
   const { identity, login, clear, loginStatus } = useInternetIdentity();
   const queryClient = useQueryClient();
-  const { data: isAdmin } = useIsCallerAdmin();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isHomeRoute = useIsHomeRoute();
 
@@ -116,25 +113,9 @@ export default function SiteHeader() {
 
               {isHomeRoute && (
                 <div className="hidden md:flex">
-                  <MyProfileControl variant="desktop" />
+                  <MyProfileControl variant="desktop" onLogout={handleLogout} />
                 </div>
               )}
-
-              {isHomeRoute && isAdmin && (
-                <div className="hidden md:flex">
-                  <AdminNotificationsControl />
-                </div>
-              )}
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLogout}
-                className="hidden md:flex gap-2"
-              >
-                <LogOut className="h-4 w-4" />
-                Logout
-              </Button>
             </>
           ) : (
             <Button
@@ -208,33 +189,12 @@ export default function SiteHeader() {
                     </Button>
 
                     {isHomeRoute && (
-                      <MyProfileControl variant="mobile" onNavigate={closeMobileMenu} />
+                      <MyProfileControl 
+                        variant="mobile" 
+                        onNavigate={closeMobileMenu}
+                        onLogout={handleLogout}
+                      />
                     )}
-
-                    {isHomeRoute && isAdmin && (
-                      <Button
-                        variant="ghost"
-                        className="justify-start"
-                        onClick={() => {
-                          navigate({ to: '/admin/notifications' });
-                          closeMobileMenu();
-                        }}
-                      >
-                        Admin Notifications
-                      </Button>
-                    )}
-
-                    <Button
-                      variant="outline"
-                      className="justify-start gap-2"
-                      onClick={() => {
-                        handleLogout();
-                        closeMobileMenu();
-                      }}
-                    >
-                      <LogOut className="h-4 w-4" />
-                      Logout
-                    </Button>
                   </div>
                 )}
 

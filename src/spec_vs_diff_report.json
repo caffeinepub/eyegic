@@ -1,56 +1,29 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-17T10:08:53.415Z",
-  "summary": "The diff adds a home-route detection hook and updates the SiteHeader to conditionally include My Profile and Admin Notifications controls. However, due to truncation, key acceptance criteria (exact Version 32 behavior, navigation targets, and mobile/non-home route behavior) cannot be verified from the provided evidence.",
-  "missing_requirements": [
-    {
-      "id": "REQ-1",
-      "requirement": "Clicking “My Profile” navigates to /profile and the control is visible/clickable when authenticated (matching Version 32).",
-      "reason": "The SiteHeader diff is truncated at the point where the authenticated controls and click handlers would appear, so the /profile navigation and exact behavior/appearance cannot be confirmed from the provided evidence.",
-      "evidence": [
-        "frontend/src/components/layout/SiteHeader.tsx (truncated)"
-      ]
-    },
-    {
-      "id": "REQ-1",
-      "requirement": "Clicking “Notifications” navigates to /admin/notifications and the control is visible/clickable for admin users (matching Version 32).",
-      "reason": "While AdminNotificationsControl is imported, the truncated diff does not show it being rendered nor any navigation wiring to /admin/notifications.",
-      "evidence": [
-        "frontend/src/components/layout/SiteHeader.tsx (truncated)"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "Ensure the restored controls do not appear on non-home routes for both desktop header and the mobile navigation experience (no alternate entry in header or menu on non-home routes).",
-      "reason": "A home-route hook is added, but the truncated header diff does not show how the mobile menu/sheet contents are conditionally rendered by route, so the mobile-nav portion of the requirement cannot be verified.",
-      "evidence": [
-        "frontend/src/hooks/routing/useIsHomeRoute.ts",
-        "frontend/src/components/layout/SiteHeader.tsx (truncated)"
-      ]
-    }
-  ],
+  "generatedAt": "2026-02-17T14:01:23.588Z",
+  "summary": "REQ-1 appears to be implemented in the header (Admin control removed), but the diff evidence is truncated so desktop/mobile removal cannot be fully verified. The diff summary also indicates an unrequested change to the footer (adding an Admin Panel link), which violates the stated constraint/non-goal of not changing other header elements and not changing the footer admin link/access.",
+  "missing_requirements": [],
   "hallucinated_features": [
     {
-      "description": "Added/updated project tracking metadata (project_state.json) describing additional feature requests and statuses.",
-      "reason": "The BuildRequest only asks for UI behavior changes in the header; adding project state/request tracking is not requested.",
+      "description": "Added an \"Admin Panel\" link in the site footer (Account section) navigating to /admin/notifications.",
+      "reason": "Not requested by REQ-1 and explicitly conflicts with the non-goal/constraint to not change the Admin Panel link in the footer or otherwise change admin access UI beyond removing the header Admin control.",
+      "evidence": [
+        "frontend-file-summaries.txt (\"frontend/src/components/layout/SiteFooter.tsx\": \"Site footer with Admin Panel link added...\")"
+      ]
+    },
+    {
+      "description": "Updated project tracking metadata in project_state.json (new_feature_requests entries AR-1/AR-2 and statuses).",
+      "reason": "Not part of the BuildRequest requirement to remove the Admin button from the header; appears to be internal bookkeeping rather than requested functionality.",
       "evidence": [
         "project_state.json"
       ]
-    },
-    {
-      "description": "Updated/added a repository-wide documentation/summary file (frontend-file-summaries.txt) describing many unrelated UI and page changes.",
-      "reason": "The BuildRequest is narrowly scoped to restoring Home header controls; maintaining a broad summary file is not requested as part of the requirements.",
-      "evidence": [
-        "frontend-file-summaries.txt (truncated)"
-      ]
     }
   ],
-  "confidence": 0.55,
+  "confidence": 0.64,
   "changed_files": [
     "frontend-file-summaries.txt",
     "frontend/src/components/layout/SiteHeader.tsx",
-    "frontend/src/hooks/routing/useIsHomeRoute.ts",
     "project_state.json"
   ]
 }

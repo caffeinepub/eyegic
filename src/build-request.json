@@ -1,58 +1,38 @@
 {
   "kind": "build_request",
-  "title": "Restore Home Header Profile & Notifications Controls (match Version 32)",
-  "projectName": "EYEGIC Bookings",
+  "title": "Remove Admin button from the site header",
+  "projectName": "Eyegic",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Restore the interactive “My Profile” and “Notifications” icon/buttons in the live UI so they appear and behave exactly as they did in Version 32.",
+      "text": "Remove the \"Admin\" control/button from the site header on both desktop and mobile views so it is no longer visible to any user (including admins), while keeping all other header content and behavior unchanged.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6",
-          "msg-8"
+          "msg-4",
+          "msg-5"
         ],
         "quotes": [
-          "the my profile and notification icon/buttons are not seen in the live version as they were visible in version 32",
-          "rebuild/fix the UI so the icons appear exactly as they did in Version 32 ... the icons were interactive in Version 32 and their behavior be restored as well"
+          "Just remove the \"Admin\" button from the header. Rest keep everything as it is",
+          "generate the update"
         ]
       },
       "acceptanceCriteria": [
-        "In production/live build, the “My Profile” control is visible and clickable when the user is authenticated, matching Version 32 appearance and interaction.",
-        "In production/live build, the “Notifications” control is visible and clickable for admin users, matching Version 32 appearance and interaction.",
-        "Clicking “My Profile” navigates to /profile.",
-        "Clicking “Notifications” navigates to /admin/notifications.",
-        "No console errors are introduced by the header changes."
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "Show the restored “My Profile” and “Notifications” controls only in the Home page header (route “/”), and ensure they do not appear in the header on other routes.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-8"
-        ],
-        "quotes": [
-          "these icons appear in the header of home page only"
-        ]
-      },
-      "acceptanceCriteria": [
-        "When the current route is “/”, the header displays the restored controls per authentication/admin rules.",
-        "When the current route is not “/”, the header does not render the “My Profile” control and does not render the “Notifications” control.",
-        "This rule applies consistently for both desktop header rendering and the mobile navigation experience (no alternate entry in the header or menu on non-home routes)."
+        "When logged in as an admin on the home route, the header does not display any \"Admin\" button/control on desktop.",
+        "When logged in as an admin on the home route, the mobile sheet menu does not display any \"Admin\" button/control.",
+        "All other existing header actions remain unchanged: navigation links, Contact Us dropdown, My Bookings button, My Profile control, Login/Logout behavior.",
+        "No backend changes are required; the /admin/notifications route and existing access control remain intact."
       ]
     }
   ],
   "constraints": [
-    "Frontend must not modify files under frontend/src/components/ui (compose existing UI components instead).",
-    "Do not edit immutable hook files (frontend/src/hooks/useInternetIdentity.ts / .tsx and frontend/src/hooks/useActor.ts)."
+    "Do not modify any backend (Motoko) code or state schema for this change.",
+    "Do not change any other header UI elements, layout, routes, or authentication logic beyond removing the Admin control from the header."
   ],
   "nonGoals": [
-    "Do not change backend data models or persistence related to notifications or profiles.",
-    "Do not add new notification types/panels beyond restoring the existing navigation/control behavior.",
-    "Do not change global navigation links (Mobile Optician / Rentals / Repairs) or authentication flow."
+    "Removing or changing the existing Admin Notifications page (/admin/notifications).",
+    "Removing the Admin Panel link in the footer or otherwise changing admin access control."
   ],
   "imageRequirements": {
     "required": [],

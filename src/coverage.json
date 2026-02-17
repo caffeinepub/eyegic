@@ -1,39 +1,24 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-17T10:08:53.418Z",
+  "generatedAt": "2026-02-17T14:01:23.591Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
-    "implemented": 2,
+    "total": 1,
+    "implemented": 1,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Restore the interactive “My Profile” and “Notifications” icon/buttons in the live UI so they appear and behave exactly as they did in Version 32.",
+        "summary": "Remove the \"Admin\" control/button from the site header on both desktop and mobile views so it is no longer visible to any user (including admins), while keeping all other header content and behavior unchanged.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/hooks/routing/useIsHomeRoute.ts"
+          "frontend/src/components/layout/SiteHeader.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/hooks/routing/useIsHomeRoute.ts"
-        ]
-      },
-      {
-        "id": "REQ-2",
-        "summary": "Show the restored “My Profile” and “Notifications” controls only in the Home page header (route “/”), and ensure they do not appear in the header on other routes.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/hooks/routing/useIsHomeRoute.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/hooks/routing/useIsHomeRoute.ts"
+          "frontend/src/components/layout/SiteHeader.tsx"
         ]
       }
     ]
@@ -44,7 +29,6 @@
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/components/layout/SiteHeader.tsx",
-    "frontend/src/hooks/routing/useIsHomeRoute.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

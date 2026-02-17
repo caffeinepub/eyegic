@@ -1,7 +1,14 @@
 import { Bell } from 'lucide-react';
 import { useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useMobileNumberVerifications } from '../../../hooks/admin/useMobileNumberVerifications';
+import { useIsCallerAdmin } from '../../../hooks/auth/useIsCallerAdmin';
 
 interface AdminNotificationsControlProps {
   onNavigate?: () => void;
@@ -9,23 +16,36 @@ interface AdminNotificationsControlProps {
 
 export default function AdminNotificationsControl({ onNavigate }: AdminNotificationsControlProps) {
   const navigate = useNavigate();
-  const { data: verifications } = useMobileNumberVerifications(true);
+  const { data: isAdmin } = useIsCallerAdmin();
+  const { data: verifications } = useMobileNumberVerifications(isAdmin === true);
 
   const notificationCount = verifications?.length || 0;
 
-  const handleClick = () => {
+  const handleNotificationsClick = () => {
     navigate({ to: '/admin/notifications' });
     onNavigate?.();
   };
 
   return (
-    <Button variant="ghost" size="icon" className="relative" onClick={handleClick}>
-      <Bell className="h-5 w-5" />
-      {notificationCount > 0 && (
-        <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-destructive-foreground text-xs flex items-center justify-center font-medium">
-          {notificationCount}
-        </span>
-      )}
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="sm" className="gap-2">
+          Admin
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={handleNotificationsClick} className="flex items-center gap-2">
+          <div className="relative">
+            <Bell className="h-4 w-4" />
+            {notificationCount > 0 && (
+              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center font-medium">
+                {notificationCount}
+              </span>
+            )}
+          </div>
+          Notifications
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

@@ -3,24 +3,14 @@
   "projectStateVersion": 3,
   "summary": "New project",
   "architectural_notes": [],
-  "known_issues": [
-    "Live production build missing the interactive Profile and Notifications icons that were present in Version 32; should appear only in Home page header."
-  ],
-  "isFixRequest": true,
+  "known_issues": [],
+  "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-restore-the-interactive-my-profile-and-notifications-icon-buttons-in-the-live-ui-so-they-appear-and-behave-exactly-as-they-did-in-version-32",
-      "title": "Restore the interactive “My Profile” and “Notifications” icon/buttons in the live UI so they appear and behave exactly as they did in Version 32.",
+      "id": "feature-remove-the-admin-control-button-from-the-site-header-on-both-desktop-and-mobile-views-so-it-is-no-longer-visible-to-any-user-including-admins-while-keeping-all-other-header-content-and-behavior-unchanged",
+      "title": "Remove the \"Admin\" control/button from the site header on both desktop and mobile views so it is no longer visible to any user (including admins), while keeping all other header content and behavior unchanged.",
       "reqIds": [
         "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-show-the-restored-my-profile-and-notifications-controls-only-in-the-home-page-header-route-and-ensure-they-do-not-appear-in-the-header-on-other-routes",
-      "title": "Show the restored “My Profile” and “Notifications” controls only in the Home page header (route “/”), and ensure they do not appear in the header on other routes.",
-      "reqIds": [
-        "REQ-2"
       ],
       "version": 1
     }
@@ -28,12 +18,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Rebuild/fix UI to restore interactive Profile and Notifications icons exactly as in Version 32, shown only in the Home page header (missing in live production)",
+      "summary": "Remove the \"Admin\" button from the header (leave everything else unchanged).",
       "reqIds": [],
-      "status": "pending"
+      "status": "in_progress"
     }
   ],
-  "projectName": "EYEGIC Bookings",
+  "projectName": "Eyegic",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

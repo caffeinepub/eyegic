@@ -1,49 +1,22 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Restore Home-only Header Profile & Notifications Controls",
+  "title": "Remove Admin control from site header",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Restore interactive “My Profile” and “Notifications” header controls to match Version 32 behavior and navigation rules.",
+      "summary": "Remove the Admin button/control from the responsive site header (desktop and mobile) without changing any other header behaviors.",
       "acceptanceCriteria": [
-        "In production/live build, the “My Profile” control is visible and clickable when the user is authenticated, matching Version 32 appearance and interaction.",
-        "In production/live build, the “Notifications” control is visible and clickable for admin users, matching Version 32 appearance and interaction.",
-        "Clicking “My Profile” navigates to /profile.",
-        "Clicking “Notifications” navigates to /admin/notifications.",
-        "No console errors are introduced by the header changes."
+        "When logged in as an admin on the home route, the header does not display any \"Admin\" button/control on desktop.",
+        "When logged in as an admin on the home route, the mobile sheet menu does not display any \"Admin\" button/control.",
+        "All other existing header actions remain unchanged: navigation links, Contact Us dropdown, My Bookings button, My Profile control, Login/Logout behavior.",
+        "No backend changes are required; the /admin/notifications route and existing access control remain intact."
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/layout/SiteHeader.tsx",
           "operation": "modify",
-          "description": "Update header rendering so the existing MyProfileControl and AdminNotificationsControl are presented and remain interactive per Version 32 rules (authenticated for profile; admin-only for notifications) while preserving current navigation behavior. Use the authorization component’s role-based capability via existing auth/admin hooks (e.g., Internet Identity auth state and admin checks) to decide visibility; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/routing/useIsHomeRoute.ts",
-          "operation": "create",
-          "description": "Add a small routing hook that determines whether the current route is the Home route (“/”) using TanStack Router state, so SiteHeader can reliably gate header-only controls without introducing console errors."
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "Show “My Profile” and “Notifications” controls only on the Home page header (/) across desktop and mobile header/menu experiences.",
-      "acceptanceCriteria": [
-        "When the current route is “/”, the header displays the restored controls per authentication/admin rules.",
-        "When the current route is not “/”, the header does not render the “My Profile” control and does not render the “Notifications” control.",
-        "This rule applies consistently for both desktop header rendering and the mobile navigation experience (no alternate entry in the header or menu on non-home routes)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/layout/SiteHeader.tsx",
-          "operation": "modify",
-          "description": "Gate rendering of MyProfileControl and AdminNotificationsControl behind an isHomeRoute check so they appear only on “/”. Apply the same gating to the mobile Sheet menu section to ensure no alternate entry for these controls appears on non-home routes. Use the authorization component’s role-based capability via existing hooks for authenticated/admin visibility; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/routing/useIsHomeRoute.ts",
-          "operation": "modify",
-          "description": "Ensure the route detection logic correctly identifies only “/” as Home (excluding other paths) and is safe across navigation changes, so header/mobile menu gating is consistent."
+          "description": "Remove the AdminNotificationsControl import and rendering blocks from both the desktop header actions and the mobile sheet menu; also remove any now-unused admin-role query/imports so the header no longer shows an \"Admin\" control for any user while keeping all other header content, layout, and behaviors unchanged."
         }
       ]
     }
