@@ -5,6 +5,7 @@ import PageLayout from '../../../components/layout/PageLayout';
 import { useBooking } from '../../../hooks/bookings/useBooking';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import BookingStatusBadge from '../../../components/bookings/BookingStatusBadge';
+import { formatINR } from '../../../utils/currency';
 
 export default function RepairRequestConfirmationPage() {
   const { bookingId } = useParams({ from: '/book/repairs/confirmation/$bookingId' });
@@ -58,30 +59,38 @@ export default function RepairRequestConfirmationPage() {
             <CardDescription>Reference ID: #{booking.id.toString()}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <div className="text-sm font-medium text-muted-foreground">Repair Type</div>
-              <div className="mt-1 capitalize">{booking.repairType?.toString().replace(/([A-Z])/g, ' $1').trim()}</div>
-            </div>
+            {booking.repairType && (
+              <div>
+                <div className="text-sm font-medium text-muted-foreground">Repair Type</div>
+                <div className="mt-1 capitalize">{booking.repairType.toString().replace(/([A-Z])/g, ' $1').trim()}</div>
+              </div>
+            )}
 
-            <div>
-              <div className="text-sm font-medium text-muted-foreground">Problem Description</div>
-              <div className="mt-1">{booking.details}</div>
-            </div>
+            {booking.details && (
+              <div>
+                <div className="text-sm font-medium text-muted-foreground">Problem Description</div>
+                <div className="mt-1">{booking.details}</div>
+              </div>
+            )}
 
-            <div>
-              <div className="text-sm font-medium text-muted-foreground">Address</div>
-              <div className="mt-1">{booking.address}</div>
-            </div>
+            {booking.address && (
+              <div>
+                <div className="text-sm font-medium text-muted-foreground">Address</div>
+                <div className="mt-1">{booking.address}</div>
+              </div>
+            )}
 
-            <div>
-              <div className="text-sm font-medium text-muted-foreground">Preferred Time</div>
-              <div className="mt-1">{new Date(booking.preferredTime).toLocaleString()}</div>
-            </div>
+            {booking.preferredTime && (
+              <div>
+                <div className="text-sm font-medium text-muted-foreground">Preferred Date</div>
+                <div className="mt-1">{new Date(booking.preferredTime).toLocaleDateString()}</div>
+              </div>
+            )}
 
             <div className="border-t pt-4">
               <div className="flex justify-between font-semibold text-lg">
-                <span>Estimated Total</span>
-                <span className="text-primary">${booking.price.total.toString()}</span>
+                <span>Service Fee</span>
+                <span className="text-primary">{formatINR(booking.price.total)}</span>
               </div>
             </div>
           </CardContent>

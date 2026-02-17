@@ -7,6 +7,13 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
+export class ExternalBlob {
+    getBytes(): Promise<Uint8Array<ArrayBuffer>>;
+    getDirectURL(): string;
+    static fromURL(url: string): ExternalBlob;
+    static fromBytes(blob: Uint8Array<ArrayBuffer>): ExternalBlob;
+    withUploadProgress(onProgress: (percentage: number) => void): ExternalBlob;
+}
 export interface RentalItem {
     id: bigint;
     name: string;
@@ -15,6 +22,11 @@ export interface RentalItem {
     pricePerDay: bigint;
     category: string;
 }
+export interface PriceInfo {
+    total: bigint;
+    baseFee: bigint;
+    addOns: bigint;
+}
 export interface Booking {
     id: bigint;
     status: BookingStatus;
@@ -22,32 +34,35 @@ export interface Booking {
     provider?: Principal;
     customer: Principal;
     createdAt: bigint;
+    mobileNumber?: string;
     repairType?: RepairType;
     updatedAt: bigint;
-    address: string;
+    address?: string;
     bookingType: BookingType;
-    preferredTime: string;
-    details: string;
+    preferredTime?: string;
+    details?: string;
     price: PriceInfo;
 }
 export interface Provider {
     id: Principal;
     active: boolean;
-    contact: string;
     name: string;
+    email: string;
     availability: string;
+    phone: string;
     serviceAreas: string;
     services: Array<ServiceType>;
 }
 export interface UserProfile {
+    age: bigint;
     name: string;
     email: string;
+    framePreferences?: Array<FrameShape>;
+    address: string;
+    gender: Gender;
     phone: string;
-}
-export interface PriceInfo {
-    total: bigint;
-    baseFee: bigint;
-    addOns: bigint;
+    profilePicture?: ExternalBlob;
+    prescriptionPicture?: ExternalBlob;
 }
 export enum BookingStatus {
     scheduled = "scheduled",
@@ -61,6 +76,20 @@ export enum BookingType {
     rental = "rental",
     repair = "repair",
     mobileOptician = "mobileOptician"
+}
+export enum FrameShape {
+    rectangular = "rectangular",
+    oval = "oval",
+    square = "square",
+    aviator = "aviator",
+    wayfarer = "wayfarer",
+    catEye = "catEye",
+    round = "round"
+}
+export enum Gender {
+    other = "other",
+    female = "female",
+    male = "male"
 }
 export enum RepairType {
     adjustment = "adjustment",
@@ -81,9 +110,10 @@ export enum UserRole {
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     assignProviderToBooking(bookingId: bigint, providerId: Principal): Promise<void>;
-    createOpticianBooking(serviceType: ServiceType, details: string, address: string, preferredTime: string, price: PriceInfo): Promise<bigint>;
+    calculateProfileCompletion(): Promise<bigint>;
+    createOpticianBooking(serviceType: ServiceType, details: string | null, address: string | null, preferredTime: string | null, price: PriceInfo, mobileNumber: string): Promise<bigint>;
     createRentalBooking(itemId: bigint, rentalPeriod: bigint, address: string, price: PriceInfo): Promise<bigint>;
-    createRepairBooking(repairType: RepairType, details: string, address: string, preferredTime: string, price: PriceInfo): Promise<bigint>;
+    createRepairBooking(repairType: RepairType, details: string | null, address: string | null, preferredTime: string | null, price: PriceInfo): Promise<bigint>;
     findAvailableRentalItems(): Promise<Array<RentalItem>>;
     getActiveProviders(): Promise<Array<Provider>>;
     getAllBookings(): Promise<Array<Booking>>;
@@ -97,7 +127,10 @@ export interface backendInterface {
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     initialize(): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
-    onboardProvider(name: string, contact: string, serviceAreas: string, services: Array<ServiceType>, availability: string): Promise<void>;
+    onboardProvider(name: string, phone: string, email: string, serviceAreas: string, services: Array<ServiceType>, availability: string): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     updateBookingStatus(bookingId: bigint, newStatus: BookingStatus): Promise<void>;
+    updateFramePreferences(newPreferences: Array<FrameShape>): Promise<void>;
+    updatePrescriptionPicture(newPicture: ExternalBlob): Promise<void>;
+    updateProfilePicture(newPicture: ExternalBlob): Promise<void>;
 }

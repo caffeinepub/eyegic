@@ -3,10 +3,10 @@ import { useActor } from '../useActor';
 import { RepairType, PriceInfo } from '../../backend';
 
 interface CreateRepairBookingParams {
-  repairType: RepairType;
-  details: string;
-  address: string;
-  preferredTime: string;
+  repairType?: RepairType;
+  details?: string;
+  address?: string;
+  preferredTime?: string;
   price: PriceInfo;
 }
 
@@ -18,10 +18,10 @@ export function useCreateRepairBooking() {
     mutationFn: async (params: CreateRepairBookingParams) => {
       if (!actor) throw new Error('Actor not available');
       return actor.createRepairBooking(
-        params.repairType,
-        params.details,
-        params.address,
-        params.preferredTime,
+        params.repairType || RepairType.other,
+        params.details || null,
+        params.address || null,
+        params.preferredTime || null,
         params.price
       );
     },

@@ -5,6 +5,7 @@ import PageLayout from '../../components/layout/PageLayout';
 import { useBooking } from '../../hooks/bookings/useBooking';
 import BookingStatusBadge from '../../components/bookings/BookingStatusBadge';
 import { Loader2, Calendar, MapPin, DollarSign } from 'lucide-react';
+import { formatINR } from '../../utils/currency';
 
 export default function BookingDetailPage() {
   const { bookingId } = useParams({ from: '/bookings/$bookingId' });
@@ -73,6 +74,13 @@ export default function BookingDetailPage() {
               </div>
             )}
 
+            {booking.mobileNumber && (
+              <div>
+                <div className="text-sm font-medium text-muted-foreground mb-1">Mobile Number</div>
+                <div>{booking.mobileNumber}</div>
+              </div>
+            )}
+
             {booking.details && (
               <div>
                 <div className="text-sm font-medium text-muted-foreground mb-1">Details</div>
@@ -81,23 +89,25 @@ export default function BookingDetailPage() {
             )}
 
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                  <div>
-                    <div className="text-sm font-medium text-muted-foreground">Service Address</div>
-                    <div className="mt-1">{booking.address}</div>
+              {booking.address && (
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                    <div>
+                      <div className="text-sm font-medium text-muted-foreground">Service Address</div>
+                      <div className="mt-1">{booking.address}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {booking.preferredTime && (
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <Calendar className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-sm font-medium text-muted-foreground">Preferred Time</div>
-                      <div className="mt-1">{new Date(booking.preferredTime).toLocaleString()}</div>
+                      <div className="text-sm font-medium text-muted-foreground">Preferred Date</div>
+                      <div className="mt-1">{new Date(booking.preferredTime).toLocaleDateString()}</div>
                     </div>
                   </div>
                 </div>
@@ -114,15 +124,15 @@ export default function BookingDetailPage() {
               <CardContent className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Base Fee</span>
-                  <span>${booking.price.baseFee.toString()}</span>
+                  <span>{formatINR(booking.price.baseFee)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Add-ons</span>
-                  <span>${booking.price.addOns.toString()}</span>
+                  <span>{formatINR(booking.price.addOns)}</span>
                 </div>
                 <div className="border-t pt-2 flex justify-between font-semibold text-lg">
                   <span>Total</span>
-                  <span className="text-primary">${booking.price.total.toString()}</span>
+                  <span className="text-primary">{formatINR(booking.price.total)}</span>
                 </div>
               </CardContent>
             </Card>

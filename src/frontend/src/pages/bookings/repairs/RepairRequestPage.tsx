@@ -13,6 +13,7 @@ import { useCreateRepairBooking } from '../../../hooks/bookings/useCreateRepairB
 import { RepairType } from '../../../backend';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import { formatINRWithSlash } from '../../../utils/currency';
 
 export default function RepairRequestPage() {
   const navigate = useNavigate();
@@ -21,43 +22,24 @@ export default function RepairRequestPage() {
   const [repairType, setRepairType] = useState<RepairType | ''>('');
   const [details, setDetails] = useState('');
   const [address, setAddress] = useState('');
-  const [preferredTime, setPreferredTime] = useState('');
+  const [preferredDate, setPreferredDate] = useState('');
   const [photo, setPhoto] = useState<File | null>(null);
 
-  const baseFees = {
-    [RepairType.adjustment]: 20,
-    [RepairType.screwTightening]: 15,
-    [RepairType.lensReplacement]: 60,
-    [RepairType.other]: 25,
-  };
-
-  const calculatePrice = () => {
-    if (!repairType) return { baseFee: 0, addOns: 0, total: 0 };
-    const baseFee = baseFees[repairType as RepairType];
-    const addOns = 0;
-    return { baseFee, addOns, total: baseFee + addOns };
-  };
-
-  const price = calculatePrice();
+  const today = new Date().toISOString().split('T')[0];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!repairType || !details || !address || !preferredTime) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
     try {
       const bookingId = await createBooking.mutateAsync({
-        repairType: repairType as RepairType,
-        details,
-        address,
-        preferredTime,
+        repairType: repairType || undefined,
+        details: details || undefined,
+        address: address || undefined,
+        preferredTime: preferredDate || undefined,
         price: {
-          baseFee: BigInt(price.baseFee),
-          addOns: BigInt(price.addOns),
-          total: BigInt(price.total),
+          baseFee: BigInt(99),
+          addOns: BigInt(0),
+          total: BigInt(99),
         },
       });
 
@@ -80,29 +62,32 @@ export default function RepairRequestPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="repairType">Issue Type *</Label>
+                  <Label htmlFor="repairType" className="text-sm font-medium">
+                    Issue Type <span className="text-muted-foreground font-normal">(Optional)</span>
+                  </Label>
                   <Select value={repairType} onValueChange={(value) => setRepairType(value as RepairType)}>
                     <SelectTrigger id="repairType">
                       <SelectValue placeholder="Select issue type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={RepairType.adjustment}>Adjustment ($20)</SelectItem>
-                      <SelectItem value={RepairType.screwTightening}>Screw Tightening ($15)</SelectItem>
-                      <SelectItem value={RepairType.lensReplacement}>Lens Replacement ($60)</SelectItem>
-                      <SelectItem value={RepairType.other}>Other ($25)</SelectItem>
+                      <SelectItem value={RepairType.adjustment}>Adjustment</SelectItem>
+                      <SelectItem value={RepairType.screwTightening}>Screw Tightening</SelectItem>
+                      <SelectItem value={RepairType.lensReplacement}>Lens Replacement</SelectItem>
+                      <SelectItem value={RepairType.other}>Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="details">Problem Description *</Label>
+                  <Label htmlFor="details" className="text-sm font-medium">
+                    Problem Description <span className="text-muted-foreground font-normal">(Optional)</span>
+                  </Label>
                   <Textarea
                     id="details"
                     placeholder="Describe the issue in detail..."
                     value={details}
                     onChange={(e) => setDetails(e.target.value)}
                     rows={4}
-                    required
                   />
                 </div>
 
@@ -117,25 +102,28 @@ export default function RepairRequestPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="address">Service Address *</Label>
+                  <Label htmlFor="address" className="text-sm font-medium">
+                    Service Address <span className="text-muted-foreground font-normal">(Optional)</span>
+                  </Label>
                   <Textarea
                     id="address"
                     placeholder="Enter your full address..."
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     rows={3}
-                    required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="preferredTime">Preferred Date & Time *</Label>
+                  <Label htmlFor="preferredDate" className="text-sm font-medium">
+                    Preferred Date <span className="text-muted-foreground font-normal">(Optional)</span>
+                  </Label>
                   <Input
-                    id="preferredTime"
-                    type="datetime-local"
-                    value={preferredTime}
-                    onChange={(e) => setPreferredTime(e.target.value)}
-                    required
+                    id="preferredDate"
+                    type="date"
+                    value={preferredDate}
+                    onChange={(e) => setPreferredDate(e.target.value)}
+                    min={today}
                   />
                 </div>
               </CardContent>
@@ -143,23 +131,11 @@ export default function RepairRequestPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Estimated Pricing</CardTitle>
+                <CardTitle>Service Fee</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Base Fee</span>
-                  <span className="font-medium">${price.baseFee}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Add-ons</span>
-                  <span className="font-medium">${price.addOns}</span>
-                </div>
-                <div className="border-t pt-3 flex justify-between font-semibold text-lg">
-                  <span>Estimated Total</span>
-                  <span className="text-primary">${price.total}</span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Final price may vary based on actual work required
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Flat repair service fee of {formatINRWithSlash(99)} (refundable on any purchase of lens or frame)
                 </p>
               </CardContent>
             </Card>

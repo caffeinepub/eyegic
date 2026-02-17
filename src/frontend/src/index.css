@@ -93,4 +93,31 @@
     .section-spacing {
         @apply py-16 md:py-24;
     }
+
+    /* Form styling utilities for consistent booking forms */
+    .form-label-required::after {
+        content: ' *';
+        @apply text-destructive;
+    }
+
+    .form-label-optional::after {
+        content: ' (Optional)';
+        @apply text-muted-foreground font-normal;
+    }
+
+    .form-helper-text {
+        @apply text-xs text-muted-foreground mt-1;
+    }
+
+    .fee-note {
+        @apply text-xs text-muted-foreground;
+    }
+
+    .form-error {
+        @apply text-sm text-destructive mt-1;
+    }
+
+    .form-success {
+        @apply text-sm text-green-600 dark:text-green-500 mt-1;
+    }
 }

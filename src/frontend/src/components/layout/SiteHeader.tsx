@@ -1,14 +1,22 @@
 import { Link, useNavigate } from '@tanstack/react-router';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import LoginButton from '../auth/LoginButton';
 import BrandLogo from '../brand/BrandLogo';
+import WhatsAppIcon from '../icons/WhatsAppIcon';
+import { useInternetIdentity } from '../../hooks/useInternetIdentity';
+import { useProfileCompletion } from '../../hooks/profile/useProfileCompletion';
 
 export default function SiteHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { identity } = useInternetIdentity();
+  const { data: profileCompletion } = useProfileCompletion();
+
+  const isAuthenticated = !!identity;
 
   const navLinks = [
     { label: 'Home', path: '/' },
@@ -16,8 +24,15 @@ export default function SiteHeader() {
     { label: 'Rentals', path: '/rentals' },
     { label: 'Repairs', path: '/services/repairs' },
     { label: 'My Bookings', path: '/my-bookings' },
-    { label: 'Provider Portal', path: '/provider/dashboard' },
   ];
+
+  const handleWhatsApp = () => {
+    window.open('https://wa.me/918600044322', '_blank');
+  };
+
+  const handleEmail = () => {
+    window.location.href = 'mailto:info@eyegic.com';
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -47,13 +62,42 @@ export default function SiteHeader() {
             >
               My Bookings
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate({ to: '/provider/dashboard' })}
-            >
-              Provider Portal
-            </Button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  Contact Us
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleWhatsApp}>
+                  <WhatsAppIcon className="mr-2 h-4 w-4" />
+                  WhatsApp: 8600044322
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleEmail}>
+                  <Mail className="mr-2 h-4 w-4" />
+                  Email: info@eyegic.com
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {isAuthenticated && (
+              <div className="flex flex-col items-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate({ to: '/my-profile' })}
+                >
+                  My Profile
+                </Button>
+                {profileCompletion !== undefined && (
+                  <span className="text-xs text-muted-foreground">
+                    {profileCompletion}% complete
+                  </span>
+                )}
+              </div>
+            )}
+            
             <LoginButton />
           </div>
 
@@ -78,6 +122,51 @@ export default function SiteHeader() {
                     {link.label}
                   </Link>
                 ))}
+                
+                <div className="pt-4 border-t space-y-3">
+                  <button
+                    onClick={() => {
+                      handleWhatsApp();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="flex items-center gap-2 text-base font-medium text-foreground/80 transition-colors hover:text-foreground py-2 w-full"
+                  >
+                    <WhatsAppIcon className="h-5 w-5" />
+                    WhatsApp: 8600044322
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      handleEmail();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="flex items-center gap-2 text-base font-medium text-foreground/80 transition-colors hover:text-foreground py-2 w-full"
+                  >
+                    <Mail className="h-5 w-5" />
+                    Email: info@eyegic.com
+                  </button>
+
+                  {isAuthenticated && (
+                    <div className="pt-2">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start"
+                        onClick={() => {
+                          navigate({ to: '/my-profile' });
+                          setMobileMenuOpen(false);
+                        }}
+                      >
+                        My Profile
+                        {profileCompletion !== undefined && (
+                          <span className="ml-auto text-xs text-muted-foreground">
+                            {profileCompletion}%
+                          </span>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                
                 <div className="pt-4 border-t">
                   <LoginButton />
                 </div>

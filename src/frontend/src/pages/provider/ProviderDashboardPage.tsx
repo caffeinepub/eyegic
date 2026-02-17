@@ -81,7 +81,10 @@ export default function ProviderDashboardPage() {
             <CardContent className="space-y-2">
               <div className="grid md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-muted-foreground">Contact:</span> {provider.contact}
+                  <span className="text-muted-foreground">Phone:</span> {provider.phone}
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Email:</span> {provider.email}
                 </div>
                 <div>
                   <span className="text-muted-foreground">Service Areas:</span> {provider.serviceAreas}
@@ -123,18 +126,20 @@ export default function ProviderDashboardPage() {
                             <div>
                               <div className="font-medium">Scheduled</div>
                               <div className="text-muted-foreground">
-                                {new Date(booking.preferredTime).toLocaleString()}
+                                {new Date(booking.preferredTime).toLocaleDateString()}
                               </div>
                             </div>
                           </div>
                         )}
-                        <div className="flex items-start gap-2">
-                          <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-                          <div>
-                            <div className="font-medium">Location</div>
-                            <div className="text-muted-foreground line-clamp-1">{booking.address}</div>
+                        {booking.address && (
+                          <div className="flex items-start gap-2">
+                            <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                            <div>
+                              <div className="font-medium">Location</div>
+                              <div className="text-muted-foreground line-clamp-1">{booking.address}</div>
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                       {booking.details && (
                         <div className="text-sm">
@@ -143,7 +148,7 @@ export default function ProviderDashboardPage() {
                       )}
                       <div className="flex items-center justify-between pt-4 border-t">
                         <div className="font-semibold">
-                          Total: <span className="text-primary">${booking.price.total.toString()}</span>
+                          Total: <span className="text-primary">Rs. {booking.price.total.toString()}</span>
                         </div>
                         <Select
                           value={booking.status}

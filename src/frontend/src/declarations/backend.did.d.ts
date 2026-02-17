@@ -17,12 +17,13 @@ export interface Booking {
   'provider' : [] | [Principal],
   'customer' : Principal,
   'createdAt' : bigint,
+  'mobileNumber' : [] | [string],
   'repairType' : [] | [RepairType],
   'updatedAt' : bigint,
-  'address' : string,
+  'address' : [] | [string],
   'bookingType' : BookingType,
-  'preferredTime' : string,
-  'details' : string,
+  'preferredTime' : [] | [string],
+  'details' : [] | [string],
   'price' : PriceInfo,
 }
 export type BookingStatus = { 'scheduled' : null } |
@@ -34,6 +35,17 @@ export type BookingStatus = { 'scheduled' : null } |
 export type BookingType = { 'rental' : null } |
   { 'repair' : null } |
   { 'mobileOptician' : null };
+export type ExternalBlob = Uint8Array;
+export type FrameShape = { 'rectangular' : null } |
+  { 'oval' : null } |
+  { 'square' : null } |
+  { 'aviator' : null } |
+  { 'wayfarer' : null } |
+  { 'catEye' : null } |
+  { 'round' : null };
+export type Gender = { 'other' : null } |
+  { 'female' : null } |
+  { 'male' : null };
 export interface PriceInfo {
   'total' : bigint,
   'baseFee' : bigint,
@@ -42,9 +54,10 @@ export interface PriceInfo {
 export interface Provider {
   'id' : Principal,
   'active' : boolean,
-  'contact' : string,
   'name' : string,
+  'email' : string,
   'availability' : string,
+  'phone' : string,
   'serviceAreas' : string,
   'services' : Array<ServiceType>,
 }
@@ -64,19 +77,59 @@ export type ServiceType = { 'eyeTest' : null } |
   { 'combined' : null } |
   { 'frameTryOn' : null };
 export interface UserProfile {
+  'age' : bigint,
   'name' : string,
   'email' : string,
+  'framePreferences' : [] | [Array<FrameShape>],
+  'address' : string,
+  'gender' : Gender,
   'phone' : string,
+  'profilePicture' : [] | [ExternalBlob],
+  'prescriptionPicture' : [] | [ExternalBlob],
 }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface _CaffeineStorageCreateCertificateResult {
+  'method' : string,
+  'blob_hash' : string,
+}
+export interface _CaffeineStorageRefillInformation {
+  'proposed_top_up_amount' : [] | [bigint],
+}
+export interface _CaffeineStorageRefillResult {
+  'success' : [] | [boolean],
+  'topped_up_amount' : [] | [bigint],
+}
 export interface _SERVICE {
+  '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
+  '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
+  '_caffeineStorageConfirmBlobDeletion' : ActorMethod<
+    [Array<Uint8Array>],
+    undefined
+  >,
+  '_caffeineStorageCreateCertificate' : ActorMethod<
+    [string],
+    _CaffeineStorageCreateCertificateResult
+  >,
+  '_caffeineStorageRefillCashier' : ActorMethod<
+    [[] | [_CaffeineStorageRefillInformation]],
+    _CaffeineStorageRefillResult
+  >,
+  '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'assignProviderToBooking' : ActorMethod<[bigint, Principal], undefined>,
+  'calculateProfileCompletion' : ActorMethod<[], bigint>,
   'createOpticianBooking' : ActorMethod<
-    [ServiceType, string, string, string, PriceInfo],
+    [
+      ServiceType,
+      [] | [string],
+      [] | [string],
+      [] | [string],
+      PriceInfo,
+      string,
+    ],
     bigint
   >,
   'createRentalBooking' : ActorMethod<
@@ -84,7 +137,7 @@ export interface _SERVICE {
     bigint
   >,
   'createRepairBooking' : ActorMethod<
-    [RepairType, string, string, string, PriceInfo],
+    [RepairType, [] | [string], [] | [string], [] | [string], PriceInfo],
     bigint
   >,
   'findAvailableRentalItems' : ActorMethod<[], Array<RentalItem>>,
@@ -101,11 +154,14 @@ export interface _SERVICE {
   'initialize' : ActorMethod<[], undefined>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'onboardProvider' : ActorMethod<
-    [string, string, string, Array<ServiceType>, string],
+    [string, string, string, string, Array<ServiceType>, string],
     undefined
   >,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'updateBookingStatus' : ActorMethod<[bigint, BookingStatus], undefined>,
+  'updateFramePreferences' : ActorMethod<[Array<FrameShape>], undefined>,
+  'updatePrescriptionPicture' : ActorMethod<[ExternalBlob], undefined>,
+  'updateProfilePicture' : ActorMethod<[ExternalBlob], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

@@ -3,15 +3,20 @@ import Int "mo:core/Int";
 import Iter "mo:core/Iter";
 import List "mo:core/List";
 import Map "mo:core/Map";
+
 import Order "mo:core/Order";
 import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
 import Text "mo:core/Text";
+import Time "mo:core/Time";
 
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import MixinStorage "blob-storage/Mixin";
+import Storage "blob-storage/Storage";
+import Migration "migration";
 
-
+(with migration = Migration.run)
 actor {
   type BookingType = {
     #mobileOptician;
@@ -69,12 +74,13 @@ actor {
     status : BookingStatus;
     serviceType : ?ServiceType;
     repairType : ?RepairType;
-    details : Text;
-    address : Text;
-    preferredTime : Text;
+    details : ?Text;
+    address : ?Text;
+    preferredTime : ?Text;
     price : PriceInfo;
     createdAt : Int;
     updatedAt : Int;
+    mobileNumber : ?Text;
   };
 
   module Booking {
@@ -98,7 +104,8 @@ actor {
   type Provider = {
     id : Principal;
     name : Text;
-    contact : Text;
+    phone : Text;
+    email : Text;
     serviceAreas : Text;
     services : [ServiceType];
     availability : Text;
@@ -126,20 +133,67 @@ actor {
     };
   };
 
-  public type UserProfile = {
-    name : Text;
-    email : Text;
-    phone : Text;
+  type FrameShape = {
+    #round;
+    #square;
+    #rectangular;
+    #catEye;
+    #aviator;
+    #wayfarer;
+    #oval;
   };
 
-  // State Management
+  module FrameShape {
+    public func compare(a : FrameShape, b : FrameShape) : Order.Order {
+      if (a == b) {
+        #equal;
+      } else {
+        #less;
+      };
+    };
+  };
+
+  public type UserProfile = {
+    name : Text;
+    age : Nat;
+    address : Text;
+    gender : Gender;
+    phone : Text;
+    email : Text;
+    framePreferences : ?[FrameShape];
+    profilePicture : ?Storage.ExternalBlob;
+    prescriptionPicture : ?Storage.ExternalBlob;
+  };
+
+  public type Gender = {
+    #male;
+    #female;
+    #other;
+  };
+
+  public type Optician = {
+    id : Text;
+    name : Text;
+    phone : Text;
+    email : Text;
+    streetAndNumber : Text;
+    postalCode : Text;
+    city : Text;
+    state : Text;
+    services : [ServiceType];
+    acceptedInsurance : Text;
+    registeredInKam : Bool;
+    active : Bool;
+  };
+
   let bookings = Map.empty<Int, Booking>();
   let providers = Map.empty<Principal, Provider>();
   let rentalCatalog = Map.empty<Int, RentalItem>();
-  let userProfiles = Map.empty<Principal, UserProfile>();
+  var userProfiles = Map.empty<Principal, UserProfile>();
 
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
+  include MixinStorage();
 
   // User Profile Management (Required by Instructions)
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
@@ -161,6 +215,91 @@ actor {
       Runtime.trap("Unauthorized: Only users can save profiles");
     };
     userProfiles.add(caller, profile);
+  };
+
+  public shared ({ caller }) func updateProfilePicture(newPicture : Storage.ExternalBlob) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can update profile picture");
+    };
+
+    switch (userProfiles.get(caller)) {
+      case (null) {
+        Runtime.trap("User profile not found");
+      };
+      case (?existingProfile) {
+        let updatedProfile = {
+          existingProfile with
+          profilePicture = ?newPicture;
+        };
+        userProfiles.add(caller, updatedProfile);
+      };
+    };
+  };
+
+  public shared ({ caller }) func updatePrescriptionPicture(newPicture : Storage.ExternalBlob) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can update prescription picture");
+    };
+
+    switch (userProfiles.get(caller)) {
+      case (null) {
+        Runtime.trap("User profile not found");
+      };
+      case (?existingProfile) {
+        let updatedProfile = {
+          existingProfile with
+          prescriptionPicture = ?newPicture;
+        };
+        userProfiles.add(caller, updatedProfile);
+      };
+    };
+  };
+
+  public shared ({ caller }) func updateFramePreferences(newPreferences : [FrameShape]) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can update frame preferences");
+    };
+
+    switch (userProfiles.get(caller)) {
+      case (null) {
+        Runtime.trap("User profile not found");
+      };
+      case (?existingProfile) {
+        let updatedProfile = {
+          existingProfile with
+          framePreferences = ?newPreferences;
+        };
+        userProfiles.add(caller, updatedProfile);
+      };
+    };
+  };
+
+  public query ({ caller }) func calculateProfileCompletion() : async Nat {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can calculate profile completion");
+    };
+
+    switch (userProfiles.get(caller)) {
+      case (null) { 0 };
+      case (?profile) {
+        var completion = 25;
+        if (profile.profilePicture != null or profile.prescriptionPicture != null) {
+          completion := completion + 25;
+        };
+        if (profile.address.size() > 0 and profile.age > 0 and profile.gender != #other) {
+          completion := completion + 25;
+        };
+        switch (profile.framePreferences) {
+          case (null) {};
+          case (?preferences) {
+            if (preferences.size() > 0) {
+              completion := completion + 25;
+            };
+          };
+        };
+        if (completion >= 100) { 100 } else { completion };
+      };
+    };
   };
 
   let initialRentalItems = List.fromArray<RentalItem>(
@@ -203,12 +342,17 @@ actor {
     };
   };
 
-  public shared ({ caller }) func createOpticianBooking(serviceType : ServiceType, details : Text, address : Text, preferredTime : Text, price : PriceInfo) : async Int {
+  public shared ({ caller }) func createOpticianBooking(serviceType : ServiceType, details : ?Text, address : ?Text, preferredTime : ?Text, price : PriceInfo, mobileNumber : Text) : async Int {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: User authentication required");
     };
 
+    if (mobileNumber.size() != 10) {
+      Runtime.trap("Mobile Number must be exactly 10 digits");
+    };
+
     let bookingId = bookings.size() + 1;
+    let currentTime = Time.now();
     let booking : Booking = {
       id = bookingId;
       bookingType = #mobileOptician;
@@ -221,20 +365,22 @@ actor {
       address;
       preferredTime;
       price;
-      createdAt = 0;
-      updatedAt = 0;
+      createdAt = currentTime;
+      updatedAt = currentTime;
+      mobileNumber = ?mobileNumber;
     };
 
     bookings.add(bookingId, booking);
     bookingId;
   };
 
-  public shared ({ caller }) func createRepairBooking(repairType : RepairType, details : Text, address : Text, preferredTime : Text, price : PriceInfo) : async Int {
+  public shared ({ caller }) func createRepairBooking(repairType : RepairType, details : ?Text, address : ?Text, preferredTime : ?Text, price : PriceInfo) : async Int {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: User authentication required");
     };
 
     let bookingId = bookings.size() + 1;
+    let currentTime = Time.now();
     let booking : Booking = {
       id = bookingId;
       bookingType = #repair;
@@ -247,8 +393,9 @@ actor {
       address;
       preferredTime;
       price;
-      createdAt = 0;
-      updatedAt = 0;
+      createdAt = currentTime;
+      updatedAt = currentTime;
+      mobileNumber = null;
     };
 
     bookings.add(bookingId, booking);
@@ -268,6 +415,7 @@ actor {
     };
 
     let bookingId = bookings.size() + 1;
+    let currentTime = Time.now();
     let booking : Booking = {
       id = bookingId;
       bookingType = #rental;
@@ -276,19 +424,20 @@ actor {
       status = #pending;
       serviceType = null;
       repairType = null;
-      details = "Rental: " # rentalItem.name # ", Period: " # rentalPeriod.toText() # " days";
-      address;
-      preferredTime = "";
+      details = ?("Rental: " # rentalItem.name # ", Period: " # rentalPeriod.toText() # " days");
+      address = ?address;
+      preferredTime = null;
       price;
-      createdAt = 0;
-      updatedAt = 0;
+      createdAt = currentTime;
+      updatedAt = currentTime;
+      mobileNumber = null;
     };
 
     bookings.add(bookingId, booking);
     bookingId;
   };
 
-  public shared ({ caller }) func onboardProvider(name : Text, contact : Text, serviceAreas : Text, services : [ServiceType], availability : Text) : async () {
+  public shared ({ caller }) func onboardProvider(name : Text, phone : Text, email : Text, serviceAreas : Text, services : [ServiceType], availability : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: User authentication required");
     };
@@ -296,7 +445,8 @@ actor {
     let provider : Provider = {
       id = caller;
       name;
-      contact;
+      phone;
+      email;
       serviceAreas;
       services;
       availability;
@@ -327,7 +477,7 @@ actor {
           existingBooking with
           provider = ?providerId;
           status = #accepted;
-          updatedAt = 0;
+          updatedAt = Time.now();
         };
         bookings.add(bookingId, updatedBooking);
       };
@@ -358,7 +508,7 @@ actor {
     let updatedBooking = {
       existingBooking with
       status = newStatus;
-      updatedAt = 0;
+      updatedAt = Time.now();
     };
     bookings.add(bookingId, updatedBooking);
   };

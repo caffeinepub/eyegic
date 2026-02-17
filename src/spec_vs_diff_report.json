@@ -1,74 +1,84 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T14:42:25.126Z",
-  "summary": "Header and footer branding were updated to use a text-only \"EYEGIC\" Link via the new/updated BrandLogo component and footer markup. However, the diff evidence still shows an existing logo hook and related logo utilities/pages referenced in summaries, which conflicts with the requirement to remove all logo images and eliminate logo-hook references if unused. Mobile-menu/header sizing behavior is only partially evidenced.",
+  "generatedAt": "2026-02-16T18:59:29.409Z",
+  "summary": "Most requested updates are present: provider onboarding now uses separate phone/email with validation and mock OTP UI, service-area PIN validation utilities exist, availability selector component is added, bookings pages appear refactored toward date-only inputs with \"today\" computed, header navigation now includes Contact Us actions and a My Profile link with completion %, and a teal/emerald theme is applied. However, some REQ-7 backend/enum alignment and exact frame-shape options appear incomplete, and there are several unrequested branding/rentals-related additions.",
   "missing_requirements": [
     {
-      "id": "REQ-1",
-      "requirement": "Remove all instances of the current logo image across the entire app so no UI renders the logo image anywhere (including ensuring no <img> uses src \"/assets/generated/EYEGIC LOGO powered by lensdirect.dim_1536x1024.png\"), and the app builds with no unused-import/typecheck errors.",
-      "reason": "The diff evidence does not demonstrate removal of all logo image usages across the app. Additionally, the presence of a dedicated logo hook (and the summaries referencing logo utilities/pages) suggests image-based logo handling may still exist, which risks leaving <img> usages and/or unused imports behind.",
+      "id": "REQ-7",
+      "requirement": "Frame shape preferences must support the exact options (Aviator, Cat Eye, Hexagon/Geometrical, Oval, Rectangle, Round, Square, Wayfarer, Wraparound) and persist via backend schema/APIs.",
+      "reason": "The frontend picker includes Hexagon/Geometrical and Wraparound by casting string literals (`'hexagonal' as any`, `'wraparound' as any`) that do not correspond to the backend `FrameShape` variant list shown in the diff. Backend `FrameShape` only includes `#round, #square, #rectangular, #catEye, #aviator, #wayfarer, #oval` (no hexagon/geometrical, no wraparound). This suggests the exact options cannot be round-tripped/persisted correctly for those missing variants.",
       "evidence": [
-        "frontend/src/hooks/branding/useSiteLogo.ts",
-        "frontend-file-summaries.txt (mentions \"useSiteLogo\" returns logo path; mentions \"logoDataUrl\" for img src; mentions \"BrandingLogoPage\" showing bundled default logo)"
+        "backend/main.mo",
+        "backend/migration.mo",
+        "frontend/src/components/profile/FrameShapePicker.tsx"
       ]
     },
     {
-      "id": "REQ-2",
-      "requirement": "Replace the header brand logo area with bold text-only \"EYEGIC\" sized as large as possible while fitting within the header height, applied across all pages including mobile header/menu; brand remains a link to \"/\"; mobile menu brand click still closes the menu if previously supported.",
-      "reason": "Desktop header appears to use a clamp-based large text variant, but the provided summary indicates the mobile menu uses the default fixed sizing rather than the same max-fit-to-header approach. Also, the diff does not show SiteHeader.tsx code to confirm the mobile-sheet brand uses the onClick close behavior (BrandLogo supports it, but usage is not evidenced here).",
+      "id": "REQ-7",
+      "requirement": "Backend UserProfile schema and APIs are extended to persist the new profile fields and provide required calls (save/read profile, picture updates, completion calculation).",
+      "reason": "Frontend hooks call `actor.getCallerUserProfile()`, `actor.saveCallerUserProfile(profile)`, `actor.updateProfilePicture(picture)`, `actor.updatePrescriptionPicture(picture)`, and `actor.calculateProfileCompletion()`, but the provided `backend/main.mo` diff excerpt does not show these functions implemented (content is truncated). From the visible backend excerpt alone, we cannot confirm these required APIs exist.",
       "evidence": [
-        "frontend/src/components/brand/BrandLogo.tsx",
-        "frontend-file-summaries.txt (states mobile menu logo uses the default fixed sizing; states SiteHeader uses BrandLogo but does not show the actual implementation)"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "requirement": "Remove the footer logo image display and replace with text-only \"EYEGIC\" (or remove logo area entirely) and ensure no references to useSiteLogo() remain if it becomes unused.",
-      "reason": "Footer was changed to text-only, but the diff still includes the site logo hook file, and there is no evidence that all references/usages of useSiteLogo() were removed across the app if it is now unused.",
-      "evidence": [
-        "frontend/src/components/layout/SiteFooter.tsx",
-        "frontend/src/hooks/branding/useSiteLogo.ts"
+        "backend/main.mo",
+        "frontend/src/hooks/profile/useCallerUserProfile.ts",
+        "frontend/src/hooks/profile/useSaveCallerUserProfile.ts",
+        "frontend/src/hooks/profile/useProfilePictures.ts",
+        "frontend/src/hooks/profile/useProfileCompletion.ts"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Introduction/retention of an image-logo source-of-truth hook (useSiteLogo) that returns a bundled logo path and supports image-based branding.",
-      "reason": "The BuildRequest explicitly requires removing all logo images across the app; keeping/adding infrastructure for an image logo is not requested and may conflict with the non-goals/requirements.",
+      "description": "Branding/logo management feature including a protected BrandingLogoPage, logo data URL utility, and a site-logo hook.",
+      "reason": "Not requested in any REQ; BuildRequest only asked for onboarding/contact verification, booking date rules, header updates, My Profile, and theme changes.",
       "evidence": [
-        "frontend/src/hooks/branding/useSiteLogo.ts",
-        "frontend-file-summaries.txt (describes useSiteLogo returning a logo path and alt text)"
+        "frontend-file-summaries.txt"
       ]
     },
     {
-      "description": "Logo data URL utility intended to feed <img src> from bytes (logoDataUrl).",
-      "reason": "Not requested; conflicts with the requirement to remove logo image usage entirely.",
+      "description": "Expanded rentals feature set and routes (rentals catalog, rental item detail, rental booking, rental confirmation).",
+      "reason": "Not requested; BuildRequest focuses on provider onboarding, repairs/mobile optician booking date rules, header/nav, and My Profile.",
       "evidence": [
-        "frontend-file-summaries.txt (mentions frontend/src/utils/logoDataUrl.ts)"
+        "frontend/src/App.tsx",
+        "frontend-file-summaries.txt"
       ]
     },
     {
-      "description": "Branding settings page for uploading/displaying a logo (BrandingLogoPage) and related routing changes.",
-      "reason": "Not requested and conflicts with the goal to remove logo imagery rather than add/manage it.",
+      "description": "Additional Tailwind animation keyframes/animations (float-gentle, fade-in-up, scale-in) and broad service-page illustration/animation updates.",
+      "reason": "Not explicitly requested; REQ-8 asks for cohesive theme/spacing/validation, but these specific animation/illustration changes go beyond the stated requirements.",
       "evidence": [
-        "frontend-file-summaries.txt (mentions frontend/src/pages/settings/BrandingLogoPage.tsx and App.tsx route changes)"
-      ]
-    },
-    {
-      "description": "Unrelated UI animations/illustration updates across multiple service/booking/provider pages and Tailwind config changes for animations.",
-      "reason": "Non-goal states not to redesign unrelated pages; these changes are unrelated to removing the logo and replacing header/footer branding.",
-      "evidence": [
-        "frontend-file-summaries.txt (mentions changes to multiple pages and frontend/tailwind.config.js animations)"
+        "frontend-file-summaries.txt"
       ]
     }
   ],
-  "confidence": 0.64,
+  "confidence": 0.68,
   "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/brand/BrandLogo.tsx",
+    "frontend/src/App.tsx",
+    "frontend/src/components/forms/AvailabilitySelector.tsx",
+    "frontend/src/components/forms/MockOtpVerification.tsx",
+    "frontend/src/components/icons/WhatsAppIcon.tsx",
     "frontend/src/components/layout/SiteFooter.tsx",
-    "frontend/src/hooks/branding/useSiteLogo.ts",
+    "frontend/src/components/layout/SiteHeader.tsx",
+    "frontend/src/components/profile/FrameShapeIcons.tsx",
+    "frontend/src/components/profile/FrameShapePicker.tsx",
+    "frontend/src/hooks/profile/useCallerUserProfile.ts",
+    "frontend/src/hooks/profile/useProfileCompletion.ts",
+    "frontend/src/hooks/profile/useProfilePictures.ts",
+    "frontend/src/hooks/profile/useSaveCallerUserProfile.ts",
+    "frontend/src/hooks/provider/useProvider.ts",
+    "frontend/src/index.css",
+    "frontend/src/pages/bookings/BookingDetailPage.tsx",
+    "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingConfirmationPage.tsx",
+    "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingPage.tsx",
+    "frontend/src/pages/bookings/repairs/RepairRequestConfirmationPage.tsx",
+    "frontend/src/pages/bookings/repairs/RepairRequestPage.tsx",
+    "frontend/src/pages/profile/MyProfilePage.tsx",
+    "frontend/src/pages/provider/ProviderDashboardPage.tsx",
+    "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
+    "frontend/src/utils/validation.ts",
     "project_state.json"
   ]
 }

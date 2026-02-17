@@ -6,6 +6,7 @@ import RequireLogin from '../../components/auth/RequireLogin';
 import { useCustomerBookings } from '../../hooks/bookings/useCustomerBookings';
 import BookingStatusBadge from '../../components/bookings/BookingStatusBadge';
 import { Loader2, Calendar, MapPin } from 'lucide-react';
+import { formatINR } from '../../utils/currency';
 
 export default function MyBookingsPage() {
   const navigate = useNavigate();
@@ -61,17 +62,19 @@ export default function MyBookingsPage() {
                         </div>
                       </div>
                     )}
-                    <div className="flex items-start gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-                      <div>
-                        <div className="font-medium">Location</div>
-                        <div className="text-muted-foreground line-clamp-1">{booking.address}</div>
+                    {booking.address && (
+                      <div className="flex items-start gap-2">
+                        <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                        <div>
+                          <div className="font-medium">Location</div>
+                          <div className="text-muted-foreground line-clamp-1">{booking.address}</div>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                   <div className="flex items-center justify-between pt-4 border-t">
                     <div className="font-semibold text-lg">
-                      Total: <span className="text-primary">${booking.price.total.toString()}</span>
+                      Total: <span className="text-primary">{formatINR(booking.price.total)}</span>
                     </div>
                     <Button
                       variant="outline"

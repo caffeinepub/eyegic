@@ -8,6 +8,17 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const _CaffeineStorageCreateCertificateResult = IDL.Record({
+  'method' : IDL.Text,
+  'blob_hash' : IDL.Text,
+});
+export const _CaffeineStorageRefillInformation = IDL.Record({
+  'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+});
+export const _CaffeineStorageRefillResult = IDL.Record({
+  'success' : IDL.Opt(IDL.Bool),
+  'topped_up_amount' : IDL.Opt(IDL.Nat),
+});
 export const UserRole = IDL.Variant({
   'admin' : IDL.Null,
   'user' : IDL.Null,
@@ -40,9 +51,10 @@ export const RentalItem = IDL.Record({
 export const Provider = IDL.Record({
   'id' : IDL.Principal,
   'active' : IDL.Bool,
-  'contact' : IDL.Text,
   'name' : IDL.Text,
+  'email' : IDL.Text,
   'availability' : IDL.Text,
+  'phone' : IDL.Text,
   'serviceAreas' : IDL.Text,
   'services' : IDL.Vec(ServiceType),
 });
@@ -66,26 +78,82 @@ export const Booking = IDL.Record({
   'provider' : IDL.Opt(IDL.Principal),
   'customer' : IDL.Principal,
   'createdAt' : IDL.Int,
+  'mobileNumber' : IDL.Opt(IDL.Text),
   'repairType' : IDL.Opt(RepairType),
   'updatedAt' : IDL.Int,
-  'address' : IDL.Text,
+  'address' : IDL.Opt(IDL.Text),
   'bookingType' : BookingType,
-  'preferredTime' : IDL.Text,
-  'details' : IDL.Text,
+  'preferredTime' : IDL.Opt(IDL.Text),
+  'details' : IDL.Opt(IDL.Text),
   'price' : PriceInfo,
 });
+export const FrameShape = IDL.Variant({
+  'rectangular' : IDL.Null,
+  'oval' : IDL.Null,
+  'square' : IDL.Null,
+  'aviator' : IDL.Null,
+  'wayfarer' : IDL.Null,
+  'catEye' : IDL.Null,
+  'round' : IDL.Null,
+});
+export const Gender = IDL.Variant({
+  'other' : IDL.Null,
+  'female' : IDL.Null,
+  'male' : IDL.Null,
+});
+export const ExternalBlob = IDL.Vec(IDL.Nat8);
 export const UserProfile = IDL.Record({
+  'age' : IDL.Nat,
   'name' : IDL.Text,
   'email' : IDL.Text,
+  'framePreferences' : IDL.Opt(IDL.Vec(FrameShape)),
+  'address' : IDL.Text,
+  'gender' : Gender,
   'phone' : IDL.Text,
+  'profilePicture' : IDL.Opt(ExternalBlob),
+  'prescriptionPicture' : IDL.Opt(ExternalBlob),
 });
 
 export const idlService = IDL.Service({
+  '_caffeineStorageBlobIsLive' : IDL.Func(
+      [IDL.Vec(IDL.Nat8)],
+      [IDL.Bool],
+      ['query'],
+    ),
+  '_caffeineStorageBlobsToDelete' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      ['query'],
+    ),
+  '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      [],
+      [],
+    ),
+  '_caffeineStorageCreateCertificate' : IDL.Func(
+      [IDL.Text],
+      [_CaffeineStorageCreateCertificateResult],
+      [],
+    ),
+  '_caffeineStorageRefillCashier' : IDL.Func(
+      [IDL.Opt(_CaffeineStorageRefillInformation)],
+      [_CaffeineStorageRefillResult],
+      [],
+    ),
+  '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'assignProviderToBooking' : IDL.Func([IDL.Int, IDL.Principal], [], []),
+  'calculateProfileCompletion' : IDL.Func([], [IDL.Nat], ['query']),
   'createOpticianBooking' : IDL.Func(
-      [ServiceType, IDL.Text, IDL.Text, IDL.Text, PriceInfo],
+      [
+        ServiceType,
+        IDL.Opt(IDL.Text),
+        IDL.Opt(IDL.Text),
+        IDL.Opt(IDL.Text),
+        PriceInfo,
+        IDL.Text,
+      ],
       [IDL.Int],
       [],
     ),
@@ -95,7 +163,13 @@ export const idlService = IDL.Service({
       [],
     ),
   'createRepairBooking' : IDL.Func(
-      [RepairType, IDL.Text, IDL.Text, IDL.Text, PriceInfo],
+      [
+        RepairType,
+        IDL.Opt(IDL.Text),
+        IDL.Opt(IDL.Text),
+        IDL.Opt(IDL.Text),
+        PriceInfo,
+      ],
       [IDL.Int],
       [],
     ),
@@ -117,17 +191,31 @@ export const idlService = IDL.Service({
   'initialize' : IDL.Func([], [], []),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'onboardProvider' : IDL.Func(
-      [IDL.Text, IDL.Text, IDL.Text, IDL.Vec(ServiceType), IDL.Text],
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Vec(ServiceType), IDL.Text],
       [],
       [],
     ),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'updateBookingStatus' : IDL.Func([IDL.Int, BookingStatus], [], []),
+  'updateFramePreferences' : IDL.Func([IDL.Vec(FrameShape)], [], []),
+  'updatePrescriptionPicture' : IDL.Func([ExternalBlob], [], []),
+  'updateProfilePicture' : IDL.Func([ExternalBlob], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const _CaffeineStorageCreateCertificateResult = IDL.Record({
+    'method' : IDL.Text,
+    'blob_hash' : IDL.Text,
+  });
+  const _CaffeineStorageRefillInformation = IDL.Record({
+    'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+  });
+  const _CaffeineStorageRefillResult = IDL.Record({
+    'success' : IDL.Opt(IDL.Bool),
+    'topped_up_amount' : IDL.Opt(IDL.Nat),
+  });
   const UserRole = IDL.Variant({
     'admin' : IDL.Null,
     'user' : IDL.Null,
@@ -160,9 +248,10 @@ export const idlFactory = ({ IDL }) => {
   const Provider = IDL.Record({
     'id' : IDL.Principal,
     'active' : IDL.Bool,
-    'contact' : IDL.Text,
     'name' : IDL.Text,
+    'email' : IDL.Text,
     'availability' : IDL.Text,
+    'phone' : IDL.Text,
     'serviceAreas' : IDL.Text,
     'services' : IDL.Vec(ServiceType),
   });
@@ -186,26 +275,82 @@ export const idlFactory = ({ IDL }) => {
     'provider' : IDL.Opt(IDL.Principal),
     'customer' : IDL.Principal,
     'createdAt' : IDL.Int,
+    'mobileNumber' : IDL.Opt(IDL.Text),
     'repairType' : IDL.Opt(RepairType),
     'updatedAt' : IDL.Int,
-    'address' : IDL.Text,
+    'address' : IDL.Opt(IDL.Text),
     'bookingType' : BookingType,
-    'preferredTime' : IDL.Text,
-    'details' : IDL.Text,
+    'preferredTime' : IDL.Opt(IDL.Text),
+    'details' : IDL.Opt(IDL.Text),
     'price' : PriceInfo,
   });
+  const FrameShape = IDL.Variant({
+    'rectangular' : IDL.Null,
+    'oval' : IDL.Null,
+    'square' : IDL.Null,
+    'aviator' : IDL.Null,
+    'wayfarer' : IDL.Null,
+    'catEye' : IDL.Null,
+    'round' : IDL.Null,
+  });
+  const Gender = IDL.Variant({
+    'other' : IDL.Null,
+    'female' : IDL.Null,
+    'male' : IDL.Null,
+  });
+  const ExternalBlob = IDL.Vec(IDL.Nat8);
   const UserProfile = IDL.Record({
+    'age' : IDL.Nat,
     'name' : IDL.Text,
     'email' : IDL.Text,
+    'framePreferences' : IDL.Opt(IDL.Vec(FrameShape)),
+    'address' : IDL.Text,
+    'gender' : Gender,
     'phone' : IDL.Text,
+    'profilePicture' : IDL.Opt(ExternalBlob),
+    'prescriptionPicture' : IDL.Opt(ExternalBlob),
   });
   
   return IDL.Service({
+    '_caffeineStorageBlobIsLive' : IDL.Func(
+        [IDL.Vec(IDL.Nat8)],
+        [IDL.Bool],
+        ['query'],
+      ),
+    '_caffeineStorageBlobsToDelete' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        ['query'],
+      ),
+    '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        [],
+        [],
+      ),
+    '_caffeineStorageCreateCertificate' : IDL.Func(
+        [IDL.Text],
+        [_CaffeineStorageCreateCertificateResult],
+        [],
+      ),
+    '_caffeineStorageRefillCashier' : IDL.Func(
+        [IDL.Opt(_CaffeineStorageRefillInformation)],
+        [_CaffeineStorageRefillResult],
+        [],
+      ),
+    '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'assignProviderToBooking' : IDL.Func([IDL.Int, IDL.Principal], [], []),
+    'calculateProfileCompletion' : IDL.Func([], [IDL.Nat], ['query']),
     'createOpticianBooking' : IDL.Func(
-        [ServiceType, IDL.Text, IDL.Text, IDL.Text, PriceInfo],
+        [
+          ServiceType,
+          IDL.Opt(IDL.Text),
+          IDL.Opt(IDL.Text),
+          IDL.Opt(IDL.Text),
+          PriceInfo,
+          IDL.Text,
+        ],
         [IDL.Int],
         [],
       ),
@@ -215,7 +360,13 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'createRepairBooking' : IDL.Func(
-        [RepairType, IDL.Text, IDL.Text, IDL.Text, PriceInfo],
+        [
+          RepairType,
+          IDL.Opt(IDL.Text),
+          IDL.Opt(IDL.Text),
+          IDL.Opt(IDL.Text),
+          PriceInfo,
+        ],
         [IDL.Int],
         [],
       ),
@@ -237,12 +388,22 @@ export const idlFactory = ({ IDL }) => {
     'initialize' : IDL.Func([], [], []),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'onboardProvider' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Text, IDL.Vec(ServiceType), IDL.Text],
+        [
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Vec(ServiceType),
+          IDL.Text,
+        ],
         [],
         [],
       ),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'updateBookingStatus' : IDL.Func([IDL.Int, BookingStatus], [], []),
+    'updateFramePreferences' : IDL.Func([IDL.Vec(FrameShape)], [], []),
+    'updatePrescriptionPicture' : IDL.Func([ExternalBlob], [], []),
+    'updateProfilePicture' : IDL.Func([ExternalBlob], [], []),
   });
 };
 

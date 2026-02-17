@@ -4,24 +4,35 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import PageLayout from '../../components/layout/PageLayout';
 import RequireLogin from '../../components/auth/RequireLogin';
+import MockOtpVerification from '../../components/forms/MockOtpVerification';
+import AvailabilitySelector from '../../components/forms/AvailabilitySelector';
 import { useOnboardProvider } from '../../hooks/provider/useProvider';
 import { ServiceType } from '../../backend';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import { validatePhone, sanitizePhone, validateEmail, validatePinCodes } from '../../utils/validation';
 
 export default function ProviderOnboardingPage() {
   const navigate = useNavigate();
   const onboardProvider = useOnboardProvider();
 
   const [name, setName] = useState('');
-  const [contact, setContact] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [serviceAreas, setServiceAreas] = useState('');
   const [availability, setAvailability] = useState('');
   const [selectedServices, setSelectedServices] = useState<ServiceType[]>([]);
+  
+  const [phoneVerified, setPhoneVerified] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
+  
+  const [phoneError, setPhoneError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [pinError, setPinError] = useState('');
+  const [availabilityError, setAvailabilityError] = useState('');
 
   const serviceOptions = [
     { value: ServiceType.eyeTest, label: 'Eye Test' },
@@ -35,19 +46,103 @@ export default function ProviderOnboardingPage() {
     );
   };
 
+  const handlePhoneChange = (value: string) => {
+    const sanitized = sanitizePhone(value);
+    setPhone(sanitized);
+    setPhoneVerified(false);
+    
+    if (sanitized.length > 0) {
+      const validation = validatePhone(sanitized);
+      setPhoneError(validation.error || '');
+    } else {
+      setPhoneError('');
+    }
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    setEmailVerified(false);
+    
+    if (value.length > 0) {
+      const validation = validateEmail(value);
+      setEmailError(validation.error || '');
+    } else {
+      setEmailError('');
+    }
+  };
+
+  const handleServiceAreasChange = (value: string) => {
+    setServiceAreas(value);
+    
+    if (value.trim().length > 0) {
+      const validation = validatePinCodes(value);
+      setPinError(validation.error || '');
+    } else {
+      setPinError('');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name || !contact || !serviceAreas || selectedServices.length === 0) {
-      toast.error('Please fill in all required fields');
+    // Validate all fields
+    let hasError = false;
+
+    if (!name) {
+      toast.error('Please enter your name');
+      return;
+    }
+
+    const phoneValidation = validatePhone(phone);
+    if (!phoneValidation.isValid) {
+      setPhoneError(phoneValidation.error || '');
+      hasError = true;
+    }
+
+    if (!phoneVerified) {
+      toast.error('Please verify your phone number');
+      return;
+    }
+
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
+      setEmailError(emailValidation.error || '');
+      hasError = true;
+    }
+
+    if (!emailVerified) {
+      toast.error('Please verify your email address');
+      return;
+    }
+
+    const pinValidation = validatePinCodes(serviceAreas);
+    if (!pinValidation.isValid) {
+      setPinError(pinValidation.error || '');
+      hasError = true;
+    }
+
+    if (!availability) {
+      setAvailabilityError('Availability is required');
+      toast.error('Please select your availability');
+      return;
+    }
+
+    if (selectedServices.length === 0) {
+      toast.error('Please select at least one service');
+      return;
+    }
+
+    if (hasError) {
+      toast.error('Please fix all errors before submitting');
       return;
     }
 
     try {
       await onboardProvider.mutateAsync({
         name,
-        contact,
-        serviceAreas,
+        phone,
+        email,
+        serviceAreas: serviceAreas.trim(),
         services: selectedServices,
         availability,
       });
@@ -59,9 +154,12 @@ export default function ProviderOnboardingPage() {
     }
   };
 
+  const phoneValidation = validatePhone(phone);
+  const emailValidation = validateEmail(email);
+
   return (
     <RequireLogin message="Please log in to register as a provider">
-      <PageLayout title="Become a Provider" description="Join our network of eyewear professionals">
+      <PageLayout title="Become a Partner" description="Join our network of eyewear professionals">
         <form onSubmit={handleSubmit}>
           <div className="max-w-2xl mx-auto space-y-6">
             <Card>
@@ -82,14 +180,50 @@ export default function ProviderOnboardingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="contact">Contact (Phone/Email) *</Label>
+                  <Label htmlFor="phone">Phone Number *</Label>
                   <Input
-                    id="contact"
-                    placeholder="phone@example.com or +1234567890"
-                    value={contact}
-                    onChange={(e) => setContact(e.target.value)}
+                    id="phone"
+                    placeholder="10-digit mobile number"
+                    value={phone}
+                    onChange={(e) => handlePhoneChange(e.target.value)}
+                    maxLength={10}
                     required
                   />
+                  {phoneError && <p className="text-sm text-destructive">{phoneError}</p>}
+                  {phone.length === 10 && phoneValidation.isValid && !phoneVerified && (
+                    <MockOtpVerification
+                      type="phone"
+                      value={phone}
+                      onVerified={() => setPhoneVerified(true)}
+                    />
+                  )}
+                  {phoneVerified && (
+                    <p className="text-sm text-green-600 dark:text-green-500">✓ Phone verified</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => handleEmailChange(e.target.value)}
+                    required
+                  />
+                  {emailError && <p className="text-sm text-destructive">{emailError}</p>}
+                  {email.length > 0 && emailValidation.isValid && !emailVerified && (
+                    <MockOtpVerification
+                      type="email"
+                      value={email}
+                      onVerified={() => setEmailVerified(true)}
+                      disabled={!emailValidation.isValid}
+                    />
+                  )}
+                  {emailVerified && (
+                    <p className="text-sm text-green-600 dark:text-green-500">✓ Email verified</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -119,26 +253,30 @@ export default function ProviderOnboardingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="serviceAreas">Service Areas *</Label>
-                  <Textarea
+                  <Label htmlFor="serviceAreas">Service Areas (PIN Codes) *</Label>
+                  <Input
                     id="serviceAreas"
-                    placeholder="e.g., Downtown, North District, etc."
+                    placeholder="e.g., 411001 411002 411003"
                     value={serviceAreas}
-                    onChange={(e) => setServiceAreas(e.target.value)}
-                    rows={3}
+                    onChange={(e) => handleServiceAreasChange(e.target.value)}
                     required
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Enter 6-digit Indian PIN codes separated by a single space
+                  </p>
+                  {pinError && <p className="text-sm text-destructive">{pinError}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="availability">Availability (Optional)</Label>
-                  <Textarea
-                    id="availability"
-                    placeholder="e.g., Weekdays 9 AM - 5 PM, Weekends by appointment"
+                  <Label htmlFor="availability">Availability *</Label>
+                  <AvailabilitySelector
                     value={availability}
-                    onChange={(e) => setAvailability(e.target.value)}
-                    rows={3}
+                    onChange={(value) => {
+                      setAvailability(value);
+                      setAvailabilityError('');
+                    }}
                   />
+                  {availabilityError && <p className="text-sm text-destructive">{availabilityError}</p>}
                 </div>
               </CardContent>
             </Card>

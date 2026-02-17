@@ -19,7 +19,8 @@ export function useProvider() {
 
 interface OnboardProviderParams {
   name: string;
-  contact: string;
+  phone: string;
+  email: string;
   serviceAreas: string;
   services: ServiceType[];
   availability: string;
@@ -34,7 +35,8 @@ export function useOnboardProvider() {
       if (!actor) throw new Error('Actor not available');
       return actor.onboardProvider(
         params.name,
-        params.contact,
+        params.phone,
+        params.email,
         params.serviceAreas,
         params.services,
         params.availability

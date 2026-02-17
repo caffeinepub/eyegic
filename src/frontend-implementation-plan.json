@@ -1,73 +1,271 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Replace image-based logo branding with text-only “EYEGIC” across header and footer",
+  "title": "EYEGIC Bookings – onboarding verification, date rules, header updates, and My Profile (frontend-only)",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Remove all rendered uses of the current logo image across the app and clean up any now-unused logo code.",
+      "summary": "Split provider onboarding contact into separate phone/email fields and require mock OTP verification for both before submission.",
       "acceptanceCriteria": [
-        "No rendered <img> in the app uses src \"/assets/generated/EYEGIC LOGO powered by lensdirect.dim_1536x1024.png\".",
-        "Header, mobile menu header, and footer no longer display the logo image.",
-        "App builds with no unused-import/typecheck errors after removing logo usage."
+        "The Provider Onboarding page no longer shows a single \"Contact (Phone/Email)\" field and instead shows separate \"Phone Number\" and \"Email\" fields.",
+        "Phone Number input only accepts 10 digits (non-digits are rejected/ignored) and the form shows an inline error if the value is not exactly 10 digits.",
+        "Email input shows an inline validation error when the email format is invalid and disables/blocks email OTP verification while invalid.",
+        "Phone verification: clicking \"Send OTP\" (mock) generates a 4-digit OTP and presents an OTP entry UI; entering the correct OTP marks the phone as verified.",
+        "Email verification: clicking \"Verify\" / \"Send OTP\" (mock) generates a 4-digit OTP and presents an OTP entry UI; entering the correct OTP marks the email as verified.",
+        "Provider onboarding submission is blocked until both phone and email are verified, with clear English user-facing messages explaining what is missing.",
+        "Backend provider data model and onboarding API store phone and email in separate fields (not a single combined contact string), and existing flows continue to work after the update."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/brand/BrandLogo.tsx",
+          "path": "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
           "operation": "modify",
-          "description": "Remove the <img>-based logo rendering and any dependency on the image src; convert the component to render text-only branding so no UI path can render the old logo image."
+          "description": "Replace the single combined contact input with separate Phone Number and Email inputs; wire inline validation (10-digit phone numeric-only; email format check) and block submission until both are verified via mock OTP UI. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/hooks/branding/useSiteLogo.ts",
-          "operation": "delete",
-          "description": "Remove the hook that hardcodes the logo image path so it cannot be referenced (directly or indirectly) after the text-only branding change."
+          "path": "frontend/src/components/forms/MockOtpVerification.tsx",
+          "operation": "create",
+          "description": "Create a reusable mock OTP verification UI (send/generate 4-digit OTP, show OTP entry, verify, and expose verified state + user-facing English messages) to support both phone and email verification on provider onboarding. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/components/layout/SiteFooter.tsx",
+          "path": "frontend/src/utils/validation.ts",
+          "operation": "create",
+          "description": "Add shared validation helpers for: (1) phone sanitization to digits-only and length=10 check, (2) basic email format validation, and (3) reusable error message strings in English. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/provider/useProvider.ts",
           "operation": "modify",
-          "description": "Remove footer <img> logo rendering and remove useSiteLogo() import/usage; ensure there are no remaining references to the logo image path and the footer still compiles cleanly."
+          "description": "Update the provider onboarding mutation interface used by the UI to pass phone and email separately (matching the existing actor typing in frontend/src/backend.d.ts) and remove the deprecated combined contact parameter usage. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/provider/ProviderDashboardPage.tsx",
+          "operation": "modify",
+          "description": "Update the provider profile display to show separate phone and email fields (instead of provider.contact) to stay consistent with the updated onboarding data shape and prevent runtime UI errors. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Replace the header brand logo area with a bold, text-only “EYEGIC” link to “/” across desktop and mobile header/menu, ensuring it scales to fit the header height.",
+      "summary": "Validate provider onboarding Service Areas as 6-digit Indian PIN codes separated by exactly one space.",
       "acceptanceCriteria": [
-        "In the desktop header, the left brand element displays bold text \"EYEGIC\" (no logo image) and clicking it navigates to \"/\".",
-        "The brand text scales to fit the header height (no vertical overflow/cropping) across responsive breakpoints.",
-        "In the mobile menu header area (inside the Sheet), the brand text \"EYEGIC\" is shown instead of an image and still closes the menu on click if previously supported via onClick."
+        "The Service Areas field explicitly supports PIN code entry and validates that each token is exactly 6 digits.",
+        "Multiple PIN codes are accepted only when separated by a single space; invalid separators or invalid tokens trigger an inline error and block submission.",
+        "Valid examples like \"411001\" and \"411001 411002\" pass validation."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/brand/BrandLogo.tsx",
+          "path": "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
           "operation": "modify",
-          "description": "Implement a text-only brand mark that renders exactly \"EYEGIC\" in bold, using responsive sizing (e.g., clamp-based Tailwind arbitrary value and tight leading) so it grows as large as possible while still fitting within the header height; preserve the existing Link to \"/\" and support the existing onClick behavior for mobile menu close."
+          "description": "Update Service Areas input copy and add strict PIN validation: one or more 6-digit tokens separated by exactly one space (no commas/newlines/double spaces), with inline English errors and submission blocking when invalid. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/components/layout/SiteHeader.tsx",
+          "path": "frontend/src/utils/validation.ts",
           "operation": "modify",
-          "description": "Ensure the header and mobile Sheet header continue to use the brand component and that layout/className constraints allow the text-only \"EYEGIC\" mark to visually scale without overflow or cropping at the existing header heights across breakpoints."
+          "description": "Add a validation helper for PIN code strings enforcing: tokens are exactly 6 digits and multi-token input uses exactly one space as a separator; return normalized value + error message for UI. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Update the footer to remove the logo image and replace it with a text-only “EYEGIC” brand mark (or remove the logo area) while keeping layout and accessibility intact.",
+      "summary": "Make provider availability mandatory using a calendar-style selector with future-date constraints and daily time range (from–to).",
       "acceptanceCriteria": [
-        "The footer no longer renders an <img> for the site logo.",
-        "Footer layout remains visually aligned (no broken spacing where the logo image used to be).",
-        "No references to useSiteLogo() remain if it becomes unused by removing the image-based logo."
+        "Availability is a required field; attempting to submit without selecting availability shows an English validation message and blocks submission.",
+        "The UI allows selecting one or more future dates by clicking individual dates and also supports selecting a contiguous date range.",
+        "Dates before the current date cannot be selected.",
+        "The UI includes a time-range selector (From time, To time) associated with the availability selection.",
+        "The availability value is persisted as part of provider onboarding submission payload (format may be textual/serialized, but must round-trip through backend storage and display in provider dashboard/profile view if shown)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/layout/SiteFooter.tsx",
-          "operation": "modify",
-          "description": "Replace the logo image area with a text-only \"EYEGIC\" brand mark (either as a Link to \"/\" or non-link text if preferred by existing footer layout), adjust spacing/alignment so the grid remains coherent, and ensure accessible semantics (no empty logo container)."
+          "path": "frontend/src/components/forms/AvailabilitySelector.tsx",
+          "operation": "create",
+          "description": "Create a calendar-based availability selector supporting (a) clicking individual future dates, (b) selecting a contiguous date range, (c) disabling past dates, and (d) selecting a daily From/To time range; output a serialized availability string for submission. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/hooks/branding/useSiteLogo.ts",
-          "operation": "delete",
-          "description": "Ensure footer cleanup leaves no remaining useSiteLogo() references anywhere in the frontend after removing the image-based logo."
+          "path": "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
+          "operation": "modify",
+          "description": "Replace the free-text Availability textarea with the new AvailabilitySelector component, make it mandatory, show inline English validation, and ensure the serialized value is included in the onboarding submission payload. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/provider/ProviderDashboardPage.tsx",
+          "operation": "modify",
+          "description": "If availability is displayed in the provider dashboard, ensure it renders safely for the new serialized availability format (and is shown consistently if present). Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Update Repair Request scheduling to be date-only (optional) and prevent selecting past dates.",
+      "acceptanceCriteria": [
+        "The Repair Request page no longer uses a datetime picker for \"Preferred Date & Time\"; it uses a date-only input.",
+        "The date picker prevents selecting dates earlier than today.",
+        "The preferred schedule field remains optional; submitting without it still succeeds.",
+        "The booking confirmation/detail views do not display an invalid date when the field is empty."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/bookings/repairs/RepairRequestPage.tsx",
+          "operation": "modify",
+          "description": "Replace the datetime-local input with a date-only input, set the minimum selectable date to today, keep the field optional, and ensure the value passed to booking creation remains null/undefined when not chosen. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/bookings/repairs/RepairRequestConfirmationPage.tsx",
+          "operation": "modify",
+          "description": "Update labels/copy to reflect a date-only preferred schedule and keep defensive rendering so empty preferred schedule does not display an invalid date. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/bookings/BookingDetailPage.tsx",
+          "operation": "modify",
+          "description": "Adjust the preferred schedule rendering label/format to treat the value as date-only when applicable, while preserving the existing guard that avoids rendering when the field is absent. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Update Mobile Optician booking scheduling to be date-only (optional) and prevent selecting past dates while preserving 10-digit mobile validation.",
+      "acceptanceCriteria": [
+        "The Mobile Optician Booking page no longer uses a datetime picker for \"Preferred Date & Time\"; it uses a date-only input.",
+        "The date picker prevents selecting dates earlier than today.",
+        "The preferred schedule field remains optional; submitting without it still succeeds.",
+        "The existing 10-digit mobile-number validation remains enforced."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingPage.tsx",
+          "operation": "modify",
+          "description": "Replace the datetime-local preferred schedule input with a date-only input, enforce min=today, keep optional submission behavior, and retain existing 10-digit mobile-number validation logic. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingConfirmationPage.tsx",
+          "operation": "modify",
+          "description": "Update labels/copy to reflect a date-only preferred schedule and keep defensive rendering so empty preferred schedule does not display an invalid date. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/bookings/BookingDetailPage.tsx",
+          "operation": "modify",
+          "description": "Ensure the preferred schedule display remains robust for date-only values (and remains hidden when empty), aligning wording with date-only scheduling for applicable booking types. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Replace header 'Provider Portal' with a 'Contact Us' entry offering WhatsApp and email actions with a WhatsApp icon.",
+      "acceptanceCriteria": [
+        "The header no longer displays \"Provider Portal\" in desktop navigation or mobile menu.",
+        "A \"Contact Us\" entry is present in both desktop and mobile navigation.",
+        "\"Contact Us\" exposes a WhatsApp action that opens the appropriate WhatsApp deep link to 8600044322 and an email action that opens a mailto to info@eyegic.com.",
+        "WhatsApp action includes a recognizable WhatsApp icon and all user-facing text is in English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/icons/WhatsAppIcon.tsx",
+          "operation": "create",
+          "description": "Add a small recognizable WhatsApp icon component (simple SVG) for use in header actions. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/layout/SiteHeader.tsx",
+          "operation": "modify",
+          "description": "Remove 'Provider Portal' from desktop and mobile navigation; add 'Contact Us' that exposes WhatsApp (wa.me deep link to +91 8600044322) and email (mailto:info@eyegic.com) actions, including the WhatsAppIcon and English labels. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/layout/SiteFooter.tsx",
+          "operation": "modify",
+          "description": "Align footer navigation with header changes by removing 'Provider Portal' link (if present) and optionally adding a consistent Contact section link/action set for WhatsApp and email. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Add a login-protected My Profile page with optional fields, image uploads, frame-shape multi-select with icons, and a profile completion percentage shown in the header.",
+      "acceptanceCriteria": [
+        "A new \"My Profile\" destination exists and is reachable from a \"My Profile\" button/link in the header (desktop and mobile).",
+        "The My Profile page requires login (unauthenticated users see the standard login prompt).",
+        "The profile form includes optional fields: Name, Age, Gender, Address.",
+        "The profile form supports uploading a profile picture and a prescription picture with preview and remove/replace behavior.",
+        "The profile form supports multi-select frame shape preferences with the exact options: Aviator, Cat Eye, Hexagon/Geometrical, Oval, Rectangle, Round, Square, Wayfarer, Wraparound; each option shows a small icon next to the label (icons may be simple SVG/inline icons).",
+        "A profile completion percentage is computed from the optional fields and displayed beneath the \"My Profile\" button in the header (and/or within the profile page), updating after saves/changes.",
+        "Backend UserProfile schema and APIs are extended to persist the new profile fields (including frame shape selections and image data references/serialized content as supported), and existing profile read/write calls continue to work."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/profile/MyProfilePage.tsx",
+          "operation": "create",
+          "description": "Create a My Profile page wrapped with RequireLogin (uses the selected authorization component’s Internet Identity flow) that displays and edits optional fields (Name, Age, Gender, Address), supports profile/prescription picture upload with preview + remove/replace, and supports multi-select frame preferences with icons. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/profile/useCallerUserProfile.ts",
+          "operation": "create",
+          "description": "Add a React Query hook to fetch the current user's profile using actor.getCallerUserProfile(), suitable for My Profile page loading and avoiding UI flash patterns described by the selected authorization component. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/profile/useSaveCallerUserProfile.ts",
+          "operation": "create",
+          "description": "Add a React Query mutation hook to save the current user's profile using actor.saveCallerUserProfile(profile), invalidating relevant cached profile and completion queries. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/profile/useProfileCompletion.ts",
+          "operation": "create",
+          "description": "Add a hook that fetches profile completion percentage using actor.calculateProfileCompletion() and exposes a UI-friendly percentage for header and profile page display. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/profile/useProfilePictures.ts",
+          "operation": "create",
+          "description": "Add mutations for updating profilePicture and prescriptionPicture using the blob-storage ExternalBlob type and actor.updateProfilePicture / actor.updatePrescriptionPicture, including upload progress support in the UI. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/profile/FrameShapePicker.tsx",
+          "operation": "create",
+          "description": "Create a frame-shape multi-select component rendering the exact requested shape labels with small icons next to each label; integrate selection state with the profile form. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/profile/FrameShapeIcons.tsx",
+          "operation": "create",
+          "description": "Provide simple inline SVG/icon renderers for frame shape options (Aviator, Cat Eye, Hexagon/Geometrical, Oval, Rectangle, Round, Square, Wayfarer, Wraparound) used by FrameShapePicker. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/layout/SiteHeader.tsx",
+          "operation": "modify",
+          "description": "Add a 'My Profile' entry in desktop and mobile navigation and display a profile completion percentage beneath/near the My Profile control when authenticated (using the new profile completion hook). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register and wire a new /my-profile route to the MyProfilePage so it is navigable from the header. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Apply a cohesive non-blue/purple theme and consistent spacing/typography/validation styling across updated UI surfaces.",
+      "acceptanceCriteria": [
+        "Updated/new screens share consistent spacing, form layout, and validation styles.",
+        "The chosen palette and styling direction avoids blue/purple as the primary theme colors.",
+        "All user-facing text on updated/new UI is in English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Extend global form/validation helper classes (errors, helper text, required/optional labels) so onboarding, booking forms, header additions, and My Profile use consistent spacing and feedback styling; keep the primary palette non-blue/purple (existing teal-based tokens). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
+          "operation": "modify",
+          "description": "Normalize form layout (spacing, labels, helper text, inline errors) to use shared styling utilities and ensure all user-facing strings for new validation/OTP are in English. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/bookings/repairs/RepairRequestPage.tsx",
+          "operation": "modify",
+          "description": "Align the updated date-only scheduling control with shared form styling utilities and ensure helper/error text is consistently styled and in English. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingPage.tsx",
+          "operation": "modify",
+          "description": "Align the updated date-only scheduling control and mobile validation messaging with shared form styling utilities and ensure all new/updated user-facing text is in English. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/profile/MyProfilePage.tsx",
+          "operation": "modify",
+          "description": "Ensure My Profile UI uses consistent typography, spacing, and validation/feedback styling aligned with the rest of the app (no blue/purple primary styling). Verify the component's usage instructions before implementing."
         }
       ]
     }

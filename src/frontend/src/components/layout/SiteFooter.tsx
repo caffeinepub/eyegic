@@ -1,9 +1,18 @@
 import { Link } from '@tanstack/react-router';
-import { Heart } from 'lucide-react';
+import { Heart, Mail } from 'lucide-react';
+import WhatsAppIcon from '../icons/WhatsAppIcon';
 
 export default function SiteFooter() {
   const currentYear = new Date().getFullYear();
   const appIdentifier = typeof window !== 'undefined' ? window.location.hostname : 'eyegic';
+
+  const handleWhatsApp = () => {
+    window.open('https://wa.me/918600044322', '_blank');
+  };
+
+  const handleEmail = () => {
+    window.location.href = 'mailto:info@eyegic.com';
+  };
 
   return (
     <footer className="border-t bg-muted/30">
@@ -48,25 +57,33 @@ export default function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link to="/provider/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Provider Portal
+                <Link to="/my-profile" className="text-muted-foreground hover:text-foreground transition-colors">
+                  My Profile
                 </Link>
               </li>
             </ul>
           </div>
 
           <div className="space-y-3">
-            <h4 className="font-medium">Company</h4>
+            <h4 className="font-medium">Contact</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  About
-                </a>
+                <button
+                  onClick={handleWhatsApp}
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <WhatsAppIcon className="h-4 w-4" />
+                  8600044322
+                </button>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Contact
-                </a>
+                <button
+                  onClick={handleEmail}
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Mail className="h-4 w-4" />
+                  info@eyegic.com
+                </button>
               </li>
             </ul>
           </div>

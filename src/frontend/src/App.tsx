@@ -1,7 +1,8 @@
-import { createRouter, RouterProvider, createRoute, createRootRoute, Outlet } from '@tanstack/react-router';
+import { RouterProvider, createRouter, createRoute, createRootRoute } from '@tanstack/react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/sonner';
-import SiteHeader from './components/layout/SiteHeader';
-import SiteFooter from './components/layout/SiteFooter';
+
 import HomePage from './pages/HomePage';
 import MobileOpticianPage from './pages/services/MobileOpticianPage';
 import RentalsPage from './pages/services/RentalsPage';
@@ -10,30 +11,27 @@ import MobileOpticianBookingPage from './pages/bookings/mobile-optician/MobileOp
 import MobileOpticianBookingConfirmationPage from './pages/bookings/mobile-optician/MobileOpticianBookingConfirmationPage';
 import RepairRequestPage from './pages/bookings/repairs/RepairRequestPage';
 import RepairRequestConfirmationPage from './pages/bookings/repairs/RepairRequestConfirmationPage';
-import RentalsCatalogPage from './pages/rentals/RentalsCatalogPage';
-import RentalItemDetailPage from './pages/rentals/RentalItemDetailPage';
-import RentalBookingPage from './pages/bookings/rentals/RentalBookingPage';
-import RentalBookingConfirmationPage from './pages/bookings/rentals/RentalBookingConfirmationPage';
 import MyBookingsPage from './pages/bookings/MyBookingsPage';
 import BookingDetailPage from './pages/bookings/BookingDetailPage';
 import ProviderOnboardingPage from './pages/provider/ProviderOnboardingPage';
 import ProviderDashboardPage from './pages/provider/ProviderDashboardPage';
+import MyProfilePage from './pages/profile/MyProfilePage';
+import RentalsCatalogPage from './pages/rentals/RentalsCatalogPage';
+import RentalItemDetailPage from './pages/rentals/RentalItemDetailPage';
+import RentalBookingPage from './pages/bookings/rentals/RentalBookingPage';
+import RentalBookingConfirmationPage from './pages/bookings/rentals/RentalBookingConfirmationPage';
 
-function Layout() {
-  return (
-    <div className="flex min-h-screen flex-col">
-      <SiteHeader />
-      <main className="flex-1">
-        <Outlet />
-      </main>
-      <SiteFooter />
-      <Toaster />
-    </div>
-  );
-}
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const rootRoute = createRootRoute({
-  component: Layout,
+  component: () => <RouterProvider router={router} />,
 });
 
 const indexRoute = createRoute({
@@ -50,8 +48,20 @@ const mobileOpticianRoute = createRoute({
 
 const rentalsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/services/rentals',
+  path: '/rentals',
   component: RentalsPage,
+});
+
+const rentalsCatalogRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/rentals/catalog',
+  component: RentalsCatalogPage,
+});
+
+const rentalItemDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/rentals/$itemId',
+  component: RentalItemDetailPage,
 });
 
 const repairsRoute = createRoute({
@@ -60,7 +70,7 @@ const repairsRoute = createRoute({
   component: RepairsPage,
 });
 
-const mobileOpticianBookingRoute = createRoute({
+const bookMobileOpticianRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/book/mobile-optician',
   component: MobileOpticianBookingPage,
@@ -72,7 +82,7 @@ const mobileOpticianConfirmationRoute = createRoute({
   component: MobileOpticianBookingConfirmationPage,
 });
 
-const repairRequestRoute = createRoute({
+const bookRepairRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/book/repairs',
   component: RepairRequestPage,
@@ -84,19 +94,7 @@ const repairConfirmationRoute = createRoute({
   component: RepairRequestConfirmationPage,
 });
 
-const rentalsCatalogRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/rentals',
-  component: RentalsCatalogPage,
-});
-
-const rentalItemDetailRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/rentals/$itemId',
-  component: RentalItemDetailPage,
-});
-
-const rentalBookingRoute = createRoute({
+const bookRentalRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/book/rentals/$itemId',
   component: RentalBookingPage,
@@ -120,7 +118,7 @@ const bookingDetailRoute = createRoute({
   component: BookingDetailPage,
 });
 
-const providerOnboardingRoute = createRoute({
+const providerOnboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/provider/onboard',
   component: ProviderOnboardingPage,
@@ -132,23 +130,30 @@ const providerDashboardRoute = createRoute({
   component: ProviderDashboardPage,
 });
 
+const myProfileRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/my-profile',
+  component: MyProfilePage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   mobileOpticianRoute,
   rentalsRoute,
-  repairsRoute,
-  mobileOpticianBookingRoute,
-  mobileOpticianConfirmationRoute,
-  repairRequestRoute,
-  repairConfirmationRoute,
   rentalsCatalogRoute,
   rentalItemDetailRoute,
-  rentalBookingRoute,
+  repairsRoute,
+  bookMobileOpticianRoute,
+  mobileOpticianConfirmationRoute,
+  bookRepairRoute,
+  repairConfirmationRoute,
+  bookRentalRoute,
   rentalConfirmationRoute,
   myBookingsRoute,
   bookingDetailRoute,
-  providerOnboardingRoute,
+  providerOnboardRoute,
   providerDashboardRoute,
+  myProfileRoute,
 ]);
 
 const router = createRouter({ routeTree });
@@ -160,5 +165,12 @@ declare module '@tanstack/react-router' {
 }
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <RouterProvider router={router} />
+        <Toaster />
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
 }

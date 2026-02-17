@@ -2,12 +2,14 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-remove-all-instances-of-the-current-logo-image-including-the-header-home-link-img-at-xpath-html-1-body-1-div-1-div-1-header-1-div-1-div-1-a-1-img-1-across-the-entire-app-so-no-ui-renders-the-logo-image-anywhere",
-      "featureTitle": "Remove all instances of the current logo image (including the header home-link <img> at XPath /html[1]/body[1]/div[1]/div[1]/header[1]/div[1]/div[1]/a[1]/img[1]) across the entire app, so no UI renders the logo image anywhere.",
+      "featureId": "feature-update-the-become-a-provider-partner-onboarding-form-to-collect-phone-and-email-as-separate-inputs-instead-of-a-single-combined-contact-field-and-require-the-user-to-verify-both-using-a-mock-otp-flow-before-allowing-submission",
+      "featureTitle": "Update the \"Become a Provider\" (partner onboarding) form to collect phone and email as separate inputs (instead of a single combined contact field), and require the user to verify both using a mock OTP flow before allowing submission.",
       "files": [
-        "frontend/src/components/brand/BrandLogo.tsx",
-        "frontend/src/components/layout/SiteFooter.tsx",
-        "frontend/src/hooks/branding/useSiteLogo.ts"
+        "frontend/src/components/forms/MockOtpVerification.tsx",
+        "frontend/src/hooks/provider/useProvider.ts",
+        "frontend/src/pages/provider/ProviderDashboardPage.tsx",
+        "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
+        "frontend/src/utils/validation.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -15,7 +17,8 @@
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
       ],
       "testIds": [
         "REQ-1"
@@ -23,10 +26,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-replace-the-header-brand-logo-area-with-a-bold-text-only-brand-mark-that-reads-exactly-eyegic-sized-as-large-as-possible-while-still-fitting-within-the-header-height-and-apply-this-across-all-pages-including-mobile-header-menu-the-brand-mark-must-remain-a-link-to",
-      "featureTitle": "Replace the header brand logo area with a bold, text-only brand mark that reads exactly \"EYEGIC\", sized as large as possible while still fitting within the header height, and apply this across all pages (including mobile header/menu). The brand mark must remain a link to \"/\".",
+      "featureId": "feature-update-the-become-a-provider-partner-onboarding-service-areas-input-to-accept-6-digit-indian-pin-codes-allowing-multiple-pin-codes-separated-by-exactly-one-space-and-validate-this-format-before-submission",
+      "featureTitle": "Update the \"Become a Provider\" (partner onboarding) Service Areas input to accept 6-digit Indian PIN codes, allowing multiple PIN codes separated by exactly one space, and validate this format before submission.",
       "files": [
-        "frontend/src/components/brand/BrandLogo.tsx"
+        "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
+        "frontend/src/utils/validation.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -34,7 +38,8 @@
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
       ],
       "testIds": [
         "REQ-2"
@@ -42,11 +47,12 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-footer-to-remove-the-logo-image-display-and-replace-it-with-a-text-only-eyegic-brand-mark-or-remove-the-logo-area-entirely-while-keeping-the-footer-layout-coherent-and-accessible",
-      "featureTitle": "Update the footer to remove the logo image display and replace it with a text-only \"EYEGIC\" brand mark (or remove the logo area entirely) while keeping the footer layout coherent and accessible.",
+      "featureId": "feature-make-provider-availability-mandatory-on-the-become-a-provider-page-and-replace-the-free-text-availability-field-with-a-calendar-based-selector-that-supports-selecting-individual-dates-or-a-date-range-disallows-past-dates-and-supports-selecting-a-daily-time-range-from-to",
+      "featureTitle": "Make provider \"Availability\" mandatory on the \"Become a Provider\" page and replace the free-text availability field with a calendar-based selector that supports selecting individual dates or a date range, disallows past dates, and supports selecting a daily time range (from–to).",
       "files": [
-        "frontend/src/components/layout/SiteFooter.tsx",
-        "frontend/src/hooks/branding/useSiteLogo.ts"
+        "frontend/src/components/forms/AvailabilitySelector.tsx",
+        "frontend/src/pages/provider/ProviderDashboardPage.tsx",
+        "frontend/src/pages/provider/ProviderOnboardingPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -54,10 +60,129 @@
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
       ],
       "testIds": [
         "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-request-repair-service-booking-form-to-disallow-selecting-past-dates-and-remove-time-selection-date-only-while-keeping-the-field-optional",
+      "featureTitle": "Update the \"Request Repair Service\" booking form to disallow selecting past dates and remove time selection (date-only), while keeping the field optional.",
+      "files": [
+        "frontend/src/pages/bookings/BookingDetailPage.tsx",
+        "frontend/src/pages/bookings/repairs/RepairRequestConfirmationPage.tsx",
+        "frontend/src/pages/bookings/repairs/RepairRequestPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-book-mobile-optician-booking-form-to-disallow-selecting-past-dates-and-remove-time-selection-date-only-while-keeping-the-field-optional",
+      "featureTitle": "Update the \"Book Mobile Optician\" booking form to disallow selecting past dates and remove time selection (date-only), while keeping the field optional.",
+      "files": [
+        "frontend/src/pages/bookings/BookingDetailPage.tsx",
+        "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingConfirmationPage.tsx",
+        "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-site-header-navigation-remove-provider-portal-and-replace-it-with-contact-us-that-provides-a-whatsapp-action-for-91-8600044322-and-an-email-action-for-info-eyegic-com-including-an-icon-for-whatsapp",
+      "featureTitle": "Update the site header navigation: remove \"Provider Portal\" and replace it with \"Contact Us\" that provides a WhatsApp action for +91 8600044322 and an email action for info@eyegic.com (including an icon for WhatsApp).",
+      "files": [
+        "frontend/src/components/icons/WhatsAppIcon.tsx",
+        "frontend/src/components/layout/SiteFooter.tsx",
+        "frontend/src/components/layout/SiteHeader.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-my-profile-area-accessible-from-the-header-that-lets-the-logged-in-user-view-edit-optional-profile-fields-name-age-gender-address-upload-a-profile-picture-upload-a-prescription-picture-select-one-or-more-eyewear-frame-shape-preferences-with-a-small-icon-next-to-each-shape-name-and-show-a-profile-completion-percentage",
+      "featureTitle": "Add a \"My Profile\" area accessible from the header that lets the logged-in user view/edit optional profile fields (name, age, gender, address), upload a profile picture, upload a prescription picture, select one or more eyewear frame shape preferences (with a small icon next to each shape name), and show a profile completion percentage.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/layout/SiteHeader.tsx",
+        "frontend/src/components/profile/FrameShapeIcons.tsx",
+        "frontend/src/components/profile/FrameShapePicker.tsx",
+        "frontend/src/hooks/profile/useCallerUserProfile.ts",
+        "frontend/src/hooks/profile/useProfileCompletion.ts",
+        "frontend/src/hooks/profile/useProfilePictures.ts",
+        "frontend/src/hooks/profile/useSaveCallerUserProfile.ts",
+        "frontend/src/pages/profile/MyProfilePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-apply-a-cohesive-consistent-visual-theme-to-the-updated-new-ui-surfaces-provider-onboarding-updates-booking-date-inputs-header-changes-and-my-profile-using-a-distinct-style-direction-that-is-not-blue-purple-with-consistent-spacing-typography-and-validation-feedback-styling",
+      "featureTitle": "Apply a cohesive, consistent visual theme to the updated/new UI surfaces (provider onboarding updates, booking date inputs, header changes, and My Profile) using a distinct style direction that is not blue/purple, with consistent spacing, typography, and validation/feedback styling.",
+      "files": [
+        "frontend/src/index.css",
+        "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingPage.tsx",
+        "frontend/src/pages/bookings/repairs/RepairRequestPage.tsx",
+        "frontend/src/pages/profile/MyProfilePage.tsx",
+        "frontend/src/pages/provider/ProviderOnboardingPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
       ],
       "confidence": "high"
     }
