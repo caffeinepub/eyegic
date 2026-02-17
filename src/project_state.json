@@ -1,123 +1,40 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Partner onboarding and customer booking app updates: add validated phone/email inputs with mock OTP verification, PIN-code based service areas, improved availability/booking date rules, header navigation updates, and a My Profile area with completion percentage and eyewear preferences.",
-  "architectural_notes": [
-    "OTP verification will be implemented as a mock/simulated flow (no real SMS/email integrations)."
+  "summary": "New project",
+  "architectural_notes": [],
+  "known_issues": [
+    "Draft preview not opening; repeated redeploys of Draft 24 did not resolve and shows an error.",
+    "Deployment request mismatch: system kept deploying Draft 24 even when user requested Draft 23."
   ],
-  "known_issues": [],
-  "isFixRequest": false,
+  "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-update-the-become-a-provider-partner-onboarding-form-to-collect-phone-and-email-as-separate-inputs-instead-of-a-single-combined-contact-field-and-require-the-user-to-verify-both-using-a-mock-otp-flow-before-allowing-submission",
-      "title": "Update the \"Become a Provider\" (partner onboarding) form to collect phone and email as separate inputs (instead of a single combined contact field), and require the user to verify both using a mock OTP flow before allowing submission.",
+      "id": "feature-fix-the-tanstack-router-initialization-in-frontend-src-app-tsx-so-the-app-can-render-without-runtime-errors-remove-the-circular-dependency-where-createrootroute-references-router-before-it-is-initialized",
+      "title": "Fix the TanStack Router initialization in frontend/src/App.tsx so the app can render without runtime errors (remove the circular dependency where createRootRoute references `router` before it is initialized).",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-update-the-become-a-provider-partner-onboarding-service-areas-input-to-accept-6-digit-indian-pin-codes-allowing-multiple-pin-codes-separated-by-exactly-one-space-and-validate-this-format-before-submission",
-      "title": "Update the \"Become a Provider\" (partner onboarding) Service Areas input to accept 6-digit Indian PIN codes, allowing multiple PIN codes separated by exactly one space, and validate this format before submission.",
+      "id": "feature-eliminate-conflicting-react-query-client-setup-by-ensuring-the-app-uses-a-single-queryclientprovider-avoid-nesting-different-queryclientproviders-between-frontend-src-main-tsx-and-frontend-src-app-tsx",
+      "title": "Eliminate conflicting React Query client setup by ensuring the app uses a single QueryClientProvider (avoid nesting different QueryClientProviders between frontend/src/main.tsx and frontend/src/App.tsx).",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-make-provider-availability-mandatory-on-the-become-a-provider-page-and-replace-the-free-text-availability-field-with-a-calendar-based-selector-that-supports-selecting-individual-dates-or-a-date-range-disallows-past-dates-and-supports-selecting-a-daily-time-range-from-to",
-      "title": "Make provider \"Availability\" mandatory on the \"Become a Provider\" page and replace the free-text availability field with a calendar-based selector that supports selecting individual dates or a date range, disallows past dates, and supports selecting a daily time range (from–to).",
+      "id": "feature-add-a-visible-user-facing-build-identifier-string-that-can-be-set-to-draft-23-and-is-displayed-in-the-ui-e-g-footer-or-an-about-area-so-it-is-unambiguous-which-draft-is-currently-deployed",
+      "title": "Add a visible, user-facing build identifier string that can be set to \"Draft 23\" and is displayed in the UI (e.g., footer or an About area) so it is unambiguous which draft is currently deployed.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
-    },
-    {
-      "id": "feature-update-the-request-repair-service-booking-form-to-disallow-selecting-past-dates-and-remove-time-selection-date-only-while-keeping-the-field-optional",
-      "title": "Update the \"Request Repair Service\" booking form to disallow selecting past dates and remove time selection (date-only), while keeping the field optional.",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-book-mobile-optician-booking-form-to-disallow-selecting-past-dates-and-remove-time-selection-date-only-while-keeping-the-field-optional",
-      "title": "Update the \"Book Mobile Optician\" booking form to disallow selecting past dates and remove time selection (date-only), while keeping the field optional.",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-site-header-navigation-remove-provider-portal-and-replace-it-with-contact-us-that-provides-a-whatsapp-action-for-91-8600044322-and-an-email-action-for-info-eyegic-com-including-an-icon-for-whatsapp",
-      "title": "Update the site header navigation: remove \"Provider Portal\" and replace it with \"Contact Us\" that provides a WhatsApp action for +91 8600044322 and an email action for info@eyegic.com (including an icon for WhatsApp).",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-my-profile-area-accessible-from-the-header-that-lets-the-logged-in-user-view-edit-optional-profile-fields-name-age-gender-address-upload-a-profile-picture-upload-a-prescription-picture-select-one-or-more-eyewear-frame-shape-preferences-with-a-small-icon-next-to-each-shape-name-and-show-a-profile-completion-percentage",
-      "title": "Add a \"My Profile\" area accessible from the header that lets the logged-in user view/edit optional profile fields (name, age, gender, address), upload a profile picture, upload a prescription picture, select one or more eyewear frame shape preferences (with a small icon next to each shape name), and show a profile completion percentage.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-apply-a-cohesive-consistent-visual-theme-to-the-updated-new-ui-surfaces-provider-onboarding-updates-booking-date-inputs-header-changes-and-my-profile-using-a-distinct-style-direction-that-is-not-blue-purple-with-consistent-spacing-typography-and-validation-feedback-styling",
-      "title": "Apply a cohesive, consistent visual theme to the updated/new UI surfaces (provider onboarding updates, booking date inputs, header changes, and My Profile) using a distinct style direction that is not blue/purple, with consistent spacing, typography, and validation/feedback styling.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
     }
   ],
-  "new_feature_requests": [
-    {
-      "id": "AR-1",
-      "summary": "Become a Partner page: separate phone/email inputs with 10-digit phone validation and mock OTP verification flows (4-digit OTP for SMS + email verify button/OTP entry).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Become a Partner page: service areas input accepts 6-digit Indian postal codes, multiple entries separated by single spaces.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Become a Partner page: mandatory availability calendar with selectable dates/date range (no past dates) and time range selection (from-to).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Request Repair Service tab: disallow selecting past dates; remove time selection.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Book Mobile Optician tab: disallow selecting past dates; remove time selection.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Header update: replace Provider Portal with Contact Us linking to WhatsApp (8600044322) and email (info@eyegic.com).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Add My Profile section: optional details (name, age, gender, address), profile picture upload, prescription upload, frame-shape preferences (multi-select, ideally with shape icons), and profile completion percentage.",
-      "reqIds": [],
-      "status": "pending"
-    }
-  ],
-  "gameProjectType": "none",
+  "new_feature_requests": [],
   "projectName": "EYEGIC Bookings",
   "clarification_mode": "instant",
   "clarification_rounds": 0

@@ -1,180 +1,72 @@
 {
   "kind": "build_request",
-  "title": "Partner onboarding contact verification, booking date rules, header updates, and My Profile",
+  "title": "Fix draft preview not opening and add visible build identifier (Draft 23)",
   "projectName": "EYEGIC Bookings",
-  "priority": "normal",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Update the \"Become a Provider\" (partner onboarding) form to collect phone and email as separate inputs (instead of a single combined contact field), and require the user to verify both using a mock OTP flow before allowing submission.",
-      "target": "both",
+      "text": "Fix the TanStack Router initialization in frontend/src/App.tsx so the app can render without runtime errors (remove the circular dependency where createRootRoute references `router` before it is initialized).",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-1",
-          "msg-user-2"
+          "msg-1"
         ],
         "quotes": [
-          "in become a partner page, seperate contact details of phone and email to be provided for the user to enter. phone number should be 10 digits only with 4 digit otp authentication/verification sms, email should have auto invalid email verification promt if entered incorrectly - with verify button to trigger otp to be sent to enterd email so that user can enter the otp received on email and self verify email address enterd.",
-          "Mock OTP"
+          "I AM STILL NOT ABLE TO OPEN THE LATEST DRAFT KINDLY FIX THIS"
         ]
       },
       "acceptanceCriteria": [
-        "The Provider Onboarding page no longer shows a single \"Contact (Phone/Email)\" field and instead shows separate \"Phone Number\" and \"Email\" fields.",
-        "Phone Number input only accepts 10 digits (non-digits are rejected/ignored) and the form shows an inline error if the value is not exactly 10 digits.",
-        "Email input shows an inline validation error when the email format is invalid and disables/blocks email OTP verification while invalid.",
-        "Phone verification: clicking \"Send OTP\" (mock) generates a 4-digit OTP and presents an OTP entry UI; entering the correct OTP marks the phone as verified.",
-        "Email verification: clicking \"Verify\" / \"Send OTP\" (mock) generates a 4-digit OTP and presents an OTP entry UI; entering the correct OTP marks the email as verified.",
-        "Provider onboarding submission is blocked until both phone and email are verified, with clear English user-facing messages explaining what is missing.",
-        "Backend provider data model and onboarding API store phone and email in separate fields (not a single combined contact string), and existing flows continue to work after the update."
+        "Opening the app shows the Home page instead of a blank screen",
+        "The browser console does not show a ReferenceError related to accessing `router` before initialization",
+        "All existing routes continue to work (e.g., /, /provider/onboard, /my-profile)"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update the \"Become a Provider\" (partner onboarding) Service Areas input to accept 6-digit Indian PIN codes, allowing multiple PIN codes separated by exactly one space, and validate this format before submission.",
+      "text": "Eliminate conflicting React Query client setup by ensuring the app uses a single QueryClientProvider (avoid nesting different QueryClientProviders between frontend/src/main.tsx and frontend/src/App.tsx).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-1"
         ],
         "quotes": [
-          "service areas can have provision to enter 6 digit indian postal codes (to be seperated by just a single space in case of multiple pin codes)"
+          "still not able to open"
         ]
       },
       "acceptanceCriteria": [
-        "The Service Areas field explicitly supports PIN code entry and validates that each token is exactly 6 digits.",
-        "Multiple PIN codes are accepted only when separated by a single space; invalid separators or invalid tokens trigger an inline error and block submission.",
-        "Valid examples like \"411001\" and \"411001 411002\" pass validation."
+        "There is only one active QueryClientProvider in the render tree at runtime",
+        "React Query hooks continue to function (queries and mutations still execute and cache as expected)"
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Make provider \"Availability\" mandatory on the \"Become a Provider\" page and replace the free-text availability field with a calendar-based selector that supports selecting individual dates or a date range, disallows past dates, and supports selecting a daily time range (from–to).",
+      "text": "Add a visible, user-facing build identifier string that can be set to \"Draft 23\" and is displayed in the UI (e.g., footer or an About area) so it is unambiguous which draft is currently deployed.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-1"
         ],
         "quotes": [
-          "availiblity (to be mandatory) can have a calander in which user can choose / select the available dates by clicking on individual dates or by selecting date range (dont allow back date from current date) (user can also select timings from - to)"
+          "Deploy draft 23"
         ]
       },
       "acceptanceCriteria": [
-        "Availability is a required field; attempting to submit without selecting availability shows an English validation message and blocks submission.",
-        "The UI allows selecting one or more future dates by clicking individual dates and also supports selecting a contiguous date range.",
-        "Dates before the current date cannot be selected.",
-        "The UI includes a time-range selector (From time, To time) associated with the availability selection.",
-        "The availability value is persisted as part of provider onboarding submission payload (format may be textual/serialized, but must round-trip through backend storage and display in provider dashboard/profile view if shown)."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Update the \"Request Repair Service\" booking form to disallow selecting past dates and remove time selection (date-only), while keeping the field optional.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-1"
-        ],
-        "quotes": [
-          "In Request Repair Service tab dont allow selection of back date from current date - remove option of selecting time"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The Repair Request page no longer uses a datetime picker for \"Preferred Date & Time\"; it uses a date-only input.",
-        "The date picker prevents selecting dates earlier than today.",
-        "The preferred schedule field remains optional; submitting without it still succeeds.",
-        "The booking confirmation/detail views do not display an invalid date when the field is empty."
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Update the \"Book Mobile Optician\" booking form to disallow selecting past dates and remove time selection (date-only), while keeping the field optional.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-1"
-        ],
-        "quotes": [
-          "same applies for Book Mobile Optician tab - dont allow selection of back date from current date - remove option of selecting time"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The Mobile Optician Booking page no longer uses a datetime picker for \"Preferred Date & Time\"; it uses a date-only input.",
-        "The date picker prevents selecting dates earlier than today.",
-        "The preferred schedule field remains optional; submitting without it still succeeds.",
-        "The existing 10-digit mobile-number validation remains enforced."
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Update the site header navigation: remove \"Provider Portal\" and replace it with \"Contact Us\" that provides a WhatsApp action for +91 8600044322 and an email action for info@eyegic.com (including an icon for WhatsApp).",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-1"
-        ],
-        "quotes": [
-          "in the header remove provider portal and replace it with \"Contact Us\" in which user can click on a whatsapp icon to get connected with us on whatsapp number 8600044322 or email us on info@eyegic.com"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The header no longer displays \"Provider Portal\" in desktop navigation or mobile menu.",
-        "A \"Contact Us\" entry is present in both desktop and mobile navigation.",
-        "\"Contact Us\" exposes a WhatsApp action that opens the appropriate WhatsApp deep link to 8600044322 and an email action that opens a mailto to info@eyegic.com.",
-        "WhatsApp action includes a recognizable WhatsApp icon and all user-facing text is in English."
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "text": "Add a \"My Profile\" area accessible from the header that lets the logged-in user view/edit optional profile fields (name, age, gender, address), upload a profile picture, upload a prescription picture, select one or more eyewear frame shape preferences (with a small icon next to each shape name), and show a profile completion percentage.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-user-1"
-        ],
-        "quotes": [
-          "in the header add \"My Profile\" button wherein user can add their all optional details like name, age, gender, address, upload their profile picture, upload their prescription picture, select their preference of eyframes like shape (aviator, cat eye, hexagon/ geometrical, oval, rectangle, round, square, wayfarer, wraparound) - if possible add a small icon of the corresponding frame shape next to the shape name - user can select one or multiple choices of frame shape -  a profile completion in percentage can be seen below My Profile button depending on the percentage of data enterd by the user in his/her profile"
-        ]
-      },
-      "acceptanceCriteria": [
-        "A new \"My Profile\" destination exists and is reachable from a \"My Profile\" button/link in the header (desktop and mobile).",
-        "The My Profile page requires login (unauthenticated users see the standard login prompt).",
-        "The profile form includes optional fields: Name, Age, Gender, Address.",
-        "The profile form supports uploading a profile picture and a prescription picture with preview and remove/replace behavior.",
-        "The profile form supports multi-select frame shape preferences with the exact options: Aviator, Cat Eye, Hexagon/Geometrical, Oval, Rectangle, Round, Square, Wayfarer, Wraparound; each option shows a small icon next to the label (icons may be simple SVG/inline icons).",
-        "A profile completion percentage is computed from the optional fields and displayed beneath the \"My Profile\" button in the header (and/or within the profile page), updating after saves/changes.",
-        "Backend UserProfile schema and APIs are extended to persist the new profile fields (including frame shape selections and image data references/serialized content as supported), and existing profile read/write calls continue to work."
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "text": "Apply a cohesive, consistent visual theme to the updated/new UI surfaces (provider onboarding updates, booking date inputs, header changes, and My Profile) using a distinct style direction that is not blue/purple, with consistent spacing, typography, and validation/feedback styling.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-1"
-        ],
-        "quotes": [
-          "Mock OTP"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Updated/new screens share consistent spacing, form layout, and validation styles.",
-        "The chosen palette and styling direction avoids blue/purple as the primary theme colors.",
-        "All user-facing text on updated/new UI is in English."
+        "The UI displays a build identifier that reads \"Draft 23\" when configured to that value",
+        "The build identifier is visible without requiring authentication",
+        "The build identifier does not require any backend calls to display"
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in backend/main.mo; do not introduce additional backend services.",
-    "Do not modify files under frontend/src/components/ui or any immutable paths listed in SYSTEM_CONTEXT; compose existing UI components instead.",
-    "OTP must be mock/simulated only (no real SMS or email sending integrations).",
-    "Do not allow selecting past dates in provider availability, repair request scheduling, or mobile optician scheduling."
+    "Do not edit files under frontend/src/components/ui (read-only).",
+    "Do not edit frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, or frontend/src/main.tsx unless strictly necessary; prefer composing around immutable paths per system constraints.",
+    "Backend must remain single-actor (all Motoko logic in backend/main.mo); only create backend/migration.mo changes if persistent state schema changes (not expected for this request).",
+    "Use English for any user-facing text."
   ],
   "nonGoals": [
-    "Implementing real SMS delivery or real email delivery for OTP codes.",
-    "Adding third-party authentication beyond Internet Identity.",
-    "Adding external databases or non-IC storage services.",
-    "Building real-time features (e.g., WebSockets) for OTP or bookings."
+    "Performing the actual platform deployment of Draft 23 (this build request covers code changes to fix the app opening and make the deployed draft identifiable).",
+    "Adding third-party monitoring, analytics, or external logging services."
   ],
   "imageRequirements": {
     "required": [],

@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { Heart, Mail } from 'lucide-react';
 import WhatsAppIcon from '../icons/WhatsAppIcon';
+import { BUILD_INFO } from '../../config/buildInfo';
 
 export default function SiteFooter() {
   const currentYear = new Date().getFullYear();
@@ -89,8 +90,13 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p className="flex items-center justify-center gap-1">
+        <div className="mt-12 pt-8 border-t space-y-2">
+          <div className="text-center">
+            <span className="inline-block px-3 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full">
+              {BUILD_INFO.identifier}
+            </span>
+          </div>
+          <p className="text-center text-sm text-muted-foreground flex items-center justify-center gap-1">
             © {currentYear} Eyegic. Built with <Heart className="h-4 w-4 text-red-500 fill-red-500" /> using{' '}
             <a
               href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(appIdentifier)}`}

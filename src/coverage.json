@@ -1,192 +1,66 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T18:59:29.413Z",
+  "generatedAt": "2026-02-17T05:19:12.517Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 8,
-    "implemented": 8,
+    "total": 3,
+    "implemented": 3,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Update the \"Become a Provider\" (partner onboarding) form to collect phone and email as separate inputs (instead of a single combined contact field), and require the user to verify both using a mock OTP flow before allowing submission.",
+        "summary": "Fix the TanStack Router initialization in frontend/src/App.tsx so the app can render without runtime errors (remove the circular dependency where createRootRoute references `router` before it is initialized).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
-          "frontend/src/components/forms/MockOtpVerification.tsx",
-          "frontend/src/utils/validation.ts",
-          "frontend/src/hooks/provider/useProvider.ts",
-          "frontend/src/pages/provider/ProviderDashboardPage.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/components/layout/RootLayout.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
-          "frontend/src/components/forms/MockOtpVerification.tsx",
-          "frontend/src/utils/validation.ts",
-          "frontend/src/hooks/provider/useProvider.ts",
-          "frontend/src/pages/provider/ProviderDashboardPage.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/components/layout/RootLayout.tsx"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Update the \"Become a Provider\" (partner onboarding) Service Areas input to accept 6-digit Indian PIN codes, allowing multiple PIN codes separated by exactly one space, and validate this format before submission.",
+        "summary": "Eliminate conflicting React Query client setup by ensuring the app uses a single QueryClientProvider (avoid nesting different QueryClientProviders between frontend/src/main.tsx and frontend/src/App.tsx).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
-          "frontend/src/utils/validation.ts"
+          "frontend/src/App.tsx",
+          "frontend/src/main.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
-          "frontend/src/utils/validation.ts"
+          "frontend/src/App.tsx"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Make provider \"Availability\" mandatory on the \"Become a Provider\" page and replace the free-text availability field with a calendar-based selector that supports selecting individual dates or a date range, disallows past dates, and supports selecting a daily time range (from–to).",
+        "summary": "Add a visible, user-facing build identifier string that can be set to \"Draft 23\" and is displayed in the UI (e.g., footer or an About area) so it is unambiguous which draft is currently deployed.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/forms/AvailabilitySelector.tsx",
-          "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
-          "frontend/src/pages/provider/ProviderDashboardPage.tsx"
+          "frontend/src/config/buildInfo.ts",
+          "frontend/src/components/layout/SiteFooter.tsx",
+          "frontend/src/components/layout/RootLayout.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/forms/AvailabilitySelector.tsx",
-          "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
-          "frontend/src/pages/provider/ProviderDashboardPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "Update the \"Request Repair Service\" booking form to disallow selecting past dates and remove time selection (date-only), while keeping the field optional.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/bookings/repairs/RepairRequestPage.tsx",
-          "frontend/src/pages/bookings/repairs/RepairRequestConfirmationPage.tsx",
-          "frontend/src/pages/bookings/BookingDetailPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/bookings/repairs/RepairRequestPage.tsx",
-          "frontend/src/pages/bookings/repairs/RepairRequestConfirmationPage.tsx",
-          "frontend/src/pages/bookings/BookingDetailPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-5",
-        "summary": "Update the \"Book Mobile Optician\" booking form to disallow selecting past dates and remove time selection (date-only), while keeping the field optional.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingPage.tsx",
-          "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingConfirmationPage.tsx",
-          "frontend/src/pages/bookings/BookingDetailPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingPage.tsx",
-          "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingConfirmationPage.tsx",
-          "frontend/src/pages/bookings/BookingDetailPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-6",
-        "summary": "Update the site header navigation: remove \"Provider Portal\" and replace it with \"Contact Us\" that provides a WhatsApp action for +91 8600044322 and an email action for info@eyegic.com (including an icon for WhatsApp).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/icons/WhatsAppIcon.tsx",
-          "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/components/layout/SiteFooter.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/icons/WhatsAppIcon.tsx",
-          "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/components/layout/SiteFooter.tsx"
-        ]
-      },
-      {
-        "id": "REQ-7",
-        "summary": "Add a \"My Profile\" area accessible from the header that lets the logged-in user view/edit optional profile fields (name, age, gender, address), upload a profile picture, upload a prescription picture, select one or more eyewear frame shape preferences (with a small icon next to each shape name), and show a profile completion percentage.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/profile/MyProfilePage.tsx",
-          "frontend/src/hooks/profile/useCallerUserProfile.ts",
-          "frontend/src/hooks/profile/useSaveCallerUserProfile.ts",
-          "frontend/src/hooks/profile/useProfileCompletion.ts",
-          "frontend/src/hooks/profile/useProfilePictures.ts",
-          "frontend/src/components/profile/FrameShapePicker.tsx",
-          "frontend/src/components/profile/FrameShapeIcons.tsx",
-          "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/profile/MyProfilePage.tsx",
-          "frontend/src/hooks/profile/useCallerUserProfile.ts",
-          "frontend/src/hooks/profile/useSaveCallerUserProfile.ts",
-          "frontend/src/hooks/profile/useProfileCompletion.ts",
-          "frontend/src/hooks/profile/useProfilePictures.ts",
-          "frontend/src/components/profile/FrameShapePicker.tsx",
-          "frontend/src/components/profile/FrameShapeIcons.tsx",
-          "frontend/src/components/layout/SiteHeader.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-8",
-        "summary": "Apply a cohesive, consistent visual theme to the updated/new UI surfaces (provider onboarding updates, booking date inputs, header changes, and My Profile) using a distinct style direction that is not blue/purple, with consistent spacing, typography, and validation/feedback styling.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/index.css",
-          "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
-          "frontend/src/pages/bookings/repairs/RepairRequestPage.tsx",
-          "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingPage.tsx",
-          "frontend/src/pages/profile/MyProfilePage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/index.css",
-          "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
-          "frontend/src/pages/bookings/repairs/RepairRequestPage.tsx",
-          "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingPage.tsx",
-          "frontend/src/pages/profile/MyProfilePage.tsx"
+          "frontend/src/config/buildInfo.ts",
+          "frontend/src/components/layout/SiteFooter.tsx",
+          "frontend/src/components/layout/RootLayout.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/blob-storage/Mixin.mo",
-    "backend/blob-storage/Storage.mo",
-    "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/forms/AvailabilitySelector.tsx",
-    "frontend/src/components/forms/MockOtpVerification.tsx",
-    "frontend/src/components/icons/WhatsAppIcon.tsx",
+    "frontend/src/components/layout/RootLayout.tsx",
     "frontend/src/components/layout/SiteFooter.tsx",
-    "frontend/src/components/layout/SiteHeader.tsx",
-    "frontend/src/components/profile/FrameShapeIcons.tsx",
-    "frontend/src/components/profile/FrameShapePicker.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/profile/useCallerUserProfile.ts",
-    "frontend/src/hooks/profile/useProfileCompletion.ts",
-    "frontend/src/hooks/profile/useProfilePictures.ts",
-    "frontend/src/hooks/profile/useSaveCallerUserProfile.ts",
-    "frontend/src/hooks/provider/useProvider.ts",
-    "frontend/src/index.css",
-    "frontend/src/pages/bookings/BookingDetailPage.tsx",
-    "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingConfirmationPage.tsx",
-    "frontend/src/pages/bookings/mobile-optician/MobileOpticianBookingPage.tsx",
-    "frontend/src/pages/bookings/repairs/RepairRequestConfirmationPage.tsx",
-    "frontend/src/pages/bookings/repairs/RepairRequestPage.tsx",
-    "frontend/src/pages/profile/MyProfilePage.tsx",
-    "frontend/src/pages/provider/ProviderDashboardPage.tsx",
-    "frontend/src/pages/provider/ProviderOnboardingPage.tsx",
-    "frontend/src/utils/validation.ts",
+    "frontend/src/config/buildInfo.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
