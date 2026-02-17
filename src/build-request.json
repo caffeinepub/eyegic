@@ -1,85 +1,99 @@
 {
   "kind": "build_request",
-  "title": "Fix draft preview not opening and add visible build identifier (Draft 23)",
+  "title": "Restore Version 27 admin OTP verification notifications and My Profile completion indicator",
   "projectName": "EYEGIC Bookings",
-  "priority": "high",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Fix the TanStack Router initialization in frontend/src/App.tsx so the app can render without runtime errors (remove the circular dependency where createRootRoute references `router` before it is initialized).",
-      "target": "frontend",
+      "text": "Persist and expose mobile-number OTP verification logs so that when a user successfully verifies their mobile number by OTP, an admin can see a notification entry containing the verified mobile number and a verification timestamp (no email/SMS).",
+      "target": "backend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "I AM STILL NOT ABLE TO OPEN THE LATEST DRAFT KINDLY FIX THIS"
+          "in version 27 whenever a user sucessfully verfies his/her mobile number by otp, ... [instead send the notification only inside the admin dashboard (no email/SMS)]."
         ]
       },
       "acceptanceCriteria": [
-        "Opening the app shows the Home page instead of a blank screen",
-        "The browser console does not show a ReferenceError related to accessing `router` before initialization",
-        "All existing routes continue to work (e.g., /, /provider/onboard, /my-profile)"
+        "Calling backend logMobileNumberVerification(mobileNumber) appends a new LogMobileNumberVerification record with {mobileNumber, verifiedAt} to persisted canister state.",
+        "Calling backend getMobileNumberVerifications() as an admin returns the full list of persisted verification records.",
+        "Calling backend getMobileNumberVerifications() as a non-admin traps with an authorization error.",
+        "No code sends email to info@eyegic.com or SMS to 8600044322 as part of this feature."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Eliminate conflicting React Query client setup by ensuring the app uses a single QueryClientProvider (avoid nesting different QueryClientProviders between frontend/src/main.tsx and frontend/src/App.tsx).",
-      "target": "frontend",
+      "text": "Update profile completion calculation so the completion percentage is based on all fields in the My Profile section, and return a 0–100 integer percentage for display in the header My Profile control.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-2"
         ],
         "quotes": [
-          "still not able to open"
+          "For the profile completion percentage, all fields inside the my profile button should be counted toward the percentage calculation"
         ]
       },
       "acceptanceCriteria": [
-        "There is only one active QueryClientProvider in the render tree at runtime",
-        "React Query hooks continue to function (queries and mutations still execute and cache as expected)"
+        "calculateProfileCompletion() evaluates every field in UserProfile (name, age, address, gender, phone, email, framePreferences, profilePicture, prescriptionPicture) when computing completion.",
+        "The returned value is a whole-number percentage from 0 to 100 inclusive.",
+        "If no profile exists for the caller, calculateProfileCompletion() returns 0.",
+        "The completion percentage increases as additional profile fields are filled in (and reaches 100 when all are filled)."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Add a visible, user-facing build identifier string that can be set to \"Draft 23\" and is displayed in the UI (e.g., footer or an About area) so it is unambiguous which draft is currently deployed.",
+      "text": "Ensure the Admin notifications UI is restored in the header for admin users and points to a notifications panel in the Admin dashboard that lists OTP-verified users (mobile number + verified time), matching Version 27 behavior.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-3"
         ],
         "quotes": [
-          "Deploy draft 23"
+          "a notifications panel"
         ]
       },
       "acceptanceCriteria": [
-        "The UI displays a build identifier that reads \"Draft 23\" when configured to that value",
-        "The build identifier is visible without requiring authentication",
-        "The build identifier does not require any backend calls to display"
+        "For admin users, the header displays an Admin notifications control with a badge count equal to the number of verification log records.",
+        "Clicking the Admin notifications control navigates to /admin/notifications.",
+        "The /admin/notifications page renders a notifications panel listing verification records sorted newest-first and displaying mobile number and a human-readable timestamp.",
+        "Non-admin users cannot access the /admin/notifications page (they see an access denied state)."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Restore the header 'My Profile' control exactly as in Version 27, including showing the profile completion percentage beneath the My Profile button in both desktop header and mobile menu variants.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "For profile button, in version 27, it showed percentage completion of profile by the user"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When authenticated, the header shows a 'My Profile' control that navigates to /profile.",
+        "The control displays the profile completion percentage text beneath the button in desktop header variant.",
+        "The same completion percentage text appears beneath the My Profile item in the mobile menu variant.",
+        "When unauthenticated, the My Profile control is not shown."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (read-only).",
-    "Do not edit frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, or frontend/src/main.tsx unless strictly necessary; prefer composing around immutable paths per system constraints.",
-    "Backend must remain single-actor (all Motoko logic in backend/main.mo); only create backend/migration.mo changes if persistent state schema changes (not expected for this request).",
-    "Use English for any user-facing text."
+    "Do not implement email or SMS notifications for OTP verification; notifications must appear only inside the admin dashboard.",
+    "Backend must remain a single Motoko actor (all logic in backend/main.mo).",
+    "Do not edit frontend immutable paths listed in SYSTEM_CONTEXT (compose existing UI components instead).",
+    "Use English for all user-facing UI text."
   ],
   "nonGoals": [
-    "Performing the actual platform deployment of Draft 23 (this build request covers code changes to fix the app opening and make the deployed draft identifiable).",
-    "Adding third-party monitoring, analytics, or external logging services."
+    "Implementing third-party email/SMS providers or any outbound messaging.",
+    "Adding real-time push updates (WebSockets/push notifications).",
+    "Changing the OTP verification UX beyond ensuring it logs verifications and drives admin notifications."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

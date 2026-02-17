@@ -57,25 +57,27 @@ export default function RentalsPage() {
             <Package className="h-10 w-10 text-primary mx-auto" />
             <h3 className="font-semibold">Choose Your Style</h3>
             <p className="text-sm text-muted-foreground">
-              Browse our catalog and select the perfect eyewear
+              Browse our curated collection of premium eyewear for every occasion
             </p>
           </CardContent>
         </Card>
+
         <Card className="motion-safe:animate-scale-in motion-safe:animation-delay-300">
           <CardContent className="pt-6 text-center space-y-3">
             <Truck className="h-10 w-10 text-primary mx-auto" />
             <h3 className="font-semibold">Fast Delivery</h3>
             <p className="text-sm text-muted-foreground">
-              Get your rental delivered to your address
+              Quick delivery to your doorstep and hassle-free returns
             </p>
           </CardContent>
         </Card>
+
         <Card className="motion-safe:animate-scale-in motion-safe:animation-delay-400">
           <CardContent className="pt-6 text-center space-y-3">
             <RotateCcw className="h-10 w-10 text-primary mx-auto" />
-            <h3 className="font-semibold">Easy Returns</h3>
+            <h3 className="font-semibold">Flexible Terms</h3>
             <p className="text-sm text-muted-foreground">
-              Return when you're done, hassle-free
+              Rent for as long as you need with easy extension options
             </p>
           </CardContent>
         </Card>

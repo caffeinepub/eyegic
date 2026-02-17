@@ -27,6 +27,10 @@ export interface PriceInfo {
     baseFee: bigint;
     addOns: bigint;
 }
+export interface LogMobileNumberVerification {
+    mobileNumber: string;
+    verifiedAt: bigint;
+}
 export interface Booking {
     id: bigint;
     status: BookingStatus;
@@ -35,8 +39,8 @@ export interface Booking {
     customer: Principal;
     createdAt: bigint;
     mobileNumber?: string;
-    repairType?: RepairType;
     updatedAt: bigint;
+    repairTypes?: Array<RepairType>;
     address?: string;
     bookingType: BookingType;
     preferredTime?: string;
@@ -113,7 +117,7 @@ export interface backendInterface {
     calculateProfileCompletion(): Promise<bigint>;
     createOpticianBooking(serviceType: ServiceType, details: string | null, address: string | null, preferredTime: string | null, price: PriceInfo, mobileNumber: string): Promise<bigint>;
     createRentalBooking(itemId: bigint, rentalPeriod: bigint, address: string, price: PriceInfo): Promise<bigint>;
-    createRepairBooking(repairType: RepairType, details: string | null, address: string | null, preferredTime: string | null, price: PriceInfo): Promise<bigint>;
+    createRepairBooking(repairTypes: Array<RepairType>, details: string | null, address: string | null, preferredTime: string | null, price: PriceInfo): Promise<bigint>;
     findAvailableRentalItems(): Promise<Array<RentalItem>>;
     getActiveProviders(): Promise<Array<Provider>>;
     getAllBookings(): Promise<Array<Booking>>;
@@ -121,12 +125,14 @@ export interface backendInterface {
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getCustomerBookings(): Promise<Array<Booking>>;
+    getMobileNumberVerifications(): Promise<Array<LogMobileNumberVerification>>;
     getProvider(providerId: Principal): Promise<Provider | null>;
     getProviderBookings(): Promise<Array<Booking>>;
     getRentalCatalog(): Promise<Array<RentalItem>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     initialize(): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
+    logMobileNumberVerification(mobileNumber: string): Promise<void>;
     onboardProvider(name: string, phone: string, email: string, serviceAreas: string, services: Array<ServiceType>, availability: string): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     updateBookingStatus(bookingId: bigint, newStatus: BookingStatus): Promise<void>;

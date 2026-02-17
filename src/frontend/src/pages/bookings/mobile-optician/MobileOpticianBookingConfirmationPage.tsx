@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from '@tanstack/react-router';
+import { useSearch, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import PageLayout from '../../../components/layout/PageLayout';
@@ -8,9 +8,25 @@ import BookingStatusBadge from '../../../components/bookings/BookingStatusBadge'
 import { formatINR } from '../../../utils/currency';
 
 export default function MobileOpticianBookingConfirmationPage() {
-  const { bookingId } = useParams({ from: '/book/mobile-optician/confirmation/$bookingId' });
+  const search = useSearch({ from: '/book/mobile-optician/confirmation' }) as { bookingId?: number };
   const navigate = useNavigate();
-  const { data: booking, isLoading } = useBooking(BigInt(bookingId));
+  const bookingId = search.bookingId;
+  const { data: booking, isLoading } = useBooking(bookingId ? BigInt(bookingId) : BigInt(0));
+
+  if (!bookingId) {
+    return (
+      <PageLayout>
+        <Card className="max-w-md mx-auto">
+          <CardHeader>
+            <CardTitle>Invalid Booking</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate({ to: '/' })}>Return Home</Button>
+          </CardContent>
+        </Card>
+      </PageLayout>
+    );
+  }
 
   if (isLoading) {
     return (

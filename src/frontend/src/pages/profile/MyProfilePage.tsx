@@ -105,6 +105,11 @@ export default function MyProfilePage() {
         await updatePrescriptionPic.mutateAsync(blob);
       }
 
+      // Filter out any non-FrameShape values (including legacy 'wraparound')
+      const validFrameShapes = framePreferences.filter(shape => 
+        Object.values(FrameShape).includes(shape)
+      );
+
       // Save profile data
       await saveProfile.mutateAsync({
         name,
@@ -113,7 +118,7 @@ export default function MyProfilePage() {
         address,
         phone,
         email,
-        framePreferences: framePreferences.length > 0 ? framePreferences : undefined,
+        framePreferences: validFrameShapes.length > 0 ? validFrameShapes : undefined,
         profilePicture: profile?.profilePicture,
         prescriptionPicture: profile?.prescriptionPicture,
       });
@@ -319,26 +324,27 @@ export default function MyProfilePage() {
             <Card>
               <CardHeader>
                 <CardTitle>Frame Preferences</CardTitle>
-                <CardDescription>Select your preferred frame shapes (multiple selections allowed)</CardDescription>
+                <CardDescription>Select your preferred frame shapes</CardDescription>
               </CardHeader>
               <CardContent>
-                <FrameShapePicker
-                  selected={framePreferences}
-                  onChange={setFramePreferences}
-                />
+                <FrameShapePicker selected={framePreferences} onChange={setFramePreferences} />
               </CardContent>
             </Card>
 
-            <div className="flex gap-4">
+            <div className="flex justify-end">
               <Button
                 type="submit"
+                size="lg"
                 disabled={saveProfile.isPending || updateProfilePic.isPending || updatePrescriptionPic.isPending}
-                className="flex-1"
               >
-                {(saveProfile.isPending || updateProfilePic.isPending || updatePrescriptionPic.isPending) && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {(saveProfile.isPending || updateProfilePic.isPending || updatePrescriptionPic.isPending) ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  'Save Profile'
                 )}
-                Save Profile
               </Button>
             </div>
           </div>

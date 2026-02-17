@@ -16,16 +16,21 @@ export default function SiteFooter() {
   };
 
   return (
-    <footer className="border-t bg-muted/30">
+    <footer className="border-t bg-background/98 backdrop-blur-md shadow-sm">
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-3">
             <Link to="/" className="inline-block">
-              <span className="text-2xl font-bold leading-none tracking-tight">EYEGIC</span>
+              <span className="font-medium">EYEGIC</span>
             </Link>
-            <p className="text-sm text-muted-foreground">
-              On-demand eyewear services at your doorstep
-            </p>
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                On-demand eyewear services
+              </p>
+              <p className="text-sm text-muted-foreground">
+                at your doorstep
+              </p>
+            </div>
           </div>
 
           <div className="space-y-3">
@@ -58,7 +63,7 @@ export default function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link to="/my-profile" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/profile" className="text-muted-foreground hover:text-foreground transition-colors">
                   My Profile
                 </Link>
               </li>

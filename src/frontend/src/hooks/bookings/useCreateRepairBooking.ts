@@ -3,7 +3,7 @@ import { useActor } from '../useActor';
 import { RepairType, PriceInfo } from '../../backend';
 
 interface CreateRepairBookingParams {
-  repairType?: RepairType;
+  repairTypes?: RepairType[];
   details?: string;
   address?: string;
   preferredTime?: string;
@@ -16,17 +16,21 @@ export function useCreateRepairBooking() {
 
   return useMutation({
     mutationFn: async (params: CreateRepairBookingParams) => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.createRepairBooking(
-        params.repairType || RepairType.other,
+      if (!actor) throw new Error('Actor not initialized');
+
+      const bookingId = await actor.createRepairBooking(
+        params.repairTypes || [],
         params.details || null,
         params.address || null,
         params.preferredTime || null,
         params.price
       );
+
+      return bookingId;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customerBookings'] });
+      queryClient.invalidateQueries({ queryKey: ['allBookings'] });
     },
   });
 }

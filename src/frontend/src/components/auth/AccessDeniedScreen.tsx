@@ -1,13 +1,9 @@
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { ShieldAlert } from 'lucide-react';
 import { useNavigate } from '@tanstack/react-router';
 
-interface AccessDeniedScreenProps {
-  message?: string;
-}
-
-export default function AccessDeniedScreen({ message }: AccessDeniedScreenProps) {
+export default function AccessDeniedScreen() {
   const navigate = useNavigate();
 
   return (
@@ -19,11 +15,11 @@ export default function AccessDeniedScreen({ message }: AccessDeniedScreenProps)
           </div>
           <CardTitle>Access Denied</CardTitle>
           <CardDescription>
-            {message || 'You do not have permission to access this page'}
+            You do not have permission to access this page. This area is restricted to administrators only.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center">
-          <Button onClick={() => navigate({ to: '/' })}>
+          <Button onClick={() => navigate({ to: '/' })} size="lg">
             Return to Home
           </Button>
         </CardContent>

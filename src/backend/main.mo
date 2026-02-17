@@ -4,6 +4,7 @@ import Iter "mo:core/Iter";
 import List "mo:core/List";
 import Map "mo:core/Map";
 
+import Migration "migration";
 import Order "mo:core/Order";
 import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
@@ -15,8 +16,7 @@ import AccessControl "authorization/access-control";
 import MixinStorage "blob-storage/Mixin";
 import Storage "blob-storage/Storage";
 
-
-
+(with migration = Migration.run)
 actor {
   type BookingType = {
     #mobileOptician;
@@ -49,7 +49,7 @@ actor {
     #combined;
   };
 
-  type RepairType = {
+  public type RepairType = {
     #adjustment;
     #screwTightening;
     #lensReplacement;
@@ -73,7 +73,7 @@ actor {
     provider : ?Principal;
     status : BookingStatus;
     serviceType : ?ServiceType;
-    repairType : ?RepairType;
+    repairTypes : ?[RepairType];
     details : ?Text;
     address : ?Text;
     preferredTime : ?Text;
@@ -171,6 +171,11 @@ actor {
     #other;
   };
 
+  public type LogMobileNumberVerification = {
+    mobileNumber : Text;
+    verifiedAt : Int;
+  };
+
   public type Optician = {
     id : Text;
     name : Text;
@@ -190,10 +195,31 @@ actor {
   let providers = Map.empty<Principal, Provider>();
   let rentalCatalog = Map.empty<Int, RentalItem>();
   var userProfiles = Map.empty<Principal, UserProfile>();
+  let verificationLogs = List.empty<LogMobileNumberVerification>();
 
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
   include MixinStorage();
+
+  // Log verification event - USER ONLY (called after successful OTP verification)
+  public shared ({ caller }) func logMobileNumberVerification(mobileNumber : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can log verification");
+    };
+    let verificationData : LogMobileNumberVerification = {
+      mobileNumber;
+      verifiedAt = Time.now();
+    };
+    verificationLogs.add(verificationData);
+  };
+
+  // Admin dashboard data - ADMIN ONLY
+  public query ({ caller }) func getMobileNumberVerifications() : async [LogMobileNumberVerification] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can access verification logs");
+    };
+    verificationLogs.toArray();
+  };
 
   // User Profile Management (Required by Instructions)
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
@@ -282,22 +308,23 @@ actor {
     switch (userProfiles.get(caller)) {
       case (null) { 0 };
       case (?profile) {
-        var completion = 25;
-        if (profile.profilePicture != null or profile.prescriptionPicture != null) {
-          completion := completion + 25;
-        };
-        if (profile.address.size() > 0 and profile.age > 0 and profile.gender != #other) {
-          completion := completion + 25;
-        };
+        var completion = 0;
+        if (profile.name != "") { completion += 1 };
+        if (profile.age > 0) { completion += 1 };
+        if (profile.address != "") { completion += 1 };
+        if (profile.gender != #other) { completion += 1 };
+        if (profile.phone != "") { completion += 1 };
+        if (profile.email != "") { completion += 1 };
+        if (profile.profilePicture != null) { completion += 1 };
+        if (profile.prescriptionPicture != null) { completion += 1 };
         switch (profile.framePreferences) {
           case (null) {};
           case (?preferences) {
-            if (preferences.size() > 0) {
-              completion := completion + 25;
-            };
+            if (preferences.size() > 0) { completion += 1 };
           };
         };
-        if (completion >= 100) { 100 } else { completion };
+        let percentComplete = (completion * 100) / 9;
+        percentComplete;
       };
     };
   };
@@ -360,7 +387,7 @@ actor {
       provider = null;
       status = #pending;
       serviceType = ?serviceType;
-      repairType = null;
+      repairTypes = null;
       details;
       address;
       preferredTime;
@@ -374,7 +401,7 @@ actor {
     bookingId;
   };
 
-  public shared ({ caller }) func createRepairBooking(repairType : RepairType, details : ?Text, address : ?Text, preferredTime : ?Text, price : PriceInfo) : async Int {
+  public shared ({ caller }) func createRepairBooking(repairTypes : [RepairType], details : ?Text, address : ?Text, preferredTime : ?Text, price : PriceInfo) : async Int {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: User authentication required");
     };
@@ -388,7 +415,7 @@ actor {
       provider = null;
       status = #pending;
       serviceType = null;
-      repairType = ?repairType;
+      repairTypes = ?repairTypes;
       details;
       address;
       preferredTime;
@@ -423,7 +450,7 @@ actor {
       provider = null;
       status = #pending;
       serviceType = null;
-      repairType = null;
+      repairTypes = null;
       details = ?("Rental: " # rentalItem.name # ", Period: " # rentalPeriod.toText() # " days");
       address = ?address;
       preferredTime = null;
@@ -624,3 +651,4 @@ actor {
     activeProviders.toArray();
   };
 };
+

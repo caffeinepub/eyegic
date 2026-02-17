@@ -1,144 +1,157 @@
 import { useParams, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import PageLayout from '../../components/layout/PageLayout';
-import { useBooking } from '../../hooks/bookings/useBooking';
-import BookingStatusBadge from '../../components/bookings/BookingStatusBadge';
-import { Loader2, Calendar, MapPin, DollarSign } from 'lucide-react';
+import RequireLogin from '../../components/auth/RequireLogin';
+import { useGetBooking } from '../../hooks/bookings/useGetBooking';
+import { Loader2 } from 'lucide-react';
 import { formatINR } from '../../utils/currency';
+import { BookingType, ServiceType, RepairType } from '../../backend';
+
+const serviceTypeLabels: Record<ServiceType, string> = {
+  [ServiceType.eyeTest]: 'Eye Test',
+  [ServiceType.frameTryOn]: 'Frame Try-On',
+  [ServiceType.combined]: 'Combined Service',
+};
+
+const repairTypeLabels: Record<RepairType, string> = {
+  [RepairType.adjustment]: 'Adjustment',
+  [RepairType.screwTightening]: 'Screw Tightening',
+  [RepairType.lensReplacement]: 'Lens Replacement',
+  [RepairType.other]: 'Other',
+};
+
+const bookingTypeLabels: Record<BookingType, string> = {
+  [BookingType.mobileOptician]: 'Mobile Optician',
+  [BookingType.repair]: 'Repair Service',
+  [BookingType.rental]: 'Eyewear Rental',
+};
 
 export default function BookingDetailPage() {
   const { bookingId } = useParams({ from: '/bookings/$bookingId' });
   const navigate = useNavigate();
-  const { data: booking, isLoading, error } = useBooking(BigInt(bookingId));
+  const { data: booking, isLoading, error } = useGetBooking(BigInt(bookingId));
 
   if (isLoading) {
     return (
-      <PageLayout>
-        <div className="flex justify-center items-center min-h-[50vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      </PageLayout>
+      <RequireLogin message="Please log in to view your booking">
+        <PageLayout title="Loading..." description="">
+          <div className="flex justify-center items-center min-h-[400px]">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        </PageLayout>
+      </RequireLogin>
     );
   }
 
   if (error || !booking) {
     return (
-      <PageLayout>
-        <Card className="max-w-md mx-auto">
-          <CardHeader>
-            <CardTitle>Booking Not Found</CardTitle>
-            <CardDescription>
-              {error ? 'You do not have permission to view this booking' : 'This booking does not exist'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => navigate({ to: '/my-bookings' })}>Back to My Bookings</Button>
-          </CardContent>
-        </Card>
-      </PageLayout>
+      <RequireLogin message="Please log in to view your booking">
+        <PageLayout title="Error" description="">
+          <div className="max-w-2xl mx-auto">
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-destructive">Failed to load booking details</p>
+              </CardContent>
+            </Card>
+          </div>
+        </PageLayout>
+      </RequireLogin>
     );
   }
 
   return (
-    <PageLayout>
-      <div className="max-w-3xl mx-auto space-y-6">
-        <Button variant="ghost" onClick={() => navigate({ to: '/my-bookings' })}>
-          ← Back to My Bookings
-        </Button>
-
-        <Card>
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle className="text-2xl capitalize">
-                  {booking.bookingType.toString().replace(/([A-Z])/g, ' $1').trim()} Service
-                </CardTitle>
-                <CardDescription>Booking Reference: #{booking.id.toString()}</CardDescription>
+    <RequireLogin message="Please log in to view your booking">
+      <PageLayout
+        title={`Booking #${booking.id.toString()}`}
+        description={bookingTypeLabels[booking.bookingType]}
+      >
+        <div className="max-w-2xl mx-auto space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Booking Information</CardTitle>
+              <CardDescription>Details of your booking</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Booking ID</p>
+                  <p className="font-medium">#{booking.id.toString()}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Type</p>
+                  <p className="font-medium">{bookingTypeLabels[booking.bookingType]}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Status</p>
+                  <Badge variant="outline" className="mt-1">
+                    {booking.status}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Total</p>
+                  <p className="font-semibold text-primary">{formatINR(Number(booking.price.total))}</p>
+                </div>
               </div>
-              <BookingStatusBadge status={booking.status} />
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {booking.serviceType && (
-              <div>
-                <div className="text-sm font-medium text-muted-foreground mb-1">Service Type</div>
-                <div className="capitalize">{booking.serviceType.toString().replace(/([A-Z])/g, ' $1').trim()}</div>
-              </div>
-            )}
 
-            {booking.repairType && (
-              <div>
-                <div className="text-sm font-medium text-muted-foreground mb-1">Repair Type</div>
-                <div className="capitalize">{booking.repairType.toString().replace(/([A-Z])/g, ' $1').trim()}</div>
-              </div>
-            )}
+              {booking.serviceType && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Service Type</p>
+                  <p className="mt-1">{serviceTypeLabels[booking.serviceType]}</p>
+                </div>
+              )}
 
-            {booking.mobileNumber && (
-              <div>
-                <div className="text-sm font-medium text-muted-foreground mb-1">Mobile Number</div>
-                <div>{booking.mobileNumber}</div>
-              </div>
-            )}
-
-            {booking.details && (
-              <div>
-                <div className="text-sm font-medium text-muted-foreground mb-1">Details</div>
-                <div>{booking.details}</div>
-              </div>
-            )}
-
-            <div className="grid md:grid-cols-2 gap-6">
-              {booking.address && (
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-sm font-medium text-muted-foreground">Service Address</div>
-                      <div className="mt-1">{booking.address}</div>
-                    </div>
+              {booking.repairTypes && booking.repairTypes.length > 0 && (
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">Issue Types</p>
+                  <div className="flex flex-wrap gap-2">
+                    {booking.repairTypes.map((type) => (
+                      <Badge key={type} variant="secondary">
+                        {repairTypeLabels[type]}
+                      </Badge>
+                    ))}
                   </div>
+                </div>
+              )}
+
+              {booking.mobileNumber && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Mobile Number</p>
+                  <p className="mt-1">{booking.mobileNumber}</p>
+                </div>
+              )}
+
+              {booking.details && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Details</p>
+                  <p className="mt-1">{booking.details}</p>
+                </div>
+              )}
+
+              {booking.address && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Service Address</p>
+                  <p className="mt-1">{booking.address}</p>
                 </div>
               )}
 
               {booking.preferredTime && (
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <Calendar className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-sm font-medium text-muted-foreground">Preferred Date</div>
-                      <div className="mt-1">{new Date(booking.preferredTime).toLocaleDateString()}</div>
-                    </div>
-                  </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Preferred Date</p>
+                  <p className="mt-1">{booking.preferredTime}</p>
                 </div>
               )}
-            </div>
+            </CardContent>
+          </Card>
 
-            <Card className="bg-muted/30">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
-                  Pricing Breakdown
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Base Fee</span>
-                  <span>{formatINR(booking.price.baseFee)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Add-ons</span>
-                  <span>{formatINR(booking.price.addOns)}</span>
-                </div>
-                <div className="border-t pt-2 flex justify-between font-semibold text-lg">
-                  <span>Total</span>
-                  <span className="text-primary">{formatINR(booking.price.total)}</span>
-                </div>
-              </CardContent>
-            </Card>
-          </CardContent>
-        </Card>
-      </div>
-    </PageLayout>
+          <div className="flex gap-4">
+            <Button variant="outline" onClick={() => navigate({ to: '/my-bookings' })} className="flex-1">
+              Back to Bookings
+            </Button>
+          </div>
+        </div>
+      </PageLayout>
+    </RequireLogin>
   );
 }

@@ -2,53 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-fix-the-tanstack-router-initialization-in-frontend-src-app-tsx-so-the-app-can-render-without-runtime-errors-remove-the-circular-dependency-where-createrootroute-references-router-before-it-is-initialized",
-      "featureTitle": "Fix the TanStack Router initialization in frontend/src/App.tsx so the app can render without runtime errors (remove the circular dependency where createRootRoute references `router` before it is initialized).",
+      "featureId": "feature-ensure-the-admin-notifications-ui-is-restored-in-the-header-for-admin-users-and-points-to-a-notifications-panel-in-the-admin-dashboard-that-lists-otp-verified-users-mobile-number-verified-time-matching-version-27-behavior",
+      "featureTitle": "Ensure the Admin notifications UI is restored in the header for admin users and points to a notifications panel in the Admin dashboard that lists OTP-verified users (mobile number + verified time), matching Version 27 behavior.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/layout/RootLayout.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0"
-      ],
-      "testIds": [
-        "REQ-1"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-eliminate-conflicting-react-query-client-setup-by-ensuring-the-app-uses-a-single-queryclientprovider-avoid-nesting-different-queryclientproviders-between-frontend-src-main-tsx-and-frontend-src-app-tsx",
-      "featureTitle": "Eliminate conflicting React Query client setup by ensuring the app uses a single QueryClientProvider (avoid nesting different QueryClientProviders between frontend/src/main.tsx and frontend/src/App.tsx).",
-      "files": [
-        "frontend/src/App.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0"
-      ],
-      "testIds": [
-        "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-visible-user-facing-build-identifier-string-that-can-be-set-to-draft-23-and-is-displayed-in-the-ui-e-g-footer-or-an-about-area-so-it-is-unambiguous-which-draft-is-currently-deployed",
-      "featureTitle": "Add a visible, user-facing build identifier string that can be set to \"Draft 23\" and is displayed in the UI (e.g., footer or an About area) so it is unambiguous which draft is currently deployed.",
-      "files": [
-        "frontend/src/components/layout/RootLayout.tsx",
-        "frontend/src/components/layout/SiteFooter.tsx",
-        "frontend/src/config/buildInfo.ts"
+        "frontend/src/components/layout/SiteHeader.tsx",
+        "frontend/src/components/layout/header/AdminNotificationsControl.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -61,6 +19,27 @@
       ],
       "testIds": [
         "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-restore-the-header-my-profile-control-exactly-as-in-version-27-including-showing-the-profile-completion-percentage-beneath-the-my-profile-button-in-both-desktop-header-and-mobile-menu-variants",
+      "featureTitle": "Restore the header 'My Profile' control exactly as in Version 27, including showing the profile completion percentage beneath the My Profile button in both desktop header and mobile menu variants.",
+      "files": [
+        "frontend/src/components/layout/SiteHeader.tsx",
+        "frontend/src/hooks/profile/useProfileCompletion.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
       ],
       "confidence": "high"
     }

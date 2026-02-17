@@ -1,72 +1,64 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix router startup crash and show build identifier (Draft 23)",
+  "title": "Restore V27 admin notifications UI and My Profile completion indicator (frontend)",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Fix TanStack Router initialization to remove circular dependency and allow the app to render.",
-      "acceptanceCriteria": [
-        "Opening the app shows the Home page instead of a blank screen",
-        "The browser console does not show a ReferenceError related to accessing `router` before initialization",
-        "All existing routes continue to work (e.g., /, /provider/onboard, /my-profile)"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Refactor TanStack Router setup so createRootRoute no longer references `router` before it is initialized (e.g., root route renders a layout with Outlet). Ensure RouterProvider is only used at the app root and route tree remains unchanged so existing routes keep working."
-        },
-        {
-          "path": "frontend/src/components/layout/RootLayout.tsx",
-          "operation": "create",
-          "description": "Create a shared root layout component that renders the global shell (e.g., SiteHeader, Outlet content area, SiteFooter) to be used as the root route component so routing can initialize without circular references."
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "Use a single React Query QueryClientProvider to avoid conflicting React Query setup.",
-      "acceptanceCriteria": [
-        "There is only one active QueryClientProvider in the render tree at runtime",
-        "React Query hooks continue to function (queries and mutations still execute and cache as expected)"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Remove the QueryClient and QueryClientProvider from App so App is not nesting a second provider under the provider created in main.tsx."
-        },
-        {
-          "path": "frontend/src/main.tsx",
-          "operation": "modify",
-          "description": "Ensure the single QueryClient created here is configured with the desired defaults (matching prior app behavior where applicable) and remains the only QueryClientProvider wrapping the app."
-        }
-      ]
-    },
-    {
       "id": "REQ-3",
-      "summary": "Add a user-visible build identifier string configurable to \"Draft 23\" and displayed without authentication or backend calls.",
+      "summary": "Restore admin header notifications control and ensure /admin/notifications shows OTP verification logs with admin-only access.",
       "acceptanceCriteria": [
-        "The UI displays a build identifier that reads \"Draft 23\" when configured to that value",
-        "The build identifier is visible without requiring authentication",
-        "The build identifier does not require any backend calls to display"
+        "For admin users, the header displays an Admin notifications control with a badge count equal to the number of verification log records.",
+        "Clicking the Admin notifications control navigates to /admin/notifications.",
+        "The /admin/notifications page renders a notifications panel listing verification records sorted newest-first and displaying mobile number and a human-readable timestamp.",
+        "Non-admin users cannot access the /admin/notifications page (they see an access denied state)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/config/buildInfo.ts",
-          "operation": "create",
-          "description": "Add a small build-info configuration module exporting a build identifier value (defaulting to \"Draft 23\" and optionally overridable via a frontend build-time environment value) with no backend dependency."
+          "path": "frontend/src/components/layout/header/AdminNotificationsControl.tsx",
+          "operation": "modify",
+          "description": "Update the Admin notifications control so the primary click action navigates directly to /admin/notifications (not just opening a dropdown), while keeping the badge count driven by useMobileNumberVerifications(). Use shadcn-ui Button for consistent styling. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/components/layout/SiteFooter.tsx",
+          "path": "frontend/src/components/layout/SiteHeader.tsx",
           "operation": "modify",
-          "description": "Display the build identifier (from the build-info config) in a clearly visible footer area so it is always shown on public pages without requiring authentication."
+          "description": "Ensure the AdminNotificationsControl is rendered for admin users in both desktop header and mobile menu variants, and that the control remains discoverable/clickable in mobile layout. Use the authorization component’s role-based access via useIsCallerAdmin() to guard admin-only UI. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/components/layout/RootLayout.tsx",
+          "path": "frontend/src/pages/admin/AdminNotificationsPage.tsx",
           "operation": "modify",
-          "description": "Ensure the global footer (with the build identifier) is included in the app shell for all routes so the identifier is consistently visible."
+          "description": "Confirm admin-only gating behavior remains: RequireLogin wrapper + AccessDeniedScreen for non-admin, and render verification records newest-first with human-readable timestamps. Keep user-facing text in English. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Verify /admin/notifications route wiring exists and remains registered to AdminNotificationsPage (add/update route only if missing). Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Restore the Version 27-style header My Profile control and show profile completion percentage under it in desktop header and mobile menu when authenticated.",
+      "acceptanceCriteria": [
+        "When authenticated, the header shows a 'My Profile' control that navigates to /profile.",
+        "The control displays the profile completion percentage text beneath the button in desktop header variant.",
+        "The same completion percentage text appears beneath the My Profile item in the mobile menu variant.",
+        "When unauthenticated, the My Profile control is not shown."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/profile/useProfileCompletion.ts",
+          "operation": "modify",
+          "description": "Normalize the completion value returned from calculateProfileCompletion() for UI display: coerce to a whole-number 0–100 (e.g., clamp + round) and ensure stable behavior when actor is unavailable. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/layout/header/MyProfileControl.tsx",
+          "operation": "modify",
+          "description": "Ensure the My Profile control matches Version 27 behavior: always show the percentage text under the control for both desktop and mobile variants when authenticated, and confirm navigation to /profile. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/layout/SiteHeader.tsx",
+          "operation": "modify",
+          "description": "Confirm MyProfileControl is rendered only when authenticated and appears in both the desktop header area and mobile menu area with the percentage beneath it. Verify the component's usage instructions before implementing."
         }
       ]
     }

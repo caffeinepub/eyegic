@@ -44,7 +44,7 @@ export default function RepairsPage() {
               ))}
             </div>
           </div>
-          <Button size="lg" onClick={() => navigate({ to: '/book/repairs' })} className="w-full md:w-auto">
+          <Button size="lg" onClick={() => navigate({ to: '/book/repair' })} className="w-full md:w-auto">
             Request Repair Service
           </Button>
         </div>

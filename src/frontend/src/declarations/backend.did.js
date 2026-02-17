@@ -79,8 +79,8 @@ export const Booking = IDL.Record({
   'customer' : IDL.Principal,
   'createdAt' : IDL.Int,
   'mobileNumber' : IDL.Opt(IDL.Text),
-  'repairType' : IDL.Opt(RepairType),
   'updatedAt' : IDL.Int,
+  'repairTypes' : IDL.Opt(IDL.Vec(RepairType)),
   'address' : IDL.Opt(IDL.Text),
   'bookingType' : BookingType,
   'preferredTime' : IDL.Opt(IDL.Text),
@@ -112,6 +112,10 @@ export const UserProfile = IDL.Record({
   'phone' : IDL.Text,
   'profilePicture' : IDL.Opt(ExternalBlob),
   'prescriptionPicture' : IDL.Opt(ExternalBlob),
+});
+export const LogMobileNumberVerification = IDL.Record({
+  'mobileNumber' : IDL.Text,
+  'verifiedAt' : IDL.Int,
 });
 
 export const idlService = IDL.Service({
@@ -164,7 +168,7 @@ export const idlService = IDL.Service({
     ),
   'createRepairBooking' : IDL.Func(
       [
-        RepairType,
+        IDL.Vec(RepairType),
         IDL.Opt(IDL.Text),
         IDL.Opt(IDL.Text),
         IDL.Opt(IDL.Text),
@@ -180,6 +184,11 @@ export const idlService = IDL.Service({
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCustomerBookings' : IDL.Func([], [IDL.Vec(Booking)], ['query']),
+  'getMobileNumberVerifications' : IDL.Func(
+      [],
+      [IDL.Vec(LogMobileNumberVerification)],
+      ['query'],
+    ),
   'getProvider' : IDL.Func([IDL.Principal], [IDL.Opt(Provider)], ['query']),
   'getProviderBookings' : IDL.Func([], [IDL.Vec(Booking)], ['query']),
   'getRentalCatalog' : IDL.Func([], [IDL.Vec(RentalItem)], ['query']),
@@ -190,6 +199,7 @@ export const idlService = IDL.Service({
     ),
   'initialize' : IDL.Func([], [], []),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'logMobileNumberVerification' : IDL.Func([IDL.Text], [], []),
   'onboardProvider' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Vec(ServiceType), IDL.Text],
       [],
@@ -276,8 +286,8 @@ export const idlFactory = ({ IDL }) => {
     'customer' : IDL.Principal,
     'createdAt' : IDL.Int,
     'mobileNumber' : IDL.Opt(IDL.Text),
-    'repairType' : IDL.Opt(RepairType),
     'updatedAt' : IDL.Int,
+    'repairTypes' : IDL.Opt(IDL.Vec(RepairType)),
     'address' : IDL.Opt(IDL.Text),
     'bookingType' : BookingType,
     'preferredTime' : IDL.Opt(IDL.Text),
@@ -309,6 +319,10 @@ export const idlFactory = ({ IDL }) => {
     'phone' : IDL.Text,
     'profilePicture' : IDL.Opt(ExternalBlob),
     'prescriptionPicture' : IDL.Opt(ExternalBlob),
+  });
+  const LogMobileNumberVerification = IDL.Record({
+    'mobileNumber' : IDL.Text,
+    'verifiedAt' : IDL.Int,
   });
   
   return IDL.Service({
@@ -361,7 +375,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'createRepairBooking' : IDL.Func(
         [
-          RepairType,
+          IDL.Vec(RepairType),
           IDL.Opt(IDL.Text),
           IDL.Opt(IDL.Text),
           IDL.Opt(IDL.Text),
@@ -377,6 +391,11 @@ export const idlFactory = ({ IDL }) => {
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCustomerBookings' : IDL.Func([], [IDL.Vec(Booking)], ['query']),
+    'getMobileNumberVerifications' : IDL.Func(
+        [],
+        [IDL.Vec(LogMobileNumberVerification)],
+        ['query'],
+      ),
     'getProvider' : IDL.Func([IDL.Principal], [IDL.Opt(Provider)], ['query']),
     'getProviderBookings' : IDL.Func([], [IDL.Vec(Booking)], ['query']),
     'getRentalCatalog' : IDL.Func([], [IDL.Vec(RentalItem)], ['query']),
@@ -387,6 +406,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'initialize' : IDL.Func([], [], []),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'logMobileNumberVerification' : IDL.Func([IDL.Text], [], []),
     'onboardProvider' : IDL.Func(
         [
           IDL.Text,

@@ -1,40 +1,58 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
+  "summary": "Implement restoration of Version 27 behavior: Admin dashboard notifications panel for OTP-verified users, and My Profile button showing profile-completion percentage based on all profile fields.",
   "architectural_notes": [],
-  "known_issues": [
-    "Draft preview not opening; repeated redeploys of Draft 24 did not resolve and shows an error.",
-    "Deployment request mismatch: system kept deploying Draft 24 even when user requested Draft 23."
-  ],
+  "known_issues": [],
   "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-fix-the-tanstack-router-initialization-in-frontend-src-app-tsx-so-the-app-can-render-without-runtime-errors-remove-the-circular-dependency-where-createrootroute-references-router-before-it-is-initialized",
-      "title": "Fix the TanStack Router initialization in frontend/src/App.tsx so the app can render without runtime errors (remove the circular dependency where createRootRoute references `router` before it is initialized).",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-eliminate-conflicting-react-query-client-setup-by-ensuring-the-app-uses-a-single-queryclientprovider-avoid-nesting-different-queryclientproviders-between-frontend-src-main-tsx-and-frontend-src-app-tsx",
-      "title": "Eliminate conflicting React Query client setup by ensuring the app uses a single QueryClientProvider (avoid nesting different QueryClientProviders between frontend/src/main.tsx and frontend/src/App.tsx).",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-visible-user-facing-build-identifier-string-that-can-be-set-to-draft-23-and-is-displayed-in-the-ui-e-g-footer-or-an-about-area-so-it-is-unambiguous-which-draft-is-currently-deployed",
-      "title": "Add a visible, user-facing build identifier string that can be set to \"Draft 23\" and is displayed in the UI (e.g., footer or an About area) so it is unambiguous which draft is currently deployed.",
+      "id": "feature-ensure-the-admin-notifications-ui-is-restored-in-the-header-for-admin-users-and-points-to-a-notifications-panel-in-the-admin-dashboard-that-lists-otp-verified-users-mobile-number-verified-time-matching-version-27-behavior",
+      "title": "Ensure the Admin notifications UI is restored in the header for admin users and points to a notifications panel in the Admin dashboard that lists OTP-verified users (mobile number + verified time), matching Version 27 behavior.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-restore-the-header-my-profile-control-exactly-as-in-version-27-including-showing-the-profile-completion-percentage-beneath-the-my-profile-button-in-both-desktop-header-and-mobile-menu-variants",
+      "title": "Restore the header 'My Profile' control exactly as in Version 27, including showing the profile completion percentage beneath the My Profile button in both desktop header and mobile menu variants.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
     }
   ],
-  "new_feature_requests": [],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Show OTP-verified user interest notifications inside Admin dashboard via a notifications panel (no email/SMS), including the verified user mobile number.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Restore My Profile button to display profile completion percentage calculated from all fields in the My Profile section.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Persist and expose mobile-number OTP verification logs so that when a user successfully verifies their mobile number by OTP, an admin can see a notification entry containing the verified mobile number and a verification timestamp (no email/SMS).",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Update profile completion calculation so the completion percentage is based on all fields in the My Profile section, and return a 0–100 integer percentage for display in the header My Profile control.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    }
+  ],
   "projectName": "EYEGIC Bookings",
   "clarification_mode": "instant",
   "clarification_rounds": 0

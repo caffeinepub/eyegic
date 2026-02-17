@@ -9,7 +9,9 @@ export function useProfileCompletion() {
     queryFn: async () => {
       if (!actor) return 0;
       const completion = await actor.calculateProfileCompletion();
-      return Number(completion);
+      // Ensure we return a stable whole number between 0-100
+      const normalized = Number(completion);
+      return Math.max(0, Math.min(100, Math.round(normalized)));
     },
     enabled: !!actor && !isFetching,
   });

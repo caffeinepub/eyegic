@@ -10,7 +10,6 @@ import {
   RoundIcon,
   SquareIcon,
   WayfarerIcon,
-  WraparoundIcon,
 } from './FrameShapeIcons';
 
 interface FrameShapePickerProps {
@@ -27,7 +26,6 @@ const frameShapeOptions = [
   { value: FrameShape.round, label: 'Round', Icon: RoundIcon },
   { value: FrameShape.square, label: 'Square', Icon: SquareIcon },
   { value: FrameShape.wayfarer, label: 'Wayfarer', Icon: WayfarerIcon },
-  { value: 'wraparound' as any, label: 'Wraparound', Icon: WraparoundIcon },
 ];
 
 export default function FrameShapePicker({ selected, onChange }: FrameShapePickerProps) {

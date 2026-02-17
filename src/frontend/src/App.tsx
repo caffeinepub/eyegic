@@ -1,7 +1,5 @@
 import { RouterProvider, createRouter, createRoute, createRootRoute } from '@tanstack/react-router';
 import { ThemeProvider } from 'next-themes';
-import { Toaster } from '@/components/ui/sonner';
-
 import RootLayout from './components/layout/RootLayout';
 import HomePage from './pages/HomePage';
 import MobileOpticianPage from './pages/services/MobileOpticianPage';
@@ -13,9 +11,10 @@ import RepairRequestPage from './pages/bookings/repairs/RepairRequestPage';
 import RepairRequestConfirmationPage from './pages/bookings/repairs/RepairRequestConfirmationPage';
 import MyBookingsPage from './pages/bookings/MyBookingsPage';
 import BookingDetailPage from './pages/bookings/BookingDetailPage';
+import MyProfilePage from './pages/profile/MyProfilePage';
 import ProviderOnboardingPage from './pages/provider/ProviderOnboardingPage';
 import ProviderDashboardPage from './pages/provider/ProviderDashboardPage';
-import MyProfilePage from './pages/profile/MyProfilePage';
+import AdminNotificationsPage from './pages/admin/AdminNotificationsPage';
 import RentalsCatalogPage from './pages/rentals/RentalsCatalogPage';
 import RentalItemDetailPage from './pages/rentals/RentalItemDetailPage';
 import RentalBookingPage from './pages/bookings/rentals/RentalBookingPage';
@@ -37,15 +36,15 @@ const mobileOpticianRoute = createRoute({
   component: MobileOpticianPage,
 });
 
-const rentalsRoute = createRoute({
+const rentalsServiceRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/rentals',
+  path: '/services/rentals',
   component: RentalsPage,
 });
 
 const rentalsCatalogRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/rentals/catalog',
+  path: '/rentals',
   component: RentalsCatalogPage,
 });
 
@@ -67,21 +66,21 @@ const bookMobileOpticianRoute = createRoute({
   component: MobileOpticianBookingPage,
 });
 
-const mobileOpticianConfirmationRoute = createRoute({
+const bookMobileOpticianConfirmationRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/book/mobile-optician/confirmation/$bookingId',
+  path: '/book/mobile-optician/confirmation',
   component: MobileOpticianBookingConfirmationPage,
 });
 
 const bookRepairRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/book/repairs',
+  path: '/book/repair',
   component: RepairRequestPage,
 });
 
-const repairConfirmationRoute = createRoute({
+const bookRepairConfirmationRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/book/repairs/confirmation/$bookingId',
+  path: '/book/repair/confirmation',
   component: RepairRequestConfirmationPage,
 });
 
@@ -91,7 +90,7 @@ const bookRentalRoute = createRoute({
   component: RentalBookingPage,
 });
 
-const rentalConfirmationRoute = createRoute({
+const bookRentalConfirmationRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/book/rentals/confirmation/$bookingId',
   component: RentalBookingConfirmationPage,
@@ -109,7 +108,13 @@ const bookingDetailRoute = createRoute({
   component: BookingDetailPage,
 });
 
-const providerOnboardRoute = createRoute({
+const profileRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/profile',
+  component: MyProfilePage,
+});
+
+const providerOnboardingRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/provider/onboard',
   component: ProviderOnboardingPage,
@@ -121,30 +126,31 @@ const providerDashboardRoute = createRoute({
   component: ProviderDashboardPage,
 });
 
-const myProfileRoute = createRoute({
+const adminNotificationsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/my-profile',
-  component: MyProfilePage,
+  path: '/admin/notifications',
+  component: AdminNotificationsPage,
 });
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
   mobileOpticianRoute,
-  rentalsRoute,
+  rentalsServiceRoute,
   rentalsCatalogRoute,
   rentalItemDetailRoute,
   repairsRoute,
   bookMobileOpticianRoute,
-  mobileOpticianConfirmationRoute,
+  bookMobileOpticianConfirmationRoute,
   bookRepairRoute,
-  repairConfirmationRoute,
+  bookRepairConfirmationRoute,
   bookRentalRoute,
-  rentalConfirmationRoute,
+  bookRentalConfirmationRoute,
   myBookingsRoute,
   bookingDetailRoute,
-  providerOnboardRoute,
+  profileRoute,
+  providerOnboardingRoute,
   providerDashboardRoute,
-  myProfileRoute,
+  adminNotificationsRoute,
 ]);
 
 const router = createRouter({ routeTree });
@@ -159,7 +165,6 @@ export default function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <RouterProvider router={router} />
-      <Toaster />
     </ThemeProvider>
   );
 }

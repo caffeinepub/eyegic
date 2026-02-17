@@ -18,8 +18,8 @@ export interface Booking {
   'customer' : Principal,
   'createdAt' : bigint,
   'mobileNumber' : [] | [string],
-  'repairType' : [] | [RepairType],
   'updatedAt' : bigint,
+  'repairTypes' : [] | [Array<RepairType>],
   'address' : [] | [string],
   'bookingType' : BookingType,
   'preferredTime' : [] | [string],
@@ -46,6 +46,10 @@ export type FrameShape = { 'rectangular' : null } |
 export type Gender = { 'other' : null } |
   { 'female' : null } |
   { 'male' : null };
+export interface LogMobileNumberVerification {
+  'mobileNumber' : string,
+  'verifiedAt' : bigint,
+}
 export interface PriceInfo {
   'total' : bigint,
   'baseFee' : bigint,
@@ -137,7 +141,7 @@ export interface _SERVICE {
     bigint
   >,
   'createRepairBooking' : ActorMethod<
-    [RepairType, [] | [string], [] | [string], [] | [string], PriceInfo],
+    [Array<RepairType>, [] | [string], [] | [string], [] | [string], PriceInfo],
     bigint
   >,
   'findAvailableRentalItems' : ActorMethod<[], Array<RentalItem>>,
@@ -147,12 +151,17 @@ export interface _SERVICE {
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCustomerBookings' : ActorMethod<[], Array<Booking>>,
+  'getMobileNumberVerifications' : ActorMethod<
+    [],
+    Array<LogMobileNumberVerification>
+  >,
   'getProvider' : ActorMethod<[Principal], [] | [Provider]>,
   'getProviderBookings' : ActorMethod<[], Array<Booking>>,
   'getRentalCatalog' : ActorMethod<[], Array<RentalItem>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'initialize' : ActorMethod<[], undefined>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'logMobileNumberVerification' : ActorMethod<[string], undefined>,
   'onboardProvider' : ActorMethod<
     [string, string, string, string, Array<ServiceType>, string],
     undefined

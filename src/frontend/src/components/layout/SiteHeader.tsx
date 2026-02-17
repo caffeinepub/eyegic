@@ -1,51 +1,70 @@
-import { Link, useNavigate } from '@tanstack/react-router';
-import { Menu, X, Mail } from 'lucide-react';
 import { useState } from 'react';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import LoginButton from '../auth/LoginButton';
+import { Menu, ChevronDown, LogOut, LogIn } from 'lucide-react';
 import BrandLogo from '../brand/BrandLogo';
 import WhatsAppIcon from '../icons/WhatsAppIcon';
+import AdminNotificationsControl from './header/AdminNotificationsControl';
+import MyProfileControl from './header/MyProfileControl';
 import { useInternetIdentity } from '../../hooks/useInternetIdentity';
-import { useProfileCompletion } from '../../hooks/profile/useProfileCompletion';
+import { useQueryClient } from '@tanstack/react-query';
+import { useIsCallerAdmin } from '../../hooks/auth/useIsCallerAdmin';
 
 export default function SiteHeader() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const { identity } = useInternetIdentity();
-  const { data: profileCompletion } = useProfileCompletion();
+  const { identity, login, clear, loginStatus } = useInternetIdentity();
+  const queryClient = useQueryClient();
+  const { data: isAdmin } = useIsCallerAdmin();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isAuthenticated = !!identity;
+  const isLoggingIn = loginStatus === 'logging-in';
+
+  const handleLogout = async () => {
+    await clear();
+    queryClient.clear();
+    navigate({ to: '/' });
+  };
+
+  const handleLogin = async () => {
+    try {
+      await login();
+    } catch (error: any) {
+      console.error('Login error:', error);
+      if (error.message === 'User is already authenticated') {
+        await clear();
+        setTimeout(() => login(), 300);
+      }
+    }
+  };
+
+  const closeMobileMenu = () => setMobileMenuOpen(false);
 
   const navLinks = [
-    { label: 'Home', path: '/' },
-    { label: 'Mobile Optician', path: '/services/mobile-optician' },
-    { label: 'Rentals', path: '/rentals' },
-    { label: 'Repairs', path: '/services/repairs' },
-    { label: 'My Bookings', path: '/my-bookings' },
+    { to: '/services/mobile-optician', label: 'Mobile Optician' },
+    { to: '/services/rentals', label: 'Rentals' },
+    { to: '/services/repairs', label: 'Repairs' },
   ];
 
-  const handleWhatsApp = () => {
-    window.open('https://wa.me/918600044322', '_blank');
-  };
-
-  const handleEmail = () => {
-    window.location.href = 'mailto:info@eyegic.com';
-  };
-
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container-custom flex h-24 md:h-28 items-center justify-between gap-4 px-4 md:px-6">
-        <div className="flex items-center gap-6 md:gap-12 h-full">
-          <BrandLogo variant="header" />
+    <header className="sticky top-0 z-50 w-full border-b bg-background/98 backdrop-blur-md supports-[backdrop-filter]:bg-background/98 shadow-sm">
+      <div className="container-custom flex h-16 items-center justify-between">
+        <div className="flex items-center gap-8">
+          <BrandLogo variant="header" onClick={closeMobileMenu} />
 
-          <nav className="hidden md:flex items-center gap-6 lg:gap-7">
-            {navLinks.slice(0, 4).map((link) => (
+          <nav className="hidden md:flex items-center gap-6">
+            {navLinks.map((link) => (
               <Link
-                key={link.path}
-                to={link.path}
-                className="text-sm font-medium text-foreground/80 transition-colors hover:text-foreground whitespace-nowrap"
+                key={link.to}
+                to={link.to}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 {link.label}
               </Link>
@@ -53,124 +72,183 @@ export default function SiteHeader() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
-          <div className="hidden md:flex items-center gap-3 lg:gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate({ to: '/my-bookings' })}
-            >
-              My Bookings
-            </Button>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  Contact Us
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleWhatsApp}>
-                  <WhatsAppIcon className="mr-2 h-4 w-4" />
-                  WhatsApp: 8600044322
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleEmail}>
-                  <Mail className="mr-2 h-4 w-4" />
-                  Email: info@eyegic.com
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {isAuthenticated && (
-              <div className="flex flex-col items-center">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate({ to: '/my-profile' })}
+        <div className="flex items-center gap-3">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="hidden md:flex gap-1">
+                Contact Us
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <a
+                  href="https://wa.me/918600044322"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
                 >
-                  My Profile
-                </Button>
-                {profileCompletion !== undefined && (
-                  <span className="text-xs text-muted-foreground">
-                    {profileCompletion}% complete
-                  </span>
-                )}
+                  <WhatsAppIcon className="h-4 w-4" />
+                  WhatsApp
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <a href="mailto:info@eyegic.com" className="flex items-center gap-2">
+                  <span>📧</span>
+                  Email
+                </a>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {isAuthenticated ? (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate({ to: '/my-bookings' })}
+                className="hidden md:flex"
+              >
+                My Bookings
+              </Button>
+
+              <div className="hidden md:flex">
+                <MyProfileControl variant="desktop" />
               </div>
-            )}
-            
-            <LoginButton />
-          </div>
+
+              {isAdmin && (
+                <div className="hidden md:flex">
+                  <AdminNotificationsControl />
+                </div>
+              )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className="hidden md:flex gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleLogin}
+              disabled={isLoggingIn}
+              className="hidden md:flex gap-2"
+            >
+              <LogIn className="h-4 w-4" />
+              {isLoggingIn ? 'Logging in...' : 'Login'}
+            </Button>
+          )}
 
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="flex-shrink-0">
-                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-              <div className="flex items-center justify-center py-6 border-b mb-6">
-                <BrandLogo onClick={() => setMobileMenuOpen(false)} />
-              </div>
-              <nav className="flex flex-col gap-4">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    className="text-base font-medium text-foreground/80 transition-colors hover:text-foreground py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-                
-                <div className="pt-4 border-t space-y-3">
-                  <button
-                    onClick={() => {
-                      handleWhatsApp();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="flex items-center gap-2 text-base font-medium text-foreground/80 transition-colors hover:text-foreground py-2 w-full"
-                  >
-                    <WhatsAppIcon className="h-5 w-5" />
-                    WhatsApp: 8600044322
-                  </button>
-                  
-                  <button
-                    onClick={() => {
-                      handleEmail();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="flex items-center gap-2 text-base font-medium text-foreground/80 transition-colors hover:text-foreground py-2 w-full"
-                  >
-                    <Mail className="h-5 w-5" />
-                    Email: info@eyegic.com
-                  </button>
+            <SheetContent side="right" className="w-[300px]">
+              <div className="flex flex-col gap-4 mt-8">
+                <BrandLogo onClick={closeMobileMenu} />
 
-                  {isAuthenticated && (
-                    <div className="pt-2">
+                <nav className="flex flex-col gap-3">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.to}
+                      to={link.to}
+                      onClick={closeMobileMenu}
+                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </nav>
+
+                <div className="border-t pt-4 flex flex-col gap-3">
+                  <div className="text-sm font-medium mb-2">Contact Us</div>
+                  <a
+                    href="https://wa.me/918600044322"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground py-2"
+                    onClick={closeMobileMenu}
+                  >
+                    <WhatsAppIcon className="h-4 w-4" />
+                    WhatsApp
+                  </a>
+                  <a
+                    href="mailto:info@eyegic.com"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground py-2"
+                    onClick={closeMobileMenu}
+                  >
+                    <span>📧</span>
+                    Email
+                  </a>
+                </div>
+
+                {isAuthenticated && (
+                  <div className="border-t pt-4 flex flex-col gap-3">
+                    <Button
+                      variant="ghost"
+                      className="justify-start"
+                      onClick={() => {
+                        navigate({ to: '/my-bookings' });
+                        closeMobileMenu();
+                      }}
+                    >
+                      My Bookings
+                    </Button>
+
+                    <MyProfileControl variant="mobile" onNavigate={closeMobileMenu} />
+
+                    {isAdmin && (
                       <Button
                         variant="ghost"
-                        className="w-full justify-start"
+                        className="justify-start"
                         onClick={() => {
-                          navigate({ to: '/my-profile' });
-                          setMobileMenuOpen(false);
+                          navigate({ to: '/admin/notifications' });
+                          closeMobileMenu();
                         }}
                       >
-                        My Profile
-                        {profileCompletion !== undefined && (
-                          <span className="ml-auto text-xs text-muted-foreground">
-                            {profileCompletion}%
-                          </span>
-                        )}
+                        Admin Notifications
                       </Button>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="pt-4 border-t">
-                  <LoginButton />
-                </div>
-              </nav>
+                    )}
+
+                    <Button
+                      variant="outline"
+                      className="justify-start gap-2"
+                      onClick={() => {
+                        handleLogout();
+                        closeMobileMenu();
+                      }}
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </Button>
+                  </div>
+                )}
+
+                {!isAuthenticated && (
+                  <div className="border-t pt-4">
+                    <Button
+                      variant="default"
+                      className="w-full gap-2"
+                      onClick={() => {
+                        handleLogin();
+                        closeMobileMenu();
+                      }}
+                      disabled={isLoggingIn}
+                    >
+                      <LogIn className="h-4 w-4" />
+                      {isLoggingIn ? 'Logging in...' : 'Login'}
+                    </Button>
+                  </div>
+                )}
+              </div>
             </SheetContent>
           </Sheet>
         </div>

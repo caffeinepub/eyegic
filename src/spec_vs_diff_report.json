@@ -1,68 +1,55 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-17T05:19:12.513Z",
-  "summary": "REQ-1 appears implemented by refactoring TanStack Router setup to use a RootLayout root route (avoiding referencing an uninitialized router). REQ-3 appears implemented by adding a buildInfo config and displaying the identifier in the footer. REQ-2 cannot be fully verified from the provided diff summary because frontend/src/main.tsx is not shown, so we cannot confirm there is exactly one QueryClientProvider at runtime. Several unrelated UI/feature changes appear in the diff summary that were not requested.",
+  "generatedAt": "2026-02-17T09:56:52.367Z",
+  "summary": "Diff adds a migration stub for a new verificationLogs field, introduces an admin notifications bell control in the header, and adds a profile-completion query hook. However, the backend APIs and authorization for OTP verification logs and the backend profile completion calculation are not evidenced in the provided diff, and the /admin/notifications page (and its access denied behavior) is not shown.",
   "missing_requirements": [
     {
+      "id": "REQ-1",
+      "requirement": "Implement persisted OTP mobile-number verification logs with admin-only retrieval: logMobileNumberVerification(mobileNumber) appends {mobileNumber, verifiedAt} to canister state; getMobileNumberVerifications() returns full list for admins and traps for non-admins; no email/SMS sending.",
+      "reason": "backend/main.mo shows a LogMobileNumberVerification type and a verificationLogs value, but there is no evidence in the diff summary of the required public methods (logMobileNumberVerification, getMobileNumberVerifications), admin-only authorization/trap behavior, or that logs are stored in a mutable, persisted structure (verificationLogs is shown as an immutable empty list).",
+      "evidence": [
+        "backend/main.mo",
+        "backend/migration.mo"
+      ]
+    },
+    {
       "id": "REQ-2",
-      "requirement": "Ensure the app uses a single React Query QueryClientProvider (avoid nesting different QueryClientProviders between frontend/src/main.tsx and frontend/src/App.tsx).",
-      "reason": "The diff summary shows App.tsx changes and claims QueryClientProvider was removed from App.tsx, but frontend/src/main.tsx is not included in the diff summary content, so it is not possible to confirm that exactly one QueryClientProvider remains in the runtime tree.",
+      "requirement": "Update calculateProfileCompletion() so it evaluates all UserProfile fields and returns an integer 0–100 (0 if no profile).",
+      "reason": "Frontend adds a hook that calls actor.calculateProfileCompletion(), but the diff summary does not show any backend implementation/update of calculateProfileCompletion() to include all fields or to return a whole-number 0–100 value.",
       "evidence": [
-        "frontend/src/App.tsx (shows router setup; no visible QueryClientProvider in truncated snippet)",
-        "File diff summary does not include frontend/src/main.tsx"
+        "frontend/src/hooks/profile/useProfileCompletion.ts",
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Restore admin notifications UX: header control for admins with badge count; navigate to /admin/notifications; /admin/notifications lists verification records newest-first with human-readable timestamps; non-admin access denied.",
+      "reason": "The header bell control and navigation to /admin/notifications are shown, but the diff summary provides no evidence of the /admin/notifications page/panel implementation, sorting newest-first, timestamp formatting, or the non-admin access denied state.",
+      "evidence": [
+        "frontend/src/components/layout/header/AdminNotificationsControl.tsx",
+        "frontend/src/components/layout/SiteHeader.tsx"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "Restore Version 27 My Profile header control and show completion percentage beneath it in both desktop header and mobile menu; hide when unauthenticated; navigates to /profile.",
+      "reason": "SiteHeader imports MyProfileControl and the new profile completion hook exists, but the provided SiteHeader diff is truncated and does not include evidence that the completion percentage is rendered beneath the control in both desktop and mobile variants, that it navigates to /profile, and that it is hidden when unauthenticated.",
+      "evidence": [
+        "frontend/src/components/layout/SiteHeader.tsx",
+        "frontend/src/hooks/profile/useProfileCompletion.ts"
       ]
     }
   ],
-  "hallucinated_features": [
-    {
-      "description": "Added/changed Tailwind animations and keyframes (float-gentle, fade-in-up, scale-in) for UI motion effects.",
-      "reason": "Not requested by any requirement (REQ-1/2/3 focus on router init, React Query provider duplication, and build identifier display).",
-      "evidence": [
-        "frontend-file-summaries.txt (frontend/tailwind.config.js)"
-      ]
-    },
-    {
-      "description": "Multiple service pages updated with new illustrations/animations and content tweaks (MobileOpticianPage, RentalsPage, RepairsPage).",
-      "reason": "Not requested by the BuildRequest.",
-      "evidence": [
-        "frontend-file-summaries.txt (frontend/src/pages/services/MobileOpticianPage.tsx)",
-        "frontend-file-summaries.txt (frontend/src/pages/services/RentalsPage.tsx)",
-        "frontend-file-summaries.txt (frontend/src/pages/services/RepairsPage.tsx)"
-      ]
-    },
-    {
-      "description": "Provider dashboard and bookings pages behavior changes (INR formatting, conditional fields, status management, schedule rendering).",
-      "reason": "Not requested by the BuildRequest.",
-      "evidence": [
-        "frontend-file-summaries.txt (frontend/src/pages/bookings/MyBookingsPage.tsx)",
-        "frontend-file-summaries.txt (frontend/src/pages/provider/ProviderDashboardPage.tsx)"
-      ]
-    },
-    {
-      "description": "Added branding/logo utilities and a protected branding settings page with upload/preview/toasts.",
-      "reason": "Not requested by the BuildRequest.",
-      "evidence": [
-        "frontend-file-summaries.txt (frontend/src/utils/logoDataUrl.ts)",
-        "frontend-file-summaries.txt (frontend/src/hooks/branding/useSiteLogo.ts)",
-        "frontend-file-summaries.txt (frontend/src/pages/settings/BrandingLogoPage.tsx)"
-      ]
-    },
-    {
-      "description": "Site header navigation changes (Provider Portal replaced with Contact Us dropdown, My Profile completion percentage).",
-      "reason": "Not requested by the BuildRequest.",
-      "evidence": [
-        "frontend-file-summaries.txt (frontend/src/components/layout/SiteHeader.tsx)"
-      ]
-    }
-  ],
-  "confidence": 0.66,
+  "hallucinated_features": [],
+  "confidence": 0.62,
   "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/App.tsx",
-    "frontend/src/components/layout/RootLayout.tsx",
-    "frontend/src/components/layout/SiteFooter.tsx",
-    "frontend/src/config/buildInfo.ts",
+    "frontend/src/components/layout/SiteHeader.tsx",
+    "frontend/src/components/layout/header/AdminNotificationsControl.tsx",
+    "frontend/src/hooks/profile/useProfileCompletion.ts",
     "project_state.json"
   ]
 }

@@ -1,10 +1,53 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Eye, Package, Wrench, ArrowRight, CheckCircle2 } from 'lucide-react';
+import MobileNumberOtpGate from '@/components/forms/MobileNumberOtpGate';
+import { setHomeOtpVerified, getHomeOtpVerified } from '@/utils/homeOtpSession';
+import { useLogMobileNumberVerification } from '@/hooks/bookings/useLogMobileNumberVerification';
+import { toast } from 'sonner';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const [showOtpGate, setShowOtpGate] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [verifiedMobile, setVerifiedMobile] = useState<string | null>(null);
+  const logVerification = useLogMobileNumberVerification();
+
+  useEffect(() => {
+    // Check if already verified in this session
+    const { verified, mobileNumber } = getHomeOtpVerified();
+    if (verified && mobileNumber) {
+      setIsVerified(true);
+      setVerifiedMobile(mobileNumber);
+    }
+  }, []);
+
+  const handleBookServiceClick = () => {
+    setShowOtpGate(true);
+  };
+
+  const handleOtpSubmit = async (mobileNumber: string) => {
+    try {
+      // Log verification to backend
+      await logVerification.mutateAsync(mobileNumber);
+      
+      // Store in session
+      setHomeOtpVerified(mobileNumber);
+      setIsVerified(true);
+      setVerifiedMobile(mobileNumber);
+      setShowOtpGate(false);
+      
+      toast.success('Mobile number verified successfully!');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to verify mobile number');
+    }
+  };
+
+  const handleServiceSelect = (path: string) => {
+    navigate({ to: path });
+  };
 
   const services = [
     {
@@ -50,11 +93,78 @@ export default function HomePage() {
                 Professional opticians, rentals, and repairs delivered to your doorstep.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" onClick={() => navigate({ to: '/services/mobile-optician' })} className="gap-2">
-                  Book a Service
-                  <ArrowRight className="h-5 w-5" />
-                </Button>
+                {!showOtpGate && !isVerified && (
+                  <Button size="lg" onClick={handleBookServiceClick} className="gap-2">
+                    Book a Service
+                    <ArrowRight className="h-5 w-5" />
+                  </Button>
+                )}
               </div>
+
+              {/* OTP Gate */}
+              {showOtpGate && !isVerified && (
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle>Verify Your Mobile Number</CardTitle>
+                    <CardDescription>
+                      Please verify your mobile number to continue booking a service
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <MobileNumberOtpGate
+                      onSubmitRequest={handleOtpSubmit}
+                      disabled={logVerification.isPending}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Service Options after verification */}
+              {isVerified && (
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle>Choose Your Service</CardTitle>
+                    <CardDescription>
+                      Select one of the following services to continue
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start gap-3 h-auto py-4"
+                      onClick={() => handleServiceSelect('/book/mobile-optician')}
+                    >
+                      <Eye className="h-5 w-5 text-primary" />
+                      <div className="text-left">
+                        <div className="font-semibold">Mobile Optician Service</div>
+                        <div className="text-xs text-muted-foreground">Eye tests and frame try-ons</div>
+                      </div>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start gap-3 h-auto py-4"
+                      onClick={() => handleServiceSelect('/rentals')}
+                    >
+                      <Package className="h-5 w-5 text-primary" />
+                      <div className="text-left">
+                        <div className="font-semibold">Eyewear Rentals</div>
+                        <div className="text-xs text-muted-foreground">Rent premium eyewear</div>
+                      </div>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start gap-3 h-auto py-4"
+                      onClick={() => handleServiceSelect('/book/repair')}
+                    >
+                      <Wrench className="h-5 w-5 text-primary" />
+                      <div className="text-left">
+                        <div className="font-semibold">Repairs & Adjustments</div>
+                        <div className="text-xs text-muted-foreground">Expert repair services</div>
+                      </div>
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
             </div>
             <div className="relative flex-shrink-0">
               <img

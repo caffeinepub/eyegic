@@ -1,66 +1,70 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-17T05:19:12.517Z",
+  "generatedAt": "2026-02-17T09:56:52.370Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 3,
+    "total": 4,
+    "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Fix the TanStack Router initialization in frontend/src/App.tsx so the app can render without runtime errors (remove the circular dependency where createRootRoute references `router` before it is initialized).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/components/layout/RootLayout.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/components/layout/RootLayout.tsx"
-        ]
+        "summary": "Persist and expose mobile-number OTP verification logs so that when a user successfully verifies their mobile number by OTP, an admin can see a notification entry containing the verified mobile number and a verification timestamp (no email/SMS).",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
         "id": "REQ-2",
-        "summary": "Eliminate conflicting React Query client setup by ensuring the app uses a single QueryClientProvider (avoid nesting different QueryClientProviders between frontend/src/main.tsx and frontend/src/App.tsx).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/main.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/App.tsx"
-        ]
+        "summary": "Update profile completion calculation so the completion percentage is based on all fields in the My Profile section, and return a 0–100 integer percentage for display in the header My Profile control.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
         "id": "REQ-3",
-        "summary": "Add a visible, user-facing build identifier string that can be set to \"Draft 23\" and is displayed in the UI (e.g., footer or an About area) so it is unambiguous which draft is currently deployed.",
+        "summary": "Ensure the Admin notifications UI is restored in the header for admin users and points to a notifications panel in the Admin dashboard that lists OTP-verified users (mobile number + verified time), matching Version 27 behavior.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/config/buildInfo.ts",
-          "frontend/src/components/layout/SiteFooter.tsx",
-          "frontend/src/components/layout/RootLayout.tsx"
+          "frontend/src/components/layout/header/AdminNotificationsControl.tsx",
+          "frontend/src/components/layout/SiteHeader.tsx",
+          "frontend/src/pages/admin/AdminNotificationsPage.tsx",
+          "frontend/src/App.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/config/buildInfo.ts",
-          "frontend/src/components/layout/SiteFooter.tsx",
-          "frontend/src/components/layout/RootLayout.tsx"
+          "frontend/src/components/layout/header/AdminNotificationsControl.tsx",
+          "frontend/src/components/layout/SiteHeader.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Restore the header 'My Profile' control exactly as in Version 27, including showing the profile completion percentage beneath the My Profile button in both desktop header and mobile menu variants.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/profile/useProfileCompletion.ts",
+          "frontend/src/components/layout/header/MyProfileControl.tsx",
+          "frontend/src/components/layout/SiteHeader.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/profile/useProfileCompletion.ts",
+          "frontend/src/components/layout/SiteHeader.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/components/layout/RootLayout.tsx",
-    "frontend/src/components/layout/SiteFooter.tsx",
-    "frontend/src/config/buildInfo.ts",
+    "frontend/src/components/layout/SiteHeader.tsx",
+    "frontend/src/components/layout/header/AdminNotificationsControl.tsx",
+    "frontend/src/hooks/profile/useProfileCompletion.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
